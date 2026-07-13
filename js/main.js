@@ -218,7 +218,9 @@
   }
 
   /* ============ 9. FORMULAIRE DE CONTACT ===================== */
-  // Utilise EmailJS si configuré, sinon repli mailto — même logique que la réservation.
+  // Envoi 100 % automatique via EmailJS : n'ouvre JAMAIS la messagerie du
+  // visiteur quand EmailJS est configuré. Le repli mailto ne sert que si
+  // EmailJS n'est pas configuré du tout (cas de secours).
   function initContactForm() {
     const form = document.getElementById("contactForm");
     if (!form) return;
@@ -236,8 +238,12 @@
       };
 
       const e = C.emailjs;
-      const emailjsOn = e && e.publicKey && e.serviceId && e.templateBarbier &&
-                        !/^X+$/i.test(e.publicKey) && window.emailjs;
+      const notEmpty = (v) => v && !/^X+$/i.test(v);
+      // Template dédié au contact s'il existe, sinon on réutilise celui de la demande de RDV.
+      const templateId = notEmpty(e && e.templateContact) ? e.templateContact
+                       : (e && e.templateBarbier) || "";
+      const emailjsOn = e && notEmpty(e.publicKey) && notEmpty(e.serviceId) &&
+                        notEmpty(templateId) && window.emailjs;
 
       const done = (type, msg) => {
         feedback.className = `booking-feedback is-visible is-${type}`;
@@ -248,11 +254,15 @@
       if (emailjsOn) {
         const btn = form.querySelector('button[type="submit"]');
         const t = btn.textContent; btn.disabled = true; btn.textContent = "Envoi…";
-        window.emailjs.send(e.serviceId, e.templateBarbier, payload)
+        window.emailjs.send(e.serviceId, templateId, payload)
           .then(() => { done("success", "Merci ! Votre message a bien été envoyé. Nous vous répondrons rapidement."); form.reset(); })
-          .catch(() => { mailtoContact(payload); done("info", "Votre messagerie s'est ouverte avec le message pré-rempli."); })
+          .catch(() => {
+            // On n'ouvre PAS la messagerie : on invite simplement à réessayer.
+            done("error", `Désolé, l'envoi a échoué. Merci de réessayer, ou de nous appeler au ${C.salon.telephone}.`);
+          })
           .finally(() => { btn.disabled = false; btn.textContent = t; });
       } else {
+        // Cas de secours uniquement si EmailJS n'est pas configuré.
         mailtoContact(payload);
         done("info", "Votre messagerie s'est ouverte avec le message pré-rempli. Envoyez-le pour nous contacter.");
       }

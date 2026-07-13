@@ -32,7 +32,7 @@ const CONFIG = {
     adresse:    "[Rue et numéro]",                  // ex : "Rue de la Coupe 12"
     codePostal: "[Code postal]",                    // ex : "1000"
     telephone:  "[+32 4XX XX XX XX]",               // affiché ET cliquable
-    email:      "[contact@rufixbarber.be]",         // email public du salon
+    email:      "vanosselt.rayane@gmail.com",       // email public du salon
     // Position sur la carte Google Maps (voir README pour générer le lien).
     // Laissez tel quel pour une position fictive, ou collez votre propre iframe src.
     mapsEmbed:  "https://www.google.com/maps?q=Grand-Place%2C%20Bruxelles&output=embed",
@@ -171,8 +171,11 @@ const CONFIG = {
   emailjs: {
     publicKey:         "k2JkXtD2RO8TkoO77",   // Public Key EmailJS
     serviceId:         "service_1sgymni",     // Service ID EmailJS
-    templateBarbier:   "template_xhi4eqj",    // template envoyé AU BARBIER (la demande)
-    templateClient:    ""                     // template de courtoisie AU CLIENT (optionnel, non configuré)
+    templateBarbier:   "template_xhi4eqj",    // template de la DEMANDE DE RDV (envoyé au barbier)
+    templateClient:    "",                    // template de courtoisie AU CLIENT (optionnel, non configuré)
+    // Template dédié au FORMULAIRE DE CONTACT (message libre).
+    // Tant qu'il est vide, le formulaire de contact réutilise templateBarbier.
+    templateContact:   ""                     // ex : "template_zzzzzzz"
   }
 };
 
