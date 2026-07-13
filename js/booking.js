@@ -28,8 +28,51 @@
     view: null,          // mois affiché dans le calendrier (Date sur le 1er)
     selectedDate: null,  // Date choisie
     selectedTime: null,  // "HH:MM"
-    serviceId: null      // id du service choisi
+    serviceId: null,     // id du service choisi
+    remoteOccupied: new Set(), // créneaux déjà pris (backend) pour la date sélectionnée
+    loadingSlots: false  // vrai pendant le chargement des créneaux depuis le backend
   };
+
+  /* ============ BACKEND GOOGLE SHEET (blocage auto) =============
+     Si config.backend.url est renseigné, on interroge le Google Sheet
+     pour connaître les créneaux déjà pris (GET) et enregistrer les
+     nouvelles demandes (POST). Vide = mode manuel (config.js) seulement. */
+  function backendUrl() {
+    return (C.backend && C.backend.url || "").trim();
+  }
+
+  // Récupère les créneaux déjà pris pour une date. Échoue « en douceur »
+  // (renvoie [] en cas d'erreur réseau) pour ne jamais bloquer le client.
+  function fetchOccupied(dateISO) {
+    const url = backendUrl();
+    if (!url) return Promise.resolve([]);
+    const sep = url.indexOf("?") === -1 ? "?" : "&";
+    return fetch(`${url}${sep}date=${encodeURIComponent(dateISO)}`, { method: "GET" })
+      .then((r) => r.json())
+      .then((d) => (d && d.ok && Array.isArray(d.occupied)) ? d.occupied : [])
+      .catch(() => []);
+  }
+
+  // Enregistre la demande dans le Google Sheet (bloque le créneau).
+  // Renvoie { ok:true } | { taken:true } | { unreachable:true }.
+  // Content-Type "text/plain" volontaire : évite le pré-vol CORS qu'Apps
+  // Script ne gère pas (astuce standard pour appeler un web app en POST).
+  function recordBooking(payload) {
+    const url = backendUrl();
+    if (!url) return Promise.resolve({ ok: true, skipped: true });
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d && d.ok) return { ok: true };
+        if (d && d.taken) return { taken: true };
+        return { unreachable: true };
+      })
+      .catch(() => ({ unreachable: true }));
+  }
 
   /* ================= UTILITAIRES DE DATE / HEURE ================= */
   const pad = (n) => String(n).padStart(2, "0");
@@ -86,6 +129,8 @@
       if (h.pause && t >= toMin(h.pause.debut) && t < toMin(h.pause.fin)) continue;
       // Exclure les créneaux bloqués manuellement (config.js)
       if (bloques.has(hhmm)) continue;
+      // Exclure les créneaux déjà pris via le backend Google Sheet (blocage auto)
+      if (state.remoteOccupied.has(hhmm)) continue;
       // Exclure les créneaux déjà passés aujourd'hui
       if (estAujourdhui && t < seuilMin) continue;
       slots.push(hhmm);
@@ -149,9 +194,25 @@
     const [y, m, d] = iso.split("-").map(Number);
     state.selectedDate = new Date(y, m - 1, d);
     state.selectedTime = null;
+    state.remoteOccupied = new Set();
     renderCalendar();
-    renderSlots();
     updateSummary();
+
+    // Récupère l'état à jour des créneaux pris (si backend configuré),
+    // puis affiche les créneaux réellement disponibles.
+    if (backendUrl()) {
+      state.loadingSlots = true;
+      renderSlots();
+      fetchOccupied(iso).then((occupied) => {
+        // On ne rafraîchit que si l'utilisateur est toujours sur cette date.
+        if (!state.selectedDate || toISO(state.selectedDate) !== iso) return;
+        state.remoteOccupied = new Set(occupied);
+        state.loadingSlots = false;
+        renderSlots();
+      });
+    } else {
+      renderSlots();
+    }
   }
 
   /* ===================== RENDU DES CRÉNEAUX ==================== */
@@ -161,6 +222,10 @@
 
     if (!state.selectedDate) {
       box.innerHTML = `<p class="slots__hint">Choisissez d'abord une date pour voir les créneaux disponibles.</p>`;
+      return;
+    }
+    if (state.loadingSlots) {
+      box.innerHTML = `<p class="slots__hint">Chargement des créneaux disponibles…</p>`;
       return;
     }
     const slots = generateSlots(state.selectedDate);
@@ -290,6 +355,7 @@ Merci de me confirmer ce créneau.
       service:   service.nom,
       prix:      service.prix,
       duree:     service.dureeTxt,
+      dureeMin:  service.duree,      // durée en minutes (pour le backend : blocage des créneaux)
       date:      formatDateLong(state.selectedDate),
       dateISO:   toISO(state.selectedDate),
       heure:     state.selectedTime,
@@ -303,27 +369,54 @@ Merci de me confirmer ce créneau.
     const btn = form.querySelector('button[type="submit"]');
     const btnTxt = btn.textContent;
     btn.disabled = true; btn.textContent = "Envoi en cours…";
+    const restore = () => { btn.disabled = false; btn.textContent = btnTxt; };
 
-    sendReservation(payload)
-      .then((res) => {
-        if (res && res.fallback) {
+    // 1) On réserve d'abord le créneau dans le backend (blocage automatique).
+    //    Si le backend n'est pas configuré, recordBooking renvoie ok immédiatement.
+    recordBooking(payload).then((rec) => {
+      if (rec.taken) {
+        // Quelqu'un vient de prendre ce créneau : on rafraîchit la liste.
+        restore();
+        showFeedback(feedback, "error",
+          "Ce créneau vient d'être réservé par quelqu'un d'autre. Merci d'en choisir un autre.");
+        state.selectedTime = null;
+        selectDate(payload.dateISO);
+        return;
+      }
+
+      // 2) Puis on envoie la demande par email (EmailJS ou repli mailto).
+      sendReservation(payload)
+        .then((res) => {
+          if (res && res.fallback) {
+            showFeedback(feedback, "info",
+              "Votre messagerie s'est ouverte avec la demande pré-remplie. Envoyez l'email pour finaliser votre demande de rendez-vous.");
+          } else {
+            showFeedback(feedback, "success",
+              "Votre demande de rendez-vous a bien été envoyée. Vous recevrez un email de confirmation dès que le coiffeur aura validé votre créneau.");
+            form.reset();
+            state.selectedTime = null;
+            // Le créneau vient d'être pris : on le retire tout de suite de l'affichage.
+            slotsForBookingLocal(payload.heure, payload.dureeMin).forEach((s) => state.remoteOccupied.add(s));
+            renderSlots(); updateSummary();
+          }
+        })
+        .catch(() => {
+          mailtoFallback(payload);
           showFeedback(feedback, "info",
-            "Votre messagerie s'est ouverte avec la demande pré-remplie. Envoyez l'email pour finaliser votre demande de rendez-vous.");
-        } else {
-          showFeedback(feedback, "success",
-            "Votre demande de rendez-vous a bien été envoyée. Vous recevrez un email de confirmation dès que le coiffeur aura validé votre créneau.");
-          form.reset();
-          state.selectedTime = null;
-          renderSlots(); updateSummary();
-        }
-      })
-      .catch(() => {
-        // En cas d'échec EmailJS, on bascule sur le repli mailto pour ne pas perdre la demande.
-        mailtoFallback(payload);
-        showFeedback(feedback, "info",
-          "L'envoi automatique a échoué : votre messagerie s'est ouverte avec la demande pré-remplie. Envoyez l'email pour finaliser.");
-      })
-      .finally(() => { btn.disabled = false; btn.textContent = btnTxt; });
+            "L'envoi automatique a échoué : votre messagerie s'est ouverte avec la demande pré-remplie. Envoyez l'email pour finaliser.");
+        })
+        .finally(restore);
+    });
+  }
+
+  // Développe une réservation en créneaux de 15 min (miroir côté client du backend).
+  function slotsForBookingLocal(heure, dureeMin) {
+    const pas = C.reservation.pasMinutes;
+    const n = Math.max(1, Math.ceil(Number(dureeMin) / pas));
+    const start = toMin(heure);
+    const out = [];
+    for (let k = 0; k < n; k++) out.push(toHHMM(start + k * pas));
+    return out;
   }
 
   function showFeedback(el, type, msg) {
