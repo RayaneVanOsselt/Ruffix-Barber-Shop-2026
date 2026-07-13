@@ -172,7 +172,7 @@ const CONFIG = {
     publicKey:         "k2JkXtD2RO8TkoO77",   // Public Key EmailJS
     serviceId:         "service_1sgymni",     // Service ID EmailJS
     templateBarbier:   "template_xhi4eqj",    // template de la DEMANDE DE RDV (envoyé au barbier)
-    templateClient:    "template_bdxh049",    // accusé de réception AU CLIENT (demande reçue, en attente de validation)
+    templateClient:    "",                    // accusé de réception AU CLIENT : désactivé (géré manuellement par le barbier)
     // Template dédié au FORMULAIRE DE CONTACT (message libre).
     // Tant qu'il est vide, le formulaire de contact réutilise templateBarbier.
     templateContact:   ""                     // ex : "template_zzzzzzz"
