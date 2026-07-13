@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Politique de confidentialité — Rufix Barber</title>
+  <meta name="description" content="Politique de confidentialité et gestion des données personnelles du salon Rufix Barber." />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+  <header class="navbar is-scrolled">
+    <nav class="navbar__inner" aria-label="Navigation">
+      <a class="navbar__logo" href="index.html" aria-label="Rufix Barber — accueil">
+        <img src="images/logo.svg" alt="Logo Rufix Barber" width="220" height="56" />
+      </a>
+      <div class="navbar__links" style="position:static;transform:none;opacity:1;pointer-events:auto;background:none;box-shadow:none;border:0;padding:0;flex-direction:row">
+        <a class="navbar__link" href="index.html">Accueil</a>
+        <span class="navbar__cta"><a class="btn btn--sm" href="index.html#reservation">Réserver</a></span>
+      </div>
+    </nav>
+  </header>
+
+  <main class="legal-page">
+    <div class="container">
+      <h1>Politique de confidentialité</h1>
+      <p class="lead">Ce texte est un <strong>modèle</strong> à adapter par le propriétaire avant la mise en ligne.</p>
+
+      <h2>Données collectées</h2>
+      <p>
+        Lorsque vous envoyez une demande de rendez-vous ou un message via le formulaire de contact,
+        nous collectons les informations que vous nous transmettez : prénom, nom, adresse email,
+        numéro de téléphone, prestation souhaitée, date et créneau. Ces données sont transmises
+        directement au salon par email (via le service EmailJS ou votre logiciel de messagerie).
+      </p>
+
+      <h2>Finalité du traitement</h2>
+      <p>
+        Ces informations sont utilisées uniquement pour traiter votre demande de rendez-vous,
+        vous confirmer votre créneau et, le cas échéant, vous recontacter. Elles ne sont ni vendues
+        ni cédées à des tiers à des fins commerciales.
+      </p>
+
+      <h2>Conservation</h2>
+      <p>
+        Vos données sont conservées le temps nécessaire à la gestion de votre rendez-vous et de la
+        relation client. Vous pouvez demander leur suppression à tout moment.
+      </p>
+
+      <h2>Vos droits (RGPD)</h2>
+      <p>
+        Conformément au Règlement Général sur la Protection des Données, vous disposez d'un droit
+        d'accès, de rectification, d'effacement et d'opposition concernant vos données personnelles.
+        Pour exercer ces droits, contactez-nous à l'adresse : [contact@rufixbarber.be].
+      </p>
+
+      <h2>Cookies</h2>
+      <p>
+        Ce site n'utilise pas de cookies de suivi publicitaire. Certains services tiers intégrés
+        (Google Maps, EmailJS) peuvent déposer des cookies techniques nécessaires à leur
+        fonctionnement. Vous pouvez configurer votre navigateur pour les refuser.
+      </p>
+
+      <h2>Services tiers</h2>
+      <ul>
+        <li><strong>EmailJS</strong> — envoi des demandes de rendez-vous par email.</li>
+        <li><strong>Google Maps</strong> — affichage de la localisation du salon.</li>
+        <li><strong>Google Fonts</strong> — chargement des polices d'écriture.</li>
+        <li><strong>GitHub Pages</strong> — hébergement du site.</li>
+      </ul>
+
+      <p style="margin-top:2.5rem">
+        <a class="link-arrow" href="index.html">← Retour à l'accueil</a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__bottom" style="border:0;justify-content:center">
+        <span>© <span id="year">2026</span> Rufix Barber —
+          <a href="mentions-legales.html">Mentions légales</a>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
