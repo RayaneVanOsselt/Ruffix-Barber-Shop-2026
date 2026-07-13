@@ -169,10 +169,10 @@ const CONFIG = {
        {{telephone}} {{email}} {{message}} {{prix}} {{duree}}
   ------------------------------------------------------------------- */
   emailjs: {
-    publicKey:         "",   // ex : "AbCdEf123..."
-    serviceId:         "",   // ex : "service_xxx"
-    templateBarbier:   "",   // template envoyé AU BARBIER (la demande)
-    templateClient:    ""    // template de courtoisie envoyé AU CLIENT (optionnel)
+    publicKey:         "k2JkXtD2RO8TkoO77",   // Public Key EmailJS
+    serviceId:         "service_1sgymni",     // Service ID EmailJS
+    templateBarbier:   "template_xhi4eqj",    // template envoyé AU BARBIER (la demande)
+    templateClient:    ""                     // template de courtoisie AU CLIENT (optionnel, non configuré)
   }
 };
 
