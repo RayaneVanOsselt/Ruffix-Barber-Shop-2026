@@ -1,0 +1,77 @@
+/* =====================================================================
+   RUFIX BARBER — animations.css
+   Animations discrètes et premium : révélation au défilement
+   (scroll-reveal), keyframes, et respect de prefers-reduced-motion.
+   Les durées restent courtes (~300–600 ms) et les easings doux.
+   ===================================================================== */
+
+/* --- Révélation au défilement (activée par IntersectionObserver) ---
+   Un élément marqué [data-reveal] démarre légèrement décalé/transparent,
+   puis se met en place quand il entre dans le viewport (.is-visible). */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity var(--t-med) var(--ease), transform var(--t-med) var(--ease);
+  will-change: opacity, transform;
+}
+[data-reveal="fade"]  { transform: none; }
+[data-reveal="left"]  { transform: translateX(-32px); }
+[data-reveal="right"] { transform: translateX(32px); }
+[data-reveal="zoom"]  { transform: scale(0.94); }
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Décalage progressif (stagger) pour les groupes de cartes.
+   Les data-delay sont posés dans le HTML (ex : data-delay="1"). */
+[data-delay="1"] { transition-delay: 0.08s; }
+[data-delay="2"] { transition-delay: 0.16s; }
+[data-delay="3"] { transition-delay: 0.24s; }
+[data-delay="4"] { transition-delay: 0.32s; }
+[data-delay="5"] { transition-delay: 0.40s; }
+[data-delay="6"] { transition-delay: 0.48s; }
+
+/* --- Keyframes --- */
+@keyframes scrollDot {
+  0%   { transform: translate(-50%, 0);    opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translate(-50%, 12px); opacity: 0; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Léger zoom lent sur l'image du hero (effet vivant, premium) */
+@keyframes heroZoom {
+  from { transform: scale(1.06); }
+  to   { transform: scale(1); }
+}
+.hero__media img { animation: heroZoom 9s var(--ease) both; }
+
+/* Entrée en cascade du contenu du hero au chargement */
+.hero__inner > * { animation: fadeInUp 0.7s var(--ease) both; }
+.hero__inner > *:nth-child(1) { animation-delay: 0.15s; }
+.hero__inner > *:nth-child(2) { animation-delay: 0.30s; }
+.hero__inner > *:nth-child(3) { animation-delay: 0.45s; }
+.hero__inner > *:nth-child(4) { animation-delay: 0.60s; }
+
+/* =====================================================================
+   ACCESSIBILITÉ : respect de prefers-reduced-motion.
+   Si l'utilisateur a demandé à réduire les animations, on désactive
+   tout mouvement non essentiel (révélations, zoom, cascade…).
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
+  .hero__media img { animation: none; transform: none; }
+  .hero__scroll .dot::after { animation: none; }
+}

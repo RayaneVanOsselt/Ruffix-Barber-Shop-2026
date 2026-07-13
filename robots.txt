@@ -1,0 +1,7 @@
+# Rufix Barber — robots.txt
+# Autorise l'indexation de tout le site par les moteurs de recherche.
+User-agent: *
+Allow: /
+
+# 👉 Remplacez l'URL ci-dessous par votre domaine réel une fois en ligne.
+Sitemap: https://rufixbarber.example.com/sitemap.xml

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mentions légales — Rufix Barber</title>
+  <meta name="description" content="Mentions légales du salon de barbier Rufix Barber." />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+  <!-- Navbar simplifiée : le fond opaque est appliqué d'emblée sur les pages légales -->
+  <header class="navbar is-scrolled">
+    <nav class="navbar__inner" aria-label="Navigation">
+      <a class="navbar__logo" href="index.html" aria-label="Rufix Barber — accueil">
+        <img src="images/logo.svg" alt="Logo Rufix Barber" width="220" height="56" />
+      </a>
+      <div class="navbar__links" style="position:static;transform:none;opacity:1;pointer-events:auto;background:none;box-shadow:none;border:0;padding:0;flex-direction:row">
+        <a class="navbar__link" href="index.html">Accueil</a>
+        <span class="navbar__cta"><a class="btn btn--sm" href="index.html#reservation">Réserver</a></span>
+      </div>
+    </nav>
+  </header>
+
+  <main class="legal-page">
+    <div class="container">
+      <h1>Mentions légales</h1>
+      <p class="lead">Les informations ci-dessous sont des <strong>placeholders</strong> à compléter avant la mise en ligne.</p>
+
+      <h2>Éditeur du site</h2>
+      <p>
+        <strong>Rufix Barber</strong><br />
+        [Rue et numéro], [Code postal] [VILLE]<br />
+        Téléphone : [+32 4XX XX XX XX]<br />
+        Email : [contact@rufixbarber.be]<br />
+        Numéro d'entreprise / TVA : [BE 0XXX.XXX.XXX]<br />
+        Responsable de la publication : [Nom du gérant]
+      </p>
+
+      <h2>Hébergement</h2>
+      <p>
+        Ce site est hébergé par <strong>GitHub Pages</strong> — GitHub, Inc.,
+        88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis.
+      </p>
+
+      <h2>Propriété intellectuelle</h2>
+      <p>
+        L'ensemble des contenus présents sur ce site (textes, images, logo, éléments graphiques)
+        est protégé par le droit d'auteur. Toute reproduction, même partielle, est interdite sans
+        autorisation préalable. Les photographies utilisées à titre de démonstration proviennent de
+        banques d'images libres de droits (voir le fichier README pour les sources) et doivent être
+        remplacées par vos propres visuels.
+      </p>
+
+      <h2>Responsabilité</h2>
+      <p>
+        Rufix Barber s'efforce d'assurer l'exactitude des informations diffusées mais ne saurait être
+        tenu responsable d'éventuelles erreurs ou omissions. Les demandes de rendez-vous envoyées via
+        le site ne constituent pas une réservation ferme : chaque créneau est confirmé manuellement.
+      </p>
+
+      <h2>Liens hypertextes</h2>
+      <p>
+        Ce site peut contenir des liens vers des sites externes (réseaux sociaux, Google Maps).
+        Rufix Barber n'exerce aucun contrôle sur ces sites et décline toute responsabilité quant à
+        leur contenu.
+      </p>
+
+      <p style="margin-top:2.5rem">
+        <a class="link-arrow" href="index.html">← Retour à l'accueil</a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__bottom" style="border:0;justify-content:center">
+        <span>© <span id="year">2026</span> Rufix Barber —
+          <a href="politique-confidentialite.html">Politique de confidentialité</a>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
