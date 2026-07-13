@@ -1,0 +1,86 @@
+<!--
+  RUFIX BARBER — Template EmailJS « Demande de RDV » (envoyé AU BARBIER)
+  ────────────────────────────────────────────────────────────────────
+  À coller dans EmailJS → ton template → éditeur de CONTENU en mode HTML/code (icône </>).
+  Variables disponibles (⚠ sans accent) :
+    {{salon}} {{service}} {{prix}} {{duree}} {{date}} {{heure}}
+    {{prenom}} {{nom}} {{telephone}} {{email}}
+  Email conçu en tableaux + styles « inline » pour un affichage fiable partout.
+-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ece7df;margin:0;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;">
+
+        <!-- En-tête (bandeau anthracite + or) -->
+        <tr>
+          <td style="background:#14110f;padding:34px 32px 28px;text-align:center;">
+            <div style="color:#c9a24b;font-size:12px;letter-spacing:4px;font-weight:bold;text-transform:uppercase;">Rufix Barber</div>
+            <div style="height:1px;width:48px;background:#c9a24b;margin:14px auto;opacity:.6;line-height:1px;">&nbsp;</div>
+            <div style="color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;">Nouvelle demande de rendez-vous</div>
+          </td>
+        </tr>
+
+        <!-- Intro -->
+        <tr>
+          <td style="padding:28px 32px 6px;color:#6f665c;font-size:15px;line-height:1.6;">
+            Une nouvelle demande vient d'être envoyée via le site <strong style="color:#2a2622;">{{salon}}</strong>.
+          </td>
+        </tr>
+
+        <!-- Bloc « Créneau demandé » -->
+        <tr>
+          <td style="padding:12px 32px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf6ec;border-left:3px solid #c9a24b;border-radius:8px;">
+              <tr><td style="padding:18px 20px;">
+                <div style="color:#c9a24b;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;padding-bottom:10px;">Créneau demandé</div>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:15px;color:#2a2622;">
+                  <tr><td style="padding:5px 0;color:#8a8178;width:90px;">Service</td><td style="padding:5px 0;font-weight:bold;">{{service}}&nbsp;<span style="color:#8a8178;font-weight:normal;">· {{prix}} € · {{duree}}</span></td></tr>
+                  <tr><td style="padding:5px 0;color:#8a8178;">Date</td><td style="padding:5px 0;font-weight:bold;">{{date}}</td></tr>
+                  <tr><td style="padding:5px 0;color:#8a8178;">Heure</td><td style="padding:5px 0;font-weight:bold;">{{heure}}</td></tr>
+                </table>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Bloc « Coordonnées client » -->
+        <tr>
+          <td style="padding:12px 32px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f5f1;border-radius:8px;">
+              <tr><td style="padding:18px 20px;">
+                <div style="color:#c9a24b;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;padding-bottom:10px;">Coordonnées client</div>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:15px;color:#2a2622;">
+                  <tr><td style="padding:5px 0;color:#8a8178;width:90px;">Nom</td><td style="padding:5px 0;font-weight:bold;">{{prenom}} {{nom}}</td></tr>
+                  <tr><td style="padding:5px 0;color:#8a8178;">Téléphone</td><td style="padding:5px 0;font-weight:bold;"><a href="tel:{{telephone}}" style="color:#a67c1e;text-decoration:none;">{{telephone}}</a></td></tr>
+                  <tr><td style="padding:5px 0;color:#8a8178;">Email</td><td style="padding:5px 0;font-weight:bold;"><a href="mailto:{{email}}" style="color:#a67c1e;text-decoration:none;">{{email}}</a></td></tr>
+                </table>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Rappel : demande à confirmer -->
+        <tr>
+          <td style="padding:14px 32px 4px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fbecd2;border:1px solid #e6bd6b;border-radius:8px;">
+              <tr><td style="padding:16px 20px;color:#7a5a12;font-size:14px;line-height:1.6;">
+                <strong>⚠ Demande à confirmer.</strong> Cette réservation n'est <strong>pas</strong> validée automatiquement.
+                Contactez le client pour confirmer (ou proposer un autre créneau), puis bloquez le créneau dans
+                <span style="background:#f0dcae;padding:1px 6px;border-radius:4px;font-family:monospace;">config.js</span>.
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Pied -->
+        <tr>
+          <td style="padding:24px 32px 30px;text-align:center;color:#b3a89b;font-size:12px;">
+            Email automatique envoyé depuis le site Rufix Barber.
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
