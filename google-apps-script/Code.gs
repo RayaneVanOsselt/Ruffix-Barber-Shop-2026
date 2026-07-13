@@ -92,6 +92,7 @@ function doGet(e) {
     var all = [];
     Object.keys(map).forEach(function (d) {
       Object.keys(map[d]).forEach(function (h) { all.push(d + " " + h); });
+    });
     return jsonOut({ ok: true, occupied: all });
   } catch (err) {
     return jsonOut({ ok: false, error: String(err) });
