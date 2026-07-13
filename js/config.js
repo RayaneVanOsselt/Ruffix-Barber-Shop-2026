@@ -176,6 +176,24 @@ const CONFIG = {
     // Template dédié au FORMULAIRE DE CONTACT (message libre).
     // Tant qu'il est vide, le formulaire de contact réutilise templateBarbier.
     templateContact:   ""                     // ex : "template_zzzzzzz"
+  },
+
+  /* -------------------------------------------------------------------
+     8. BACKEND GOOGLE SHEET — blocage automatique des créneaux
+     -------------------------------------------------------------------
+     Permet de bloquer un créneau AUTOMATIQUEMENT pour tous les visiteurs
+     dès qu'une personne le demande (via un Google Sheet + Apps Script).
+
+     👉 Tant que « url » est vide (""), le site fonctionne comme avant :
+        blocage manuel via creneauxBloques ci-dessus. Aucune régression.
+
+     Pour activer (voir BACKEND-GOOGLE-SHEET.md) :
+       1. Crée le Google Sheet + colle le script (google-apps-script/Code.gs)
+       2. Déploie-le en « Application Web » (accès : Tout le monde)
+       3. Colle ici l'URL qui finit par /exec
+  ------------------------------------------------------------------- */
+  backend: {
+    url: ""   // ex : "https://script.google.com/macros/s/AKfy.../exec"
   }
 };
 
