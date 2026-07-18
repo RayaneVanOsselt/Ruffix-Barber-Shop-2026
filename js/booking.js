@@ -1,18 +1,25 @@
 /* =====================================================================
    RUFIX BARBER — booking.js
-   Logique de réservation : calendrier, génération des créneaux de 15 min,
-   récapitulatif, et envoi de la DEMANDE de rendez-vous.
+   Réservation avec CALENDRIER HEBDOMADAIRE et créneaux COLORÉS.
 
-   ⚠️ IMPORTANT (rappel métier) : le salon est privé. Le client NE réserve
-   PAS un créneau confirmé : il envoie une DEMANDE que le barbier valide
-   manuellement. Tout le vocabulaire de l'interface le reflète.
+   Principes (cf. cahier des charges) :
+   - Vue par SEMAINE (lun → dim), navigation semaine par semaine, jusqu'au
+     31/12/2026 inclus (config.reservation.dateMax).
+   - Créneaux de 15 min. La DURÉE du service détermine automatiquement le
+     nombre de créneaux consécutifs bloqués (30 min = 2, 45 = 3, 1 h = 4…).
+   - Les créneaux ne DISPARAISSENT pas : ils changent d'état / de couleur.
+       🟢 vert  = disponible et réservable
+       🔴 rouge = déjà réservé / indisponible
+       (gris/verrouillé = semaine pas encore ouverte, ou hors horaires)
+   - Ouverture hebdo glissante : une semaine s'ouvre au "vendredi 21h" de la
+     semaine précédente (config.reservation.ouverture).
 
-   ⚠️ LIMITE TECHNIQUE (GitHub Pages = site statique, sans serveur) :
-   il est impossible de verrouiller un créneau en temps réel entre plusieurs
-   visiteurs. La disponibilité est donc pilotée par le fichier config.js que
-   le propriétaire édite à la main (jours fermés, créneaux bloqués).
-   👉 Pour un retrait automatique des créneaux, l'évolution recommandée est
-      de brancher Google Calendar ou un petit backend (voir README).
+   ⚠️ Le salon reste en CONFIRMATION MANUELLE : une demande bloque le créneau
+   mais n'est pas confirmée automatiquement côté client.
+
+   ⚠️ Site statique : la disponibilité partagée entre visiteurs vient du
+   backend Google Sheet (config.backend.url) ; sinon, blocage manuel via
+   config.creneauxBloques. L'anti double-réservation final est côté backend.
    ===================================================================== */
 
 (function () {
@@ -20,43 +27,80 @@
 
   const C = window.CONFIG;
   const JOURS = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+  const JOURS_COURT = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
   const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin",
                 "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
 
-  /* --- État de la réservation en cours --- */
+  /* --- État de la réservation --- */
   const state = {
-    view: null,          // mois affiché dans le calendrier (Date sur le 1er)
-    selectedDate: null,  // Date choisie
-    selectedTime: null,  // "HH:MM"
-    serviceId: null,     // id du service choisi
-    remoteOccupied: new Set(), // créneaux déjà pris (backend) pour la date sélectionnée
-    loadingSlots: false  // vrai pendant le chargement des créneaux depuis le backend
+    weekStart: null,       // lundi de la semaine affichée (Date)
+    selectedDate: null,    // "AAAA-MM-JJ"
+    selectedTime: null,    // "HH:MM"
+    serviceId: null,       // id du service choisi
+    occupiedByDate: {},    // { "AAAA-MM-JJ": Set(["11:00", …]) } (backend)
+    loading: false
   };
 
-  /* ============ BACKEND GOOGLE SHEET (blocage auto) =============
-     Si config.backend.url est renseigné, on interroge le Google Sheet
-     pour connaître les créneaux déjà pris (GET) et enregistrer les
-     nouvelles demandes (POST). Vide = mode manuel (config.js) seulement. */
-  function backendUrl() {
-    return (C.backend && C.backend.url || "").trim();
+  /* ================= UTILITAIRES DATE / HEURE ================= */
+  const pad = (n) => String(n).padStart(2, "0");
+  function toISO(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+  function toMin(hhmm) { const [h, m] = hhmm.split(":").map(Number); return h * 60 + m; }
+  function toHHMM(min) { return `${pad(Math.floor(min / 60))}:${pad(min % 60)}`; }
+  function startOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
+  function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  function parseISO(iso) { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d); }
+  // Lundi de la semaine contenant d
+  function mondayOf(d) { const x = startOfDay(d); const off = (x.getDay() + 6) % 7; return addDays(x, -off); }
+
+  function dateMax() {
+    return startOfDay(parseISO(C.reservation.dateMax || "2026-12-31"));
   }
 
-  // Récupère les créneaux déjà pris pour une date. Échoue « en douceur »
-  // (renvoie [] en cas d'erreur réseau) pour ne jamais bloquer le client.
-  function fetchOccupied(dateISO) {
+  /* ============ OUVERTURE HEBDOMADAIRE GLISSANTE ============
+     Une semaine (lundi = monday) s'ouvre dès qu'on a dépassé le "jour/heure"
+     d'ouverture situé dans la semaine PRÉCÉDENTE (par défaut vendredi 21h). */
+  function weekOpensAt(monday) {
+    const o = C.reservation.ouverture;
+    const jour = (o && typeof o.jour === "number") ? o.jour : 5;   // 5 = vendredi
+    const heure = (o && typeof o.heure === "number") ? o.heure : 21;
+    // Nombre de jours à reculer depuis le lundi pour tomber sur ce jour la semaine d'avant.
+    const back = ((1 - jour + 7) % 7) || 7;   // vendredi → 3 ; lundi → 7
+    const b = addDays(monday, -back);
+    b.setHours(heure, 0, 0, 0);
+    return b;
+  }
+  function isWeekOpen(monday) {
+    if (!C.reservation.ouverture) return true;   // règle désactivée
+    return new Date() >= weekOpensAt(monday);
+  }
+
+  /* ============ BACKEND GOOGLE SHEET (blocage auto) ============ */
+  function backendUrl() { return ((C.backend && C.backend.url) || "").trim(); }
+
+  // Récupère TOUS les créneaux déjà pris → state.occupiedByDate. Échoue en douceur.
+  function fetchAllOccupied() {
     const url = backendUrl();
-    if (!url) return Promise.resolve([]);
+    if (!url) return Promise.resolve();
     const sep = url.indexOf("?") === -1 ? "?" : "&";
-    return fetch(`${url}${sep}date=${encodeURIComponent(dateISO)}`, { method: "GET" })
+    return fetch(`${url}${sep}all=1`, { method: "GET" })
       .then((r) => r.json())
-      .then((d) => (d && d.ok && Array.isArray(d.occupied)) ? d.occupied : [])
-      .catch(() => []);
+      .then((d) => {
+        const map = {};
+        if (d && d.ok && Array.isArray(d.occupied)) {
+          d.occupied.forEach((s) => {
+            const sp = String(s).split(" ");
+            if (sp.length < 2) return;
+            if (!map[sp[0]]) map[sp[0]] = new Set();
+            map[sp[0]].add(sp[1]);
+          });
+        }
+        state.occupiedByDate = map;
+      })
+      .catch(() => {});
   }
 
-  // Enregistre la demande dans le Google Sheet (bloque le créneau).
-  // Renvoie { ok:true } | { taken:true } | { unreachable:true }.
-  // Content-Type "text/plain" volontaire : évite le pré-vol CORS qu'Apps
-  // Script ne gère pas (astuce standard pour appeler un web app en POST).
+  // Enregistre la demande (POST) → { ok:true } | { taken:true } | { unreachable:true }.
+  // Content-Type "text/plain" volontaire (évite le pré-vol CORS non géré par Apps Script).
   function recordBooking(payload) {
     const url = backendUrl();
     if (!url) return Promise.resolve({ ok: true, skipped: true });
@@ -66,185 +110,182 @@
       body: JSON.stringify(payload)
     })
       .then((r) => r.json())
-      .then((d) => {
-        if (d && d.ok) return { ok: true };
-        if (d && d.taken) return { taken: true };
-        return { unreachable: true };
-      })
+      .then((d) => (d && d.ok) ? { ok: true } : (d && d.taken) ? { taken: true } : { unreachable: true })
       .catch(() => ({ unreachable: true }));
   }
 
-  /* ================= UTILITAIRES DE DATE / HEURE ================= */
-  const pad = (n) => String(n).padStart(2, "0");
+  /* ================= STATUT D'UN CRÉNEAU =================
+     Renvoie : 'none' (hors horaires / pause), 'closed' (jour fermé),
+     'past' (déjà passé), 'locked' (semaine pas encore ouverte),
+     'reserved' (déjà pris), 'free' (disponible). */
+  function isReserved(dateISO, hhmm) {
+    if (C.creneauxBloques.some((b) => b.date === dateISO && b.heure === hhmm)) return true;
+    const set = state.occupiedByDate[dateISO];
+    return set ? set.has(hhmm) : false;
+  }
 
-  // Convertit une Date en clé locale "AAAA-MM-JJ" (sans décalage de fuseau).
-  function toISO(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+  function slotStatus(dateISO, t) {
+    const d = parseISO(dateISO);
+    const h = C.horaires[JOURS[d.getDay()]];
+    if (!h || !h.ouvert || C.joursFermes.includes(dateISO)) return "closed";
 
-  // "HH:MM" -> minutes depuis minuit
-  function toMin(hhmm) { const [h, m] = hhmm.split(":").map(Number); return h * 60 + m; }
-  // minutes -> "HH:MM"
-  function toHHMM(min) { return `${pad(Math.floor(min / 60))}:${pad(min % 60)}`; }
+    const debut = toMin(h.debut), fin = toMin(h.fin), pas = C.reservation.pasMinutes;
+    if (t < debut || t > fin - pas) return "none";                       // hors horaires
+    if (h.pause && t >= toMin(h.pause.debut) && t < toMin(h.pause.fin)) return "none"; // pause
 
-  function startOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
-
-  // Un jour est-il réservable ? (pas dans le passé, ouvert, non bloqué, dans la fenêtre)
-  function isDayAvailable(date) {
     const today = startOfDay(new Date());
-    const day = startOfDay(date);
-    if (day < today) return false;                                    // passé
-    const limite = new Date(today);
-    limite.setDate(limite.getDate() + C.reservation.joursAVenir);
-    if (day > limite) return false;                                   // trop loin
-    if (C.joursFermes.includes(toISO(day))) return false;             // vacances / férié
-    const h = C.horaires[JOURS[day.getDay()]];
-    if (!h || !h.ouvert) return false;                                // jour de fermeture
-    return true;
-  }
-
-  /* ================= GÉNÉRATION DES CRÉNEAUX ====================
-     Lit config.js pour construire les créneaux de 15 min de la journée,
-     en excluant : la pause déjeuner, les créneaux bloqués, et — pour
-     aujourd'hui — les créneaux déjà passés (avec le délai minimum). */
-  function generateSlots(date) {
-    const h = C.horaires[JOURS[date.getDay()]];
-    if (!h || !h.ouvert) return [];
-
-    const pas = C.reservation.pasMinutes;
-    const iso = toISO(date);
-    const debut = toMin(h.debut);
-    const fin = toMin(h.fin);                 // dernier créneau proposé = fin - pas
-    const bloques = new Set(
-      C.creneauxBloques.filter((b) => b.date === iso).map((b) => b.heure)
-    );
-
-    // Seuil « maintenant + délai mini » si la date est aujourd'hui
-    const now = new Date();
-    const estAujourdhui = toISO(now) === iso;
-    const seuilMin = now.getHours() * 60 + now.getMinutes() + C.reservation.delaiMiniHeures * 60;
-
-    const slots = [];
-    for (let t = debut; t <= fin - pas; t += pas) {
-      const hhmm = toHHMM(t);
-      // Exclure la pause déjeuner
-      if (h.pause && t >= toMin(h.pause.debut) && t < toMin(h.pause.fin)) continue;
-      // Exclure les créneaux bloqués manuellement (config.js)
-      if (bloques.has(hhmm)) continue;
-      // Exclure les créneaux déjà pris via le backend Google Sheet (blocage auto)
-      if (state.remoteOccupied.has(hhmm)) continue;
-      // Exclure les créneaux déjà passés aujourd'hui
-      if (estAujourdhui && t < seuilMin) continue;
-      slots.push(hhmm);
+    const day = startOfDay(d);
+    if (day > dateMax()) return "none";
+    if (day < today) return "past";
+    if (day.getTime() === today.getTime()) {
+      const now = new Date();
+      const seuil = now.getHours() * 60 + now.getMinutes() + (C.reservation.delaiMiniHeures || 0) * 60;
+      if (t < seuil) return "past";
     }
-    return slots;
+    if (!isWeekOpen(mondayOf(d))) return "locked";
+    if (isReserved(dateISO, toHHMM(t))) return "reserved";
+    return "free";
   }
 
-  /* ===================== RENDU DU CALENDRIER ==================== */
-  function renderCalendar() {
-    const monthLabel = document.getElementById("calMonth");
-    const grid = document.getElementById("calGrid");
-    const prevBtn = document.getElementById("calPrev");
-    const nextBtn = document.getElementById("calNext");
+  // Tous les créneaux (15 min) qu'occupe une prestation à partir d'une heure.
+  function spanTimes(startHHMM, dureeMin) {
+    const pas = C.reservation.pasMinutes;
+    const n = Math.max(1, Math.ceil(Number(dureeMin) / pas));
+    const start = toMin(startHHMM);
+    const out = [];
+    for (let k = 0; k < n; k++) out.push(toHHMM(start + k * pas));
+    return out;
+  }
+  // La prestation choisie tient-elle entièrement (tous les créneaux libres) ?
+  function spanIsFree(dateISO, startHHMM, dureeMin) {
+    return spanTimes(startHHMM, dureeMin).every((hhmm) => slotStatus(dateISO, toMin(hhmm)) === "free");
+  }
+
+  /* ===================== RENDU DE LA SEMAINE ==================== */
+  function weekDaysISO() {
+    const days = [];
+    for (let i = 0; i < 7; i++) days.push(toISO(addDays(state.weekStart, i)));
+    return days;
+  }
+
+  // Plage horaire à afficher : de la plus tôt à la plus tard parmi les jours ouverts.
+  function weekTimeRange(daysISO) {
+    let min = Infinity, max = -Infinity;
+    daysISO.forEach((iso) => {
+      const d = parseISO(iso);
+      const h = C.horaires[JOURS[d.getDay()]];
+      if (h && h.ouvert) { min = Math.min(min, toMin(h.debut)); max = Math.max(max, toMin(h.fin)); }
+    });
+    if (min === Infinity) { min = toMin("09:00"); max = toMin("18:00"); }
+    return { min, max };
+  }
+
+  function labelWeek() {
+    const a = state.weekStart, b = addDays(a, 6);
+    const jour = (x) => x.getDate();
+    if (a.getMonth() === b.getMonth()) {
+      return `Semaine du ${jour(a)} au ${jour(b)} ${MOIS[b.getMonth()]} ${b.getFullYear()}`;
+    }
+    return `Semaine du ${jour(a)} ${MOIS[a.getMonth()]} au ${jour(b)} ${MOIS[b.getMonth()]} ${b.getFullYear()}`;
+  }
+
+  function renderWeek() {
+    const grid = document.getElementById("weekGrid");
+    const label = document.getElementById("weekLabel");
+    const prevBtn = document.getElementById("weekPrev");
+    const nextBtn = document.getElementById("weekNext");
+    const note = document.getElementById("weekNote");
     if (!grid) return;
 
-    const view = state.view;
-    monthLabel.textContent = `${MOIS[view.getMonth()]} ${view.getFullYear()}`;
+    label.textContent = labelWeek();
 
-    // En-têtes des jours (lundi en premier)
-    const dows = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
-    let html = dows.map((d) => `<div class="calendar__dow">${d}</div>`).join("");
+    const days = weekDaysISO();
+    const { min, max } = weekTimeRange(days);
+    const pas = C.reservation.pasMinutes;
 
-    const first = new Date(view.getFullYear(), view.getMonth(), 1);
-    // getDay() : 0=dim … on décale pour commencer le lundi
-    const offset = (first.getDay() + 6) % 7;
-    const nbJours = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
-
-    // Cellules vides avant le 1er
-    for (let i = 0; i < offset; i++) html += `<div class="calendar__day is-empty" aria-hidden="true"></div>`;
-
-    for (let d = 1; d <= nbJours; d++) {
-      const date = new Date(view.getFullYear(), view.getMonth(), d);
-      const iso = toISO(date);
-      const dispo = isDayAvailable(date);
-      const selected = state.selectedDate && toISO(state.selectedDate) === iso;
-      html += `<button type="button"
-                 class="calendar__day${selected ? " is-selected" : ""}"
-                 data-date="${iso}"
-                 ${dispo ? "" : "disabled"}
-                 aria-label="${d} ${MOIS[view.getMonth()]}${dispo ? "" : " — indisponible"}"
-                 ${selected ? 'aria-pressed="true"' : ""}>${d}</button>`;
+    // Créneaux de la sélection en cours (pour surligner la plage réservée).
+    const service = C.services.find((s) => s.id === state.serviceId);
+    const selSet = new Set();
+    if (state.selectedDate && state.selectedTime && service) {
+      spanTimes(state.selectedTime, service.duree).forEach((hh) => selSet.add(state.selectedDate + " " + hh));
     }
+
+    // En-tête : coin vide + 7 jours
+    let html = `<div class="wcell wcorner" aria-hidden="true"></div>`;
+    days.forEach((iso) => {
+      const d = parseISO(iso);
+      const isToday = toISO(new Date()) === iso;
+      html += `<div class="wcell whead${isToday ? " is-today" : ""}">
+                 <span class="whead__dow">${JOURS_COURT[d.getDay()]}</span>
+                 <span class="whead__num">${d.getDate()}</span>
+               </div>`;
+    });
+
+    // Lignes horaires
+    for (let t = min; t <= max - pas; t += pas) {
+      const hhmm = toHHMM(t);
+      // On n'affiche la ligne que si au moins un jour a un créneau réel à cette heure.
+      const anyReal = days.some((iso) => {
+        const st = slotStatus(iso, t);
+        return st !== "none";
+      });
+      if (!anyReal) continue;
+
+      html += `<div class="wcell wtime">${hhmm}</div>`;
+      days.forEach((iso) => {
+        const st = slotStatus(iso, t);
+        const key = iso + " " + hhmm;
+        if (st === "none") { html += `<div class="wcell wslot wslot--none" aria-hidden="true"></div>`; return; }
+        const isSel = selSet.has(key);
+        const cls = isSel ? "wslot--sel" : ("wslot--" + st);
+        const clickable = (st === "free");
+        const dLabel = `${JOURS_COURT[parseISO(iso).getDay()]} ${parseISO(iso).getDate()} à ${hhmm}`;
+        const stTxt = st === "free" ? "disponible" : st === "reserved" ? "réservé" : st === "past" ? "passé" : st === "locked" ? "pas encore ouvert" : "indisponible";
+        html += `<button type="button" class="wcell wslot ${cls}"
+                   ${clickable ? "" : "disabled"}
+                   ${clickable ? `data-date="${iso}" data-time="${hhmm}"` : ""}
+                   aria-label="${dLabel} — ${stTxt}"></button>`;
+      });
+    }
+
     grid.innerHTML = html;
 
-    // Activer / désactiver les flèches de navigation
-    const today = startOfDay(new Date());
-    const curMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-    prevBtn.disabled = view <= curMonthStart;
-    const limite = new Date(today);
-    limite.setDate(limite.getDate() + C.reservation.joursAVenir);
-    const limiteMonthStart = new Date(limite.getFullYear(), limite.getMonth(), 1);
-    nextBtn.disabled = view >= limiteMonthStart;
+    // Navigation (bornes)
+    prevBtn.disabled = state.weekStart <= mondayOf(new Date());
+    nextBtn.disabled = mondayOf(dateMax()) <= state.weekStart;
 
-    // Clic sur un jour disponible
-    grid.querySelectorAll(".calendar__day[data-date]:not([disabled])").forEach((btn) => {
-      btn.addEventListener("click", () => selectDate(btn.dataset.date));
-    });
-  }
-
-  function selectDate(iso) {
-    const [y, m, d] = iso.split("-").map(Number);
-    state.selectedDate = new Date(y, m - 1, d);
-    state.selectedTime = null;
-    state.remoteOccupied = new Set();
-    renderCalendar();
-    updateSummary();
-
-    // Récupère l'état à jour des créneaux pris (si backend configuré),
-    // puis affiche les créneaux réellement disponibles.
-    if (backendUrl()) {
-      state.loadingSlots = true;
-      renderSlots();
-      fetchOccupied(iso).then((occupied) => {
-        // On ne rafraîchit que si l'utilisateur est toujours sur cette date.
-        if (!state.selectedDate || toISO(state.selectedDate) !== iso) return;
-        state.remoteOccupied = new Set(occupied);
-        state.loadingSlots = false;
-        renderSlots();
-      });
+    // Note : semaine pas encore ouverte ?
+    if (!isWeekOpen(state.weekStart)) {
+      const o = weekOpensAt(state.weekStart);
+      note.textContent = `🔒 Les réservations pour cette semaine ouvrent le ${JOURS[o.getDay()]} ${o.getDate()} ${MOIS[o.getMonth()]} à ${pad(o.getHours())}h.`;
+      note.classList.add("is-visible");
+    } else if (!state.serviceId) {
+      note.textContent = "Choisissez d'abord une prestation (étape 1), puis cliquez un créneau vert.";
+      note.classList.add("is-visible");
     } else {
-      renderSlots();
+      note.classList.remove("is-visible");
+      note.textContent = "";
     }
   }
 
-  /* ===================== RENDU DES CRÉNEAUX ==================== */
-  function renderSlots() {
-    const box = document.getElementById("slots");
-    if (!box) return;
-
-    if (!state.selectedDate) {
-      box.innerHTML = `<p class="slots__hint">Choisissez d'abord une date pour voir les créneaux disponibles.</p>`;
+  /* ===================== SÉLECTION D'UN CRÉNEAU ==================== */
+  function selectSlot(dateISO, hhmm) {
+    const note = document.getElementById("weekNote");
+    const service = C.services.find((s) => s.id === state.serviceId);
+    if (!service) {
+      note.textContent = "Choisissez d'abord une prestation (étape 1).";
+      note.classList.add("is-visible");
       return;
     }
-    if (state.loadingSlots) {
-      box.innerHTML = `<p class="slots__hint">Chargement des créneaux disponibles…</p>`;
+    if (!spanIsFree(dateISO, hhmm, service.duree)) {
+      note.textContent = `Ce créneau est trop court pour « ${service.nom} » (${service.dureeTxt}) : un créneau suivant est déjà pris. Choisissez un autre horaire.`;
+      note.classList.add("is-visible");
       return;
     }
-    const slots = generateSlots(state.selectedDate);
-    if (slots.length === 0) {
-      box.innerHTML = `<p class="slots__empty">Aucun créneau disponible ce jour-là. Merci de choisir une autre date.</p>`;
-      return;
-    }
-    box.innerHTML = slots.map((s) =>
-      `<button type="button" class="slot${state.selectedTime === s ? " is-selected" : ""}"
-        data-time="${s}" ${state.selectedTime === s ? 'aria-pressed="true"' : ""}>${s}</button>`
-    ).join("");
-
-    box.querySelectorAll(".slot").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        state.selectedTime = btn.dataset.time;
-        renderSlots();
-        updateSummary();
-      });
-    });
+    state.selectedDate = dateISO;
+    state.selectedTime = hhmm;
+    renderWeek();
+    updateSummary();
   }
 
   /* ============ RADIOS DE SERVICE (générées depuis config) ===== */
@@ -259,17 +300,31 @@
       </label>`).join("");
 
     box.querySelectorAll('input[name="service"]').forEach((input) => {
-      input.addEventListener("change", () => { state.serviceId = input.value; updateSummary(); });
+      input.addEventListener("change", () => {
+        state.serviceId = input.value;
+        // La durée change : on revérifie la sélection en cours.
+        if (state.selectedDate && state.selectedTime) {
+          const service = C.services.find((s) => s.id === state.serviceId);
+          if (!spanIsFree(state.selectedDate, state.selectedTime, service.duree)) {
+            state.selectedDate = null; state.selectedTime = null;
+          }
+        }
+        renderWeek();
+        updateSummary();
+      });
     });
   }
 
   /* ================= RÉCAPITULATIF DE CONFIRMATION ============= */
+  function formatDateLong(d) {
+    return `${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
+  }
   function updateSummary() {
     const el = document.getElementById("bookingSummary");
     if (!el) return;
     const service = C.services.find((s) => s.id === state.serviceId);
     if (state.selectedDate && state.selectedTime && service) {
-      const dateTxt = formatDateLong(state.selectedDate);
+      const dateTxt = formatDateLong(parseISO(state.selectedDate));
       el.innerHTML = `Confirmez votre demande : <strong>${service.nom}</strong>
         le <strong>${dateTxt}</strong> à <strong>${state.selectedTime}</strong>
         <br><span style="color:var(--color-muted)">${service.prix} € · ${service.dureeTxt}</span>`;
@@ -279,17 +334,8 @@
     }
   }
 
-  function formatDateLong(d) {
-    return `${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
-  }
-
   /* =====================================================================
-     ENVOI DE LA DEMANDE — STRATÉGIE MODULAIRE
-     ---------------------------------------------------------------------
-     On isole l'envoi dans une seule fonction « sendReservation(payload) ».
-     Pour changer de fournisseur (Formspree, Google Form, mailto…),
-     il suffit de remplacer le contenu de cette fonction — le reste du
-     code ne change pas.
+     ENVOI DE LA DEMANDE — stratégie modulaire (EmailJS, sinon mailto).
      ===================================================================== */
   function emailjsConfigured() {
     const e = C.emailjs;
@@ -297,7 +343,6 @@
            !/^X+$/i.test(e.publicKey) && window.emailjs;
   }
 
-  // Repli universel : ouvre la messagerie du client, pré-remplie vers le salon.
   function mailtoFallback(payload) {
     const sujet = `Demande de RDV — ${payload.service} le ${payload.date} à ${payload.heure}`;
     const corps =
@@ -321,19 +366,15 @@ Merci de me confirmer ce créneau.
     window.location.href = url;
   }
 
-  // Renvoie une promesse. Utilise EmailJS si configuré, sinon mailto.
   function sendReservation(payload) {
     if (emailjsConfigured()) {
       const e = C.emailjs;
-      // 1) Email au barbier (la demande à valider)
       const p = window.emailjs.send(e.serviceId, e.templateBarbier, payload);
-      // 2) Email de courtoisie au client (optionnel, si template fourni)
       if (e.templateClient && !/^X+$/i.test(e.templateClient)) {
         window.emailjs.send(e.serviceId, e.templateClient, payload).catch(() => {});
       }
       return p;
     }
-    // Repli mailto : considéré comme « envoyé » une fois la messagerie ouverte.
     return new Promise((resolve) => { mailtoFallback(payload); resolve({ fallback: true }); });
   }
 
@@ -344,20 +385,24 @@ Merci de me confirmer ce créneau.
     const feedback = document.getElementById("bookingFeedback");
     const service = C.services.find((s) => s.id === state.serviceId);
 
-    // Validations métier explicites
-    if (!state.selectedDate) return showFeedback(feedback, "error", "Merci de choisir une date.");
-    if (!state.selectedTime) return showFeedback(feedback, "error", "Merci de choisir un créneau horaire.");
     if (!service)            return showFeedback(feedback, "error", "Merci de choisir une prestation.");
+    if (!state.selectedDate || !state.selectedTime)
+                             return showFeedback(feedback, "error", "Merci de choisir un créneau (case verte) dans le calendrier.");
     if (!form.checkValidity()) { form.reportValidity(); return; }
+
+    // Dernière vérification côté client (la plage est-elle toujours libre ?)
+    if (!spanIsFree(state.selectedDate, state.selectedTime, service.duree)) {
+      return showFeedback(feedback, "error", "Ce créneau n'est plus disponible. Merci d'en choisir un autre.");
+    }
 
     const data = new FormData(form);
     const payload = {
       service:   service.nom,
       prix:      service.prix,
       duree:     service.dureeTxt,
-      dureeMin:  service.duree,      // durée en minutes (pour le backend : blocage des créneaux)
-      date:      formatDateLong(state.selectedDate),
-      dateISO:   toISO(state.selectedDate),
+      dureeMin:  service.duree,     // minutes → blocage backend
+      date:      formatDateLong(parseISO(state.selectedDate)),
+      dateISO:   state.selectedDate,
       heure:     state.selectedTime,
       prenom:    (data.get("prenom") || "").trim(),
       nom:       (data.get("nom") || "").trim(),
@@ -372,18 +417,14 @@ Merci de me confirmer ce créneau.
     const restore = () => { btn.disabled = false; btn.textContent = btnTxt; };
 
     // 1) On réserve d'abord le créneau dans le backend (blocage automatique).
-    //    Si le backend n'est pas configuré, recordBooking renvoie ok immédiatement.
     recordBooking(payload).then((rec) => {
       if (rec.taken) {
-        // Quelqu'un vient de prendre ce créneau : on rafraîchit la liste.
         restore();
         showFeedback(feedback, "error",
           "Ce créneau vient d'être réservé par quelqu'un d'autre. Merci d'en choisir un autre.");
-        state.selectedTime = null;
-        selectDate(payload.dateISO);
+        fetchAllOccupied().then(() => { state.selectedTime = null; state.selectedDate = null; renderWeek(); updateSummary(); });
         return;
       }
-
       // 2) Puis on envoie la demande par email (EmailJS ou repli mailto).
       sendReservation(payload)
         .then((res) => {
@@ -393,11 +434,12 @@ Merci de me confirmer ce créneau.
           } else {
             showFeedback(feedback, "success",
               "Votre demande de rendez-vous a bien été envoyée. Vous recevrez un email de confirmation dès que le coiffeur aura validé votre créneau.");
+            // Blocage immédiat côté affichage (les créneaux passent en rouge).
+            const set = state.occupiedByDate[payload.dateISO] || (state.occupiedByDate[payload.dateISO] = new Set());
+            spanTimes(payload.heure, payload.dureeMin).forEach((hh) => set.add(hh));
             form.reset();
-            state.selectedTime = null;
-            // Le créneau vient d'être pris : on le retire tout de suite de l'affichage.
-            slotsForBookingLocal(payload.heure, payload.dureeMin).forEach((s) => state.remoteOccupied.add(s));
-            renderSlots(); updateSummary();
+            state.selectedDate = null; state.selectedTime = null;
+            renderWeek(); updateSummary();
           }
         })
         .catch(() => {
@@ -409,16 +451,6 @@ Merci de me confirmer ce créneau.
     });
   }
 
-  // Développe une réservation en créneaux de 15 min (miroir côté client du backend).
-  function slotsForBookingLocal(heure, dureeMin) {
-    const pas = C.reservation.pasMinutes;
-    const n = Math.max(1, Math.ceil(Number(dureeMin) / pas));
-    const start = toMin(heure);
-    const out = [];
-    for (let k = 0; k < n; k++) out.push(toHHMM(start + k * pas));
-    return out;
-  }
-
   function showFeedback(el, type, msg) {
     if (!el) return;
     el.className = `booking-feedback is-visible is-${type}`;
@@ -428,10 +460,10 @@ Merci de me confirmer ce créneau.
   }
 
   /* =================== PRÉ-REMPLISSAGE DEPUIS UNE CARTE ======== */
-  // Appelé quand on clique « Réserver » sur une carte service.
   function preselectService(serviceId) {
     state.serviceId = serviceId;
     renderServiceChoices();
+    renderWeek();
     updateSummary();
   }
   window.RufixBooking = { preselectService };
@@ -440,26 +472,32 @@ Merci de me confirmer ce créneau.
   function init() {
     if (!C || !document.getElementById("bookingForm")) return;
 
-    // Mois affiché = mois courant
-    const now = new Date();
-    state.view = new Date(now.getFullYear(), now.getMonth(), 1);
+    // Semaine affichée = semaine courante (mais jamais avant aujourd'hui).
+    state.weekStart = mondayOf(new Date());
 
-    renderCalendar();
-    renderSlots();
     renderServiceChoices();
+    renderWeek();
 
-    document.getElementById("calPrev").addEventListener("click", () => {
-      state.view = new Date(state.view.getFullYear(), state.view.getMonth() - 1, 1);
-      renderCalendar();
+    document.getElementById("weekPrev").addEventListener("click", () => {
+      if (state.weekStart <= mondayOf(new Date())) return;
+      state.weekStart = addDays(state.weekStart, -7);
+      renderWeek();
+      if (backendUrl()) fetchAllOccupied().then(renderWeek);
     });
-    document.getElementById("calNext").addEventListener("click", () => {
-      state.view = new Date(state.view.getFullYear(), state.view.getMonth() + 1, 1);
-      renderCalendar();
+    document.getElementById("weekNext").addEventListener("click", () => {
+      if (mondayOf(dateMax()) <= state.weekStart) return;
+      state.weekStart = addDays(state.weekStart, 7);
+      renderWeek();
+      if (backendUrl()) fetchAllOccupied().then(renderWeek);
+    });
+
+    document.getElementById("weekGrid").addEventListener("click", (e) => {
+      const cell = e.target.closest(".wslot--free[data-date]");
+      if (cell) selectSlot(cell.dataset.date, cell.dataset.time);
     });
 
     document.getElementById("bookingForm").addEventListener("submit", handleSubmit);
 
-    // Boutons « Réserver » des cartes services : pré-sélection + défilement
     document.querySelectorAll("[data-book-service]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
@@ -467,6 +505,9 @@ Merci de me confirmer ce créneau.
         document.getElementById("reservation").scrollIntoView({ behavior: "smooth" });
       });
     });
+
+    // Charge l'état des créneaux pris (backend), puis rafraîchit l'affichage.
+    if (backendUrl()) fetchAllOccupied().then(renderWeek);
   }
 
   if (document.readyState !== "loading") init();
