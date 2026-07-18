@@ -407,6 +407,108 @@
   padding: 1rem 0; text-align: center;
 }
 
+/* ---- Calendrier HEBDOMADAIRE (grille de créneaux colorés) ---- */
+.week__header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; margin-bottom: 1rem;
+}
+.week__label { font-family: var(--font-title); font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem); text-align: center; }
+
+/* Légende des couleurs */
+.week__legend {
+  display: flex; flex-wrap: wrap; gap: 1rem 1.4rem;
+  margin-bottom: 1rem; font-size: 0.82rem; color: var(--color-muted);
+}
+.legend-item { display: inline-flex; align-items: center; gap: 0.45rem; }
+.legend-dot { width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 1px solid; }
+.legend-dot--free  { background: var(--slot-free-bg);  border-color: var(--slot-free); }
+.legend-dot--taken { background: var(--slot-taken-bg); border-color: var(--slot-taken); }
+.legend-dot--sel   { background: var(--color-accent);  border-color: var(--color-accent); }
+
+/* Zone défilable (surtout mobile) */
+.week__grid-wrap {
+  overflow: auto;
+  max-height: 60vh;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+}
+
+/* La grille : 1 colonne "heures" + 7 colonnes "jours" */
+.week__grid {
+  display: grid;
+  grid-template-columns: 52px repeat(7, minmax(64px, 1fr));
+  gap: 4px;
+  padding: 6px;
+  min-width: 540px;   /* garantit la lisibilité, sinon scroll horizontal */
+}
+.wcell { min-height: 30px; }
+
+/* En-têtes de jours (sticky en haut) */
+.whead {
+  position: sticky; top: 0; z-index: 3;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 6px 2px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+  line-height: 1.1;
+}
+.whead__dow { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-muted); }
+.whead__num { font-family: var(--font-title); font-size: 1.05rem; font-weight: 700; }
+.whead.is-today { outline: 1.5px solid var(--color-accent); }
+.whead.is-today .whead__num { color: var(--color-accent); }
+.wcorner { position: sticky; top: 0; left: 0; z-index: 4; background: var(--color-bg); }
+
+/* Colonne des heures (sticky à gauche) */
+.wtime {
+  position: sticky; left: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 8px;
+  font-size: 0.78rem; color: var(--color-muted);
+  background: var(--color-bg);
+}
+
+/* Cases créneaux */
+.wslot {
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: default;
+  padding: 0;
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease),
+              background var(--t-fast) var(--ease);
+}
+.wslot--none { background: transparent; }                    /* hors horaires / pause */
+.wslot--free {
+  background: var(--slot-free-bg);
+  border-color: var(--slot-free);
+  cursor: pointer;
+}
+.wslot--free:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+.wslot--reserved,
+.wslot--past {
+  background: var(--slot-taken-bg);
+  border-color: var(--slot-taken);
+  cursor: not-allowed;
+}
+.wslot--past { opacity: 0.5; }
+.wslot--closed { background: var(--slot-locked-bg); }        /* jour fermé (ligne rare) */
+.wslot--locked {
+  background: repeating-linear-gradient(45deg, var(--slot-locked-bg), var(--slot-locked-bg) 6px, transparent 6px, transparent 12px);
+  border-color: var(--color-line);
+  cursor: not-allowed;
+}
+.wslot--sel {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-glow);
+}
+
+.week__note {
+  margin-top: 0.9rem; color: var(--color-muted); font-size: 0.88rem;
+  display: none;
+}
+.week__note.is-visible { display: block; }
+
 /* Formulaire */
 .field { margin-bottom: 1.1rem; }
 .field label { display: block; font-size: 0.88rem; margin-bottom: 0.4rem; color: var(--color-text); }

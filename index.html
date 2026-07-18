@@ -278,34 +278,43 @@
           </p>
         </div>
 
-        <form id="bookingForm" class="booking__grid" novalidate>
+        <form id="bookingForm" novalidate>
 
-          <!-- Colonne gauche : date + créneaux -->
-          <div>
-            <div class="booking-panel" data-reveal="left" style="margin-bottom:1.5rem">
-              <p class="booking-panel__title"><span class="step-num">1</span> Choisissez une date</p>
-              <div class="calendar">
-                <div class="calendar__header">
-                  <button type="button" class="calendar__nav" id="calPrev" aria-label="Mois précédent">
-                    <svg class="icon" aria-hidden="true"><use href="#i-chevron-left"></use></svg>
-                  </button>
-                  <span class="calendar__month" id="calMonth" aria-live="polite">—</span>
-                  <button type="button" class="calendar__nav" id="calNext" aria-label="Mois suivant">
-                    <svg class="icon" aria-hidden="true"><use href="#i-chevron-right"></use></svg>
-                  </button>
-                </div>
-                <div class="calendar__grid" id="calGrid" role="grid" aria-label="Calendrier des dates disponibles"></div>
+          <!-- Étape 1 : prestation (la durée détermine les créneaux bloqués) -->
+          <div class="booking-panel" data-reveal style="margin-bottom:1.5rem">
+            <p class="booking-panel__title"><span class="step-num">1</span> Choisissez votre prestation</p>
+            <!-- Radios générées depuis config.js par booking.js -->
+            <div class="service-choice" id="serviceChoice" role="radiogroup" aria-label="Choix de la prestation"></div>
+          </div>
+
+          <!-- Étape 2 : créneau — grille hebdomadaire colorée -->
+          <div class="booking-panel" data-reveal style="margin-bottom:1.5rem">
+            <p class="booking-panel__title"><span class="step-num">2</span> Choisissez votre créneau</p>
+            <div class="week">
+              <div class="week__header">
+                <button type="button" class="calendar__nav" id="weekPrev" aria-label="Semaine précédente">
+                  <svg class="icon" aria-hidden="true"><use href="#i-chevron-left"></use></svg>
+                </button>
+                <span class="week__label" id="weekLabel" aria-live="polite">—</span>
+                <button type="button" class="calendar__nav" id="weekNext" aria-label="Semaine suivante">
+                  <svg class="icon" aria-hidden="true"><use href="#i-chevron-right"></use></svg>
+                </button>
               </div>
-            </div>
-
-            <div class="booking-panel" data-reveal="left" data-delay="1">
-              <p class="booking-panel__title"><span class="step-num">2</span> Choisissez un créneau</p>
-              <div class="slots" id="slots" role="listbox" aria-label="Créneaux horaires disponibles"></div>
+              <!-- Légende des couleurs -->
+              <div class="week__legend" aria-hidden="true">
+                <span class="legend-item"><span class="legend-dot legend-dot--free"></span> Disponible</span>
+                <span class="legend-item"><span class="legend-dot legend-dot--taken"></span> Réservé / indisponible</span>
+                <span class="legend-item"><span class="legend-dot legend-dot--sel"></span> Votre sélection</span>
+              </div>
+              <div class="week__grid-wrap">
+                <div class="week__grid" id="weekGrid" role="grid" aria-label="Créneaux de la semaine"></div>
+              </div>
+              <p class="week__note" id="weekNote" aria-live="polite"></p>
             </div>
           </div>
 
-          <!-- Colonne droite : coordonnées + service + confirmation -->
-          <div class="booking-panel" data-reveal="right">
+          <!-- Étape 3 : coordonnées + confirmation -->
+          <div class="booking-panel" data-reveal>
             <p class="booking-panel__title"><span class="step-num">3</span> Vos informations</p>
 
             <div class="field-row">
@@ -327,12 +336,6 @@
                 <label for="email">Email <span class="req">*</span></label>
                 <input class="input" type="email" id="email" name="email" autocomplete="email" required />
               </div>
-            </div>
-
-            <div class="field">
-              <label>Prestation <span class="req">*</span></label>
-              <!-- Radios générées depuis config.js par booking.js -->
-              <div class="service-choice" id="serviceChoice" role="radiogroup" aria-label="Choix de la prestation"></div>
             </div>
 
             <!-- Récapitulatif de confirmation -->

@@ -140,14 +140,25 @@ const CONFIG = {
      6. RÉGLAGES DE RÉSERVATION
      -------------------------------------------------------------------
      pasMinutes      : intervalle entre deux créneaux (15 = 09:00, 09:15…)
-     joursAVenir     : nombre de jours ouverts à la réservation (calendrier)
      delaiMiniHeures : délai minimum avant un rendez-vous (en heures).
                        Ex : 2 = on ne peut pas réserver pour dans moins de 2h.
+     dateMax         : dernière date réservable (incluse).
+     ouverture       : règle d'ouverture hebdomadaire glissante (voir ci-dessous).
   ------------------------------------------------------------------- */
   reservation: {
     pasMinutes: 15,
-    joursAVenir: 60,
-    delaiMiniHeures: 2
+    delaiMiniHeures: 2,
+
+    // Date maximale réservable (incluse). Aucun créneau proposé au-delà.
+    dateMax: "2026-12-31",
+
+    // OUVERTURE HEBDOMADAIRE GLISSANTE
+    // Une semaine (lundi → dimanche) s'ouvre à la réservation dès qu'on a
+    // dépassé le "vendredi 21h" de la semaine qui la précède.
+    //   → concrètement : ce vendredi 21h ouvre la semaine suivante.
+    // Les semaines pas encore ouvertes restent visibles mais verrouillées.
+    // Mettez  ouverture: null  pour tout ouvrir immédiatement (sans règle).
+    ouverture: { jour: 5, heure: 21 }   // jour : 0=dim … 5=vendredi ; heure : 21 = 21h
   },
 
   /* -------------------------------------------------------------------

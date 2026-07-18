@@ -21,6 +21,13 @@
   --color-accent-hover:  #dcb968;   /* Accent au survol (plus clair)              */
   --color-line:          rgba(201,162,75,0.18); /* Filets / bordures fines        */
 
+  /* --- Couleurs des créneaux (calendrier) --- */
+  --slot-free:      #6fca8a;                 /* 🟢 disponible — texte/bordure       */
+  --slot-free-bg:   rgba(85,180,120,0.16);   /* 🟢 disponible — fond                */
+  --slot-taken:     #d97a72;                 /* 🔴 réservé / indisponible — bordure  */
+  --slot-taken-bg:  rgba(190,80,72,0.16);    /* 🔴 réservé / indisponible — fond     */
+  --slot-locked-bg: rgba(255,255,255,0.04);  /* 🔒 semaine pas encore ouverte / passé */
+
   /* --- Ombres très douces (aspect premium) --- */
   --shadow-soft:  0 10px 30px -12px rgba(0,0,0,0.55);
   --shadow-card:  0 18px 40px -20px rgba(0,0,0,0.65);
