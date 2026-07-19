@@ -87,7 +87,9 @@
     const url = backendUrl();
     if (!url) return Promise.resolve();
     const sep = url.indexOf("?") === -1 ? "?" : "&";
-    return fetch(`${url}${sep}all=1`, { method: "GET" })
+    // ⚠️ Google met les réponses Apps Script en cache : sans paramètre unique,
+    // le site afficherait des disponibilités périmées (créneau confirmé encore vert).
+    return fetch(`${url}${sep}all=1&_=${Date.now()}`, { method: "GET", cache: "no-store" })
       .then((r) => r.json())
       .then((d) => {
         // Transforme ["AAAA-MM-JJ HH:MM", …] en { "AAAA-MM-JJ": Set(["HH:MM"]) }
