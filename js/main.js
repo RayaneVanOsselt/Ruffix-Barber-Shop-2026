@@ -175,9 +175,19 @@
     const setHref = (sel, href) => document.querySelectorAll(sel).forEach((a) => a && (a.href = href));
     setHref("[data-config-tel]", `tel:${(C.salon.telephone || "").replace(/[^+\d]/g, "")}`);
     setHref("[data-config-mail]", `mailto:${C.salon.email}`);
-    setHref("[data-config-instagram]", C.salon.instagram);
-    setHref("[data-config-facebook]", C.salon.facebook);
     setHref("[data-config-maps]", C.salon.mapsLink);
+
+    // Réseaux sociaux : on renseigne le lien, et on masque l'icône si l'URL est vide.
+    const setSocial = (sel, url) => {
+      document.querySelectorAll(sel).forEach((a) => {
+        if (url) { a.href = url; a.style.display = ""; }
+        else { a.style.display = "none"; }   // ex : pas de page Facebook
+      });
+    };
+    setSocial("[data-config-instagram]", C.salon.instagram);
+    setSocial("[data-config-instagram2]", C.salon.instagramPerso);
+    setSocial("[data-config-tiktok]", C.salon.tiktok);
+    setSocial("[data-config-facebook]", C.salon.facebook);
 
     // Carte Google Maps
     const map = document.getElementById("mapFrame");

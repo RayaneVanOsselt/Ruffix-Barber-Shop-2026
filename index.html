@@ -29,7 +29,8 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
-  <link rel="apple-touch-icon" href="images/favicon.svg" />
+  <!-- Écran d'accueil mobile : le vrai logo (rendu net en grand format) -->
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
 
   <!-- ===================== Polices Google ===================== -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -38,9 +39,9 @@
         rel="stylesheet" />
 
   <!-- ========================= Styles ========================= -->
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/components.css" />
-  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/base.css?v=20260718b" />
+  <link rel="stylesheet" href="css/components.css?v=20260718b" />
+  <link rel="stylesheet" href="css/animations.css?v=20260718b" />
 
   <!-- ============= Données structurées (SEO local) =============
        👉 Éditez ces valeurs en même temps que js/config.js.
@@ -68,7 +69,11 @@
       { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Thursday","Friday"], "opens": "09:00", "closes": "19:00" },
       { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "08:30", "closes": "17:00" }
     ],
-    "sameAs": ["https://instagram.com/", "https://facebook.com/"]
+    "sameAs": [
+      "https://www.instagram.com/rufixbarber",
+      "https://www.instagram.com/rufiiix___",
+      "https://www.tiktok.com/@rufixbarber"
+    ]
   }
   </script>
 </head>
@@ -83,8 +88,8 @@
   <header class="navbar" id="navbar">
     <nav class="navbar__inner" aria-label="Navigation principale">
       <a class="navbar__logo" href="#accueil" aria-label="Rufix Barber — accueil">
-        <!-- Logo : remplacer images/logo.svg par le vrai logo -->
-        <img src="images/logo.svg" alt="Logo Rufix Barber" width="220" height="56" />
+        <img src="images/logo.png" alt="Logo Rufix Barber" width="240" height="240" />
+        <span class="navbar__wordmark"><strong>RUFIX</strong><em>BARBER</em></span>
       </a>
 
       <div class="navbar__links" id="navLinks">
@@ -663,17 +668,27 @@
       <div class="footer__grid">
         <div>
           <div class="footer__logo">
-            <img src="images/logo.svg" alt="Logo Rufix Barber" width="220" height="56" />
+            <img src="images/logo.png" alt="Logo Rufix Barber" width="240" height="240" loading="lazy" />
           </div>
           <p class="footer__tagline">
             Barbier &amp; salon de coiffure homme premium à
             <span data-config="salon.ville">[VILLE]</span>. Coupe, barbe et rasage sur rendez-vous.
           </p>
           <div class="footer__socials">
-            <a class="footer__social" data-config-instagram href="#" aria-label="Instagram" target="_blank" rel="noopener">
+            <a class="footer__social" data-config-instagram href="#"
+               aria-label="Instagram du salon Rufix Barber" target="_blank" rel="noopener">
               <svg class="icon" aria-hidden="true"><use href="#i-instagram"></use></svg>
             </a>
-            <a class="footer__social" data-config-facebook href="#" aria-label="Facebook" target="_blank" rel="noopener">
+            <a class="footer__social" data-config-instagram2 href="#"
+               aria-label="Instagram personnel de Rufix" target="_blank" rel="noopener">
+              <svg class="icon" aria-hidden="true"><use href="#i-instagram"></use></svg>
+            </a>
+            <a class="footer__social" data-config-tiktok href="#"
+               aria-label="TikTok de Rufix Barber" target="_blank" rel="noopener">
+              <svg class="icon" aria-hidden="true"><use href="#i-tiktok"></use></svg>
+            </a>
+            <a class="footer__social" data-config-facebook href="#"
+               aria-label="Facebook" target="_blank" rel="noopener">
               <svg class="icon" aria-hidden="true"><use href="#i-facebook"></use></svg>
             </a>
           </div>
@@ -724,6 +739,7 @@
     <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
     <symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></symbol>
     <symbol id="i-facebook" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h-3a4 4 0 00-4 4v3H5v4h3v7h4v-7h3l1-4h-4V7a1 1 0 011-1h3z"/></symbol>
+    <symbol id="i-tiktok" viewBox="0 0 24 24"><path fill="currentColor" d="M16.5 2h-2.9v13.2a2.6 2.6 0 1 1-2.1-2.6V9.5a5.9 5.9 0 1 0 5 5.8V9.2a7 7 0 0 0 4 1.3V7.4a4.1 4.1 0 0 1-4-4V2z"/></symbol>
   </svg>
 
   <!-- ========================= Scripts =========================
@@ -731,8 +747,9 @@
        Si les clés ne sont pas renseignées dans config.js, le site
        bascule automatiquement sur le repli mailto (aucune erreur). -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/booking.js" defer></script>
-  <script src="js/main.js" defer></script>
+  <script src="js/config.js?v=20260718b"></script>
+  <script src="js/booking.js?v=20260718b" defer></script>
+  <script src="js/main.js?v=20260718b" defer></script>
+  <script src="js/assistant.js?v=20260718b" defer></script>
 </body>
 </html>

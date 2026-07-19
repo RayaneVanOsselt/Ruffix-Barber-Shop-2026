@@ -38,8 +38,11 @@ const CONFIG = {
     mapsEmbed:  "https://www.google.com/maps?q=Grand-Place%2C%20Bruxelles&output=embed",
     // Lien "Itinéraire" (bouton) — ouvre Google Maps avec l'adresse.
     mapsLink:   "https://www.google.com/maps/search/?api=1&query=Rufix+Barber",
-    instagram:  "https://instagram.com/",           // URL complète du profil
-    facebook:   "https://facebook.com/",            // URL complète de la page
+    // --- Réseaux sociaux (URL nettoyées des paramètres de suivi) ---
+    instagram:      "https://www.instagram.com/rufixbarber",   // compte du salon
+    instagramPerso: "https://www.instagram.com/rufiiix___",    // compte personnel
+    tiktok:         "https://www.tiktok.com/@rufixbarber",     // TikTok du salon
+    facebook:       "",                                        // pas de page Facebook (laisser vide = icône masquée)
     // Adresse du site en ligne (sert au SEO / partages). À adapter après mise en ligne.
     siteUrl:    "https://rufixbarber.example.com/"
   },
@@ -205,6 +208,30 @@ const CONFIG = {
   ------------------------------------------------------------------- */
   backend: {
     url: ""   // ex : "https://script.google.com/macros/s/AKfy.../exec"
+  },
+
+  /* -------------------------------------------------------------------
+     9. ASSISTANT VIRTUEL (bouton de chat flottant)
+     -------------------------------------------------------------------
+     L'assistant répond aux questions des clients en utilisant les
+     informations RÉELLES de ce fichier (services, tarifs, horaires,
+     créneaux libres…) et la FAQ de la page. Il fonctionne hors ligne,
+     gratuitement, sans aucune clé.
+
+     actif        : false pour désactiver complètement l'assistant.
+     nom          : nom affiché en haut de la fenêtre de chat.
+     messageAccueil : première phrase affichée au visiteur.
+
+     aiProxyUrl   : (optionnel, pour plus tard) URL d'un relais qui appelle
+        une vraie IA (Claude…). ⚠️ NE JAMAIS mettre de clé API ici : ce
+        fichier est public. La clé doit rester sur le relais (Apps Script).
+        Vide = moteur local uniquement.
+  ------------------------------------------------------------------- */
+  assistant: {
+    actif: true,
+    nom: "Assistant Rufix",
+    messageAccueil: "Bonjour 👋 Je suis l'assistant de Rufix Barber. Je peux vous renseigner sur les prestations, les tarifs, les horaires, et vous guider pour réserver.",
+    aiProxyUrl: ""
   }
 };
 
