@@ -20,18 +20,33 @@
 
 var SHEET_NAME = "Reservations";   // nom de l'onglet du Google Sheet
 var PAS_MIN = 15;                  // pas des créneaux (doit correspondre à config.js)
+var CODE_VERSION = 2;              // témoin : permet de vérifier quelle version est déployée
 
 /* ---------- Petits utilitaires ---------- */
 function pad2(n) { return (n < 10 ? "0" : "") + n; }
 
+// Détection robuste d'une date : « instanceof Date » n'est pas fiable dans
+// Apps Script (les objets viennent d'un autre contexte) → on teste la méthode.
+function isDate(v) {
+  return v && typeof v.getTime === "function" && !isNaN(v.getTime());
+}
+
 function normDate(v, tz) {
   // Google Sheets peut convertir "2026-07-14" en objet Date : on re-normalise.
-  return (v instanceof Date) ? Utilities.formatDate(v, tz, "yyyy-MM-dd") : String(v).trim();
+  if (isDate(v)) return Utilities.formatDate(v, tz, "yyyy-MM-dd");
+  return String(v).trim();
 }
+
 function normTime(v, tz) {
-  if (v instanceof Date) return Utilities.formatDate(v, tz, "HH:mm");
+  if (isDate(v)) return Utilities.formatDate(v, tz, "HH:mm");
+  // Sheets peut aussi stocker une heure en fraction de journée (0,5 = 12:00).
+  if (typeof v === "number") {
+    var mins = Math.round(v * 24 * 60);
+    return pad2(Math.floor(mins / 60) % 24) + ":" + pad2(mins % 60);
+  }
   var p = String(v).trim().split(":");
-  return p.length >= 2 ? pad2(parseInt(p[0], 10)) + ":" + pad2(parseInt(p[1], 10)) : String(v).trim();
+  if (p.length < 2) return String(v).trim();
+  return pad2(parseInt(p[0], 10)) + ":" + pad2(parseInt(p[1], 10));
 }
 
 // Développe une réservation en tous les créneaux de 15 min qu'elle occupe.
@@ -87,13 +102,13 @@ function doGet(e) {
     var map = occupiedMap();
     var date = e && e.parameter && e.parameter.date;
     if (date) {
-      return jsonOut({ ok: true, date: date, occupied: Object.keys(map[date] || {}) });
+      return jsonOut({ ok: true, version: CODE_VERSION, date: date, occupied: Object.keys(map[date] || {}) });
     }
     var all = [];
     Object.keys(map).forEach(function (d) {
       Object.keys(map[d]).forEach(function (h) { all.push(d + " " + h); });
     });
-    return jsonOut({ ok: true, occupied: all });
+    return jsonOut({ ok: true, version: CODE_VERSION, occupied: all });
   } catch (err) {
     return jsonOut({ ok: false, error: String(err) });
   }
@@ -124,10 +139,12 @@ function doPost(e) {
       if (dayTaken[wanted[i]]) return jsonOut({ ok: false, taken: true });
     }
 
+    // L'apostrophe force le format TEXTE : Sheets ne transforme plus
+    // "2026-07-22" en date ni "14:00" en heure (source de bugs de lecture).
     getSheet().appendRow([
       new Date(),                     // A Horodatage
-      data.dateISO,                   // B Date
-      data.heure,                     // C Heure
+      "'" + data.dateISO,             // B Date   (texte "AAAA-MM-JJ")
+      "'" + data.heure,               // C Heure  (texte "HH:MM")
       data.service || "",             // D Service
       data.dureeMin || "",            // E DureeMin
       data.prenom || "",              // F Prenom

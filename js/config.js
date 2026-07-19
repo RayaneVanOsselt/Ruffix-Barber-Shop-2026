@@ -207,7 +207,7 @@ const CONFIG = {
        3. Colle ici l'URL qui finit par /exec
   ------------------------------------------------------------------- */
   backend: {
-    url: ""   // ex : "https://script.google.com/macros/s/AKfy.../exec"
+    url: "https://script.google.com/macros/s/AKfycbwvEVdBDfHvu7Wx7-VEikvpywseAY6i75XbtveX2wM6IEoEle4tVnNCAs1XRnzHci5O/exec"
   },
 
   /* -------------------------------------------------------------------
