@@ -37,8 +37,13 @@
     selectedDate: null,    // "AAAA-MM-JJ"
     selectedTime: null,    // "HH:MM"
     serviceId: null,       // id du service choisi
-    occupiedByDate: {},    // { "AAAA-MM-JJ": Set(["11:00", …]) } (backend)
-    loading: false
+    occupiedByDate: {},    // 🔴 RDV CONFIRMÉS → créneaux bloqués
+    pendingByDate: {},     // 🟠 demandes EN ATTENTE → visibles mais non bloquantes
+    loading: false,
+    // Vrai tant que les créneaux déjà pris n'ont pas été chargés depuis le backend.
+    // Évite d'afficher des créneaux VERTS (donc cliquables) alors qu'ils sont
+    // peut-être déjà réservés — Google Apps Script met ~2 s à répondre.
+    loadingOccupied: false
   };
 
   /* ================= UTILITAIRES DATE / HEURE ================= */
@@ -85,16 +90,22 @@
     return fetch(`${url}${sep}all=1`, { method: "GET" })
       .then((r) => r.json())
       .then((d) => {
-        const map = {};
-        if (d && d.ok && Array.isArray(d.occupied)) {
-          d.occupied.forEach((s) => {
+        // Transforme ["AAAA-MM-JJ HH:MM", …] en { "AAAA-MM-JJ": Set(["HH:MM"]) }
+        const versMap = (liste) => {
+          const map = {};
+          (Array.isArray(liste) ? liste : []).forEach((s) => {
             const sp = String(s).split(" ");
             if (sp.length < 2) return;
             if (!map[sp[0]]) map[sp[0]] = new Set();
             map[sp[0]].add(sp[1]);
           });
+          return map;
+        };
+        if (d && d.ok) {
+          // "confirmed" = nouveau format (v3) ; "occupied" = repli ancien format
+          state.occupiedByDate = versMap(d.confirmed || d.occupied);
+          state.pendingByDate = versMap(d.pending);
         }
-        state.occupiedByDate = map;
       })
       .catch(() => {});
   }
@@ -118,9 +129,15 @@
      Renvoie : 'none' (hors horaires / pause), 'closed' (jour fermé),
      'past' (déjà passé), 'locked' (semaine pas encore ouverte),
      'reserved' (déjà pris), 'free' (disponible). */
+  // 🔴 Créneau BLOQUÉ : RDV confirmé par le barbier, ou blocage manuel (config.js)
   function isReserved(dateISO, hhmm) {
     if (C.creneauxBloques.some((b) => b.date === dateISO && b.heure === hhmm)) return true;
     const set = state.occupiedByDate[dateISO];
+    return set ? set.has(hhmm) : false;
+  }
+  // 🟠 Créneau EN ATTENTE : une demande existe, mais elle ne bloque pas encore.
+  function isPending(dateISO, hhmm) {
+    const set = state.pendingByDate[dateISO];
     return set ? set.has(hhmm) : false;
   }
 
@@ -143,8 +160,10 @@
       if (t < seuil) return "past";
     }
     if (!isWeekOpen(mondayOf(d))) return "locked";
-    if (isReserved(dateISO, toHHMM(t))) return "reserved";
-    return "free";
+    const hhmm = toHHMM(t);
+    if (isReserved(dateISO, hhmm)) return "reserved";                   // 🔴 confirmé
+    if (isPending(dateISO, hhmm)) return "pending";                     // 🟠 en attente
+    return "free";                                                      // 🟢 libre
   }
 
   // Tous les créneaux (15 min) qu'occupe une prestation à partir d'une heure.
@@ -156,9 +175,13 @@
     for (let k = 0; k < n; k++) out.push(toHHMM(start + k * pas));
     return out;
   }
-  // La prestation choisie tient-elle entièrement (tous les créneaux libres) ?
+  // La prestation choisie tient-elle entièrement ?
+  // 🟠 Un créneau "en attente" reste réservable : seuls les RDV confirmés bloquent.
   function spanIsFree(dateISO, startHHMM, dureeMin) {
-    return spanTimes(startHHMM, dureeMin).every((hhmm) => slotStatus(dateISO, toMin(hhmm)) === "free");
+    return spanTimes(startHHMM, dureeMin).every((hhmm) => {
+      const st = slotStatus(dateISO, toMin(hhmm));
+      return st === "free" || st === "pending";
+    });
   }
 
   /* ===================== RENDU DE LA SEMAINE ==================== */
@@ -233,14 +256,22 @@
 
       html += `<div class="wcell wtime">${hhmm}</div>`;
       days.forEach((iso) => {
-        const st = slotStatus(iso, t);
+        const st0 = slotStatus(iso, t);
+        // Tant que les créneaux pris ne sont pas chargés, on n'affiche NI vert NI rouge :
+        // un état neutre non cliquable, pour ne jamais proposer un créneau déjà réservé.
+        const st = (state.loadingOccupied && (st0 === "free" || st0 === "reserved" || st0 === "pending"))
+                 ? "loading" : st0;
         const key = iso + " " + hhmm;
         if (st === "none") { html += `<div class="wcell wslot wslot--none" aria-hidden="true"></div>`; return; }
         const isSel = selSet.has(key);
         const cls = isSel ? "wslot--sel" : ("wslot--" + st);
-        const clickable = (st === "free");
+        // 🟠 "pending" reste cliquable : la demande n'est pas encore confirmée.
+        const clickable = (st === "free" || st === "pending");
         const dLabel = `${JOURS_COURT[parseISO(iso).getDay()]} ${parseISO(iso).getDate()} à ${hhmm}`;
-        const stTxt = st === "free" ? "disponible" : st === "reserved" ? "réservé" : st === "past" ? "passé" : st === "locked" ? "pas encore ouvert" : "indisponible";
+        const stTxt = st === "free" ? "disponible" : st === "reserved" ? "réservé (confirmé)"
+                    : st === "pending" ? "demande en attente de confirmation"
+                    : st === "past" ? "passé"
+                    : st === "locked" ? "pas encore ouvert" : st === "loading" ? "chargement en cours" : "indisponible";
         html += `<button type="button" class="wcell wslot ${cls}"
                    ${clickable ? "" : "disabled"}
                    ${clickable ? `data-date="${iso}" data-time="${hhmm}"` : ""}
@@ -254,8 +285,11 @@
     prevBtn.disabled = state.weekStart <= mondayOf(new Date());
     nextBtn.disabled = mondayOf(dateMax()) <= state.weekStart;
 
-    // Note : semaine pas encore ouverte ?
-    if (!isWeekOpen(state.weekStart)) {
+    // Note : chargement des disponibilités en cours ?
+    if (state.loadingOccupied) {
+      note.textContent = "⏳ Chargement des disponibilités en cours…";
+      note.classList.add("is-visible");
+    } else if (!isWeekOpen(state.weekStart)) {
       const o = weekOpensAt(state.weekStart);
       note.textContent = `🔒 Les réservations pour cette semaine ouvrent le ${JOURS[o.getDay()]} ${o.getDate()} ${MOIS[o.getMonth()]} à ${pad(o.getHours())}h.`;
       note.classList.add("is-visible");
@@ -434,8 +468,9 @@ Merci de me confirmer ce créneau.
           } else {
             showFeedback(feedback, "success",
               "Votre demande de rendez-vous a bien été envoyée. Vous recevrez un email de confirmation dès que le coiffeur aura validé votre créneau.");
-            // Blocage immédiat côté affichage (les créneaux passent en rouge).
-            const set = state.occupiedByDate[payload.dateISO] || (state.occupiedByDate[payload.dateISO] = new Set());
+            // La demande passe en ATTENTE (orange) : elle ne bloque pas encore le
+            // créneau, c'est le barbier qui la confirmera (statut "Confirmé" dans le Sheet).
+            const set = state.pendingByDate[payload.dateISO] || (state.pendingByDate[payload.dateISO] = new Set());
             spanTimes(payload.heure, payload.dureeMin).forEach((hh) => set.add(hh));
             form.reset();
             state.selectedDate = null; state.selectedTime = null;
@@ -511,6 +546,9 @@ Merci de me confirmer ce créneau.
 
     // Semaine affichée = semaine courante (mais jamais avant aujourd'hui).
     state.weekStart = mondayOf(new Date());
+    // Si un backend est configuré, on démarre en "chargement" : aucun créneau
+    // n'est proposé tant qu'on ne sait pas lesquels sont déjà pris.
+    state.loadingOccupied = !!backendUrl();
 
     renderServiceChoices();
     renderWeek();
@@ -529,7 +567,8 @@ Merci de me confirmer ce créneau.
     });
 
     document.getElementById("weekGrid").addEventListener("click", (e) => {
-      const cell = e.target.closest(".wslot--free[data-date]");
+      // Seules les cases réservables portent data-date (vert ou orange)
+      const cell = e.target.closest(".wslot[data-date]");
       if (cell) selectSlot(cell.dataset.date, cell.dataset.time);
     });
 
@@ -543,8 +582,15 @@ Merci de me confirmer ce créneau.
       });
     });
 
-    // Charge l'état des créneaux pris (backend), puis rafraîchit l'affichage.
-    if (backendUrl()) fetchAllOccupied().then(renderWeek);
+    // Charge l'état des créneaux pris (backend), puis débloque l'affichage.
+    // On lève le "chargement" même en cas d'échec réseau, pour ne pas laisser
+    // le calendrier inutilisable (repli : blocage manuel via config.creneauxBloques).
+    if (backendUrl()) {
+      fetchAllOccupied().then(() => {
+        state.loadingOccupied = false;
+        renderWeek();
+      });
+    }
   }
 
   if (document.readyState !== "loading") init();

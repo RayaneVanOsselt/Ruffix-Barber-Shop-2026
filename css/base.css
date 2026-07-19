@@ -26,6 +26,8 @@
   --slot-free-bg:   rgba(85,180,120,0.16);   /* 🟢 disponible — fond                */
   --slot-taken:     #d97a72;                 /* 🔴 réservé / indisponible — bordure  */
   --slot-taken-bg:  rgba(190,80,72,0.16);    /* 🔴 réservé / indisponible — fond     */
+  --slot-pending:    #e8a94a;                /* 🟠 en attente de confirmation — bordure */
+  --slot-pending-bg: rgba(224,160,60,0.18);  /* 🟠 en attente de confirmation — fond    */
   --slot-locked-bg: rgba(255,255,255,0.04);  /* 🔒 semaine pas encore ouverte / passé */
 
   /* --- Ombres très douces (aspect premium) --- */

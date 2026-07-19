@@ -20,7 +20,21 @@
 
 var SHEET_NAME = "Reservations";   // nom de l'onglet du Google Sheet
 var PAS_MIN = 15;                  // pas des créneaux (doit correspondre à config.js)
-var CODE_VERSION = 2;              // témoin : permet de vérifier quelle version est déployée
+var CODE_VERSION = 3;              // témoin : permet de vérifier quelle version est déployée
+
+/* ---------------------------------------------------------------------
+   STATUTS (colonne J du Sheet) — pilotent la couleur sur le site :
+     "Confirmé" / "Validé"      -> 🔴 ROUGE : créneau BLOQUÉ
+     "Annulé"  / "Refusé"       -> 🟢 VERT  : créneau libéré (ignoré)
+     tout le reste ("En attente", vide…) -> 🟠 ORANGE : demande reçue,
+        en attente de votre validation, le créneau n'est PAS encore bloqué.
+--------------------------------------------------------------------- */
+function statutType(statut) {
+  var s = String(statut || "").toLowerCase().trim();
+  if (s.indexOf("annul") === 0 || s.indexOf("refus") === 0) return "ignore";
+  if (s.indexOf("confirm") === 0 || s.indexOf("valid") === 0) return "confirmed";
+  return "pending";
+}
 
 /* ---------- Petits utilitaires ---------- */
 function pad2(n) { return (n < 10 ? "0" : "") + n; }
@@ -67,24 +81,35 @@ function getSheet() {
   return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
 }
 
-// Renvoie un objet { "AAAA-MM-JJ": Set(["11:00", ...]) } des créneaux occupés,
-// en ignorant les lignes annulées/refusées.
-function occupiedMap() {
+// Renvoie { confirmed: {"AAAA-MM-JJ": {"11:00":true}}, pending: {...} }
+// - confirmed : rendez-vous validés  -> bloquent le créneau (rouge)
+// - pending   : demandes en attente  -> n'empêchent PAS de réserver (orange)
+// Les lignes annulées / refusées sont ignorées.
+function bookingMaps() {
   var sheet = getSheet();
   var tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone();
   var rows = sheet.getDataRange().getValues();
-  var map = {};
+  var res = { confirmed: {}, pending: {} };
   for (var i = 1; i < rows.length; i++) {         // i=1 : on saute l'en-tête
     var dateISO = normDate(rows[i][1], tz);       // colonne B
     var heure   = normTime(rows[i][2], tz);       // colonne C
     var dureeMin = rows[i][4];                     // colonne E
-    var statut  = String(rows[i][9] || "").toLowerCase(); // colonne J
-    if (!dateISO || !heure) continue;
-    if (statut.indexOf("annul") === 0 || statut.indexOf("refus") === 0) continue;
-    if (!map[dateISO]) map[dateISO] = {};
-    slotsForBooking(heure, dureeMin).forEach(function (s) { map[dateISO][s] = true; });
+    var type    = statutType(rows[i][9]);          // colonne J
+    if (!dateISO || !heure || type === "ignore") continue;
+    var bucket = res[type];
+    if (!bucket[dateISO]) bucket[dateISO] = {};
+    slotsForBooking(heure, dureeMin).forEach(function (s) { bucket[dateISO][s] = true; });
   }
-  return map;
+  return res;
+}
+
+// Aplatit une map en tableau ["AAAA-MM-JJ HH:MM", ...]
+function flatten(map) {
+  var out = [];
+  Object.keys(map).forEach(function (d) {
+    Object.keys(map[d]).forEach(function (h) { out.push(d + " " + h); });
+  });
+  return out;
 }
 
 function jsonOut(obj) {
@@ -99,16 +124,22 @@ function jsonOut(obj) {
    ===================================================================== */
 function doGet(e) {
   try {
-    var map = occupiedMap();
+    var m = bookingMaps();
     var date = e && e.parameter && e.parameter.date;
     if (date) {
-      return jsonOut({ ok: true, version: CODE_VERSION, date: date, occupied: Object.keys(map[date] || {}) });
+      return jsonOut({
+        ok: true, version: CODE_VERSION, date: date,
+        confirmed: Object.keys(m.confirmed[date] || {}),   // 🔴 bloqués
+        pending:   Object.keys(m.pending[date]   || {}),   // 🟠 en attente
+        occupied:  Object.keys(m.confirmed[date] || {})    // compatibilité
+      });
     }
-    var all = [];
-    Object.keys(map).forEach(function (d) {
-      Object.keys(map[d]).forEach(function (h) { all.push(d + " " + h); });
+    return jsonOut({
+      ok: true, version: CODE_VERSION,
+      confirmed: flatten(m.confirmed),
+      pending:   flatten(m.pending),
+      occupied:  flatten(m.confirmed)                      // compatibilité
     });
-    return jsonOut({ ok: true, version: CODE_VERSION, occupied: all });
   } catch (err) {
     return jsonOut({ ok: false, error: String(err) });
   }
@@ -131,9 +162,10 @@ function doPost(e) {
     var data = JSON.parse(e.postData.contents);
     if (!data.dateISO || !data.heure) return jsonOut({ ok: false, error: "date/heure manquante" });
 
-    // Anti double-réservation : le créneau demandé chevauche-t-il un créneau déjà pris ?
-    var map = occupiedMap();
-    var dayTaken = map[data.dateISO] || {};
+    // Anti double-réservation : on ne refuse QUE si un rendez-vous CONFIRMÉ
+    // occupe déjà le créneau. Une demande en attente (orange) ne bloque pas.
+    var m = bookingMaps();
+    var dayTaken = m.confirmed[data.dateISO] || {};
     var wanted = slotsForBooking(data.heure, data.dureeMin || PAS_MIN);
     for (var i = 0; i < wanted.length; i++) {
       if (dayTaken[wanted[i]]) return jsonOut({ ok: false, taken: true });
@@ -151,7 +183,7 @@ function doPost(e) {
       data.nom || "",                 // G Nom
       "'" + (data.telephone || ""),   // H Telephone (apostrophe = garde le format texte)
       data.email || "",               // I Email
-      "En attente"                    // J Statut
+      "En attente de confirmation"    // J Statut → 🟠 orange tant que non validé
     ]);
     return jsonOut({ ok: true });
   } catch (err) {

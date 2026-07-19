@@ -444,6 +444,7 @@
 .legend-item { display: inline-flex; align-items: center; gap: 0.45rem; }
 .legend-dot { width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 1px solid; }
 .legend-dot--free  { background: var(--slot-free-bg);  border-color: var(--slot-free); }
+.legend-dot--pending { background: var(--slot-pending-bg); border-color: var(--slot-pending); }
 .legend-dot--taken { background: var(--slot-taken-bg); border-color: var(--slot-taken); }
 .legend-dot--sel   { background: var(--color-accent);  border-color: var(--color-accent); }
 
@@ -506,6 +507,14 @@
   cursor: pointer;
 }
 .wslot--free:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+/* 🟠 Demande reçue, en attente de validation du barbier : encore réservable */
+.wslot--pending {
+  background: var(--slot-pending-bg);
+  border-color: var(--slot-pending);
+  cursor: pointer;
+}
+.wslot--pending:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+
 .wslot--reserved,
 .wslot--past {
   background: var(--slot-taken-bg);
@@ -524,6 +533,14 @@
   border-color: var(--color-accent);
   box-shadow: var(--shadow-glow);
 }
+/* État d'attente : ni vert ni rouge tant qu'on ne connaît pas les créneaux pris */
+.wslot--loading {
+  background: var(--slot-locked-bg);
+  border-color: var(--color-line);
+  cursor: progress;
+  animation: slotPulse 1.4s ease-in-out infinite;
+}
+@keyframes slotPulse { 0%,100% { opacity: 0.45; } 50% { opacity: 0.8; } }
 
 .week__note {
   margin-top: 0.9rem; color: var(--color-muted); font-size: 0.88rem;
