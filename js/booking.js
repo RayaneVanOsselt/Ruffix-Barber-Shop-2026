@@ -466,7 +466,44 @@ Merci de me confirmer ce créneau.
     renderWeek();
     updateSummary();
   }
-  window.RufixBooking = { preselectService };
+
+  /* ============ API PUBLIQUE (utilisée par l'assistant) ========
+     Permet à l'assistant de citer de VRAIS créneaux disponibles et
+     d'emmener le visiteur directement sur la réservation. */
+  function nextAvailableSlots(limit, serviceId) {
+    const service = C.services.find((s) => s.id === serviceId) || C.services[0];
+    const pas = C.reservation.pasMinutes;
+    const max = dateMax();
+    const out = [];
+    const today = startOfDay(new Date());
+    for (let i = 0; i < 120 && out.length < limit; i++) {
+      const day = addDays(today, i);
+      if (day > max) break;
+      const iso = toISO(day);
+      const h = C.horaires[JOURS[day.getDay()]];
+      if (!h || !h.ouvert) continue;
+      for (let t = toMin(h.debut); t <= toMin(h.fin) - pas && out.length < limit; t += pas) {
+        const hhmm = toHHMM(t);
+        if (slotStatus(iso, t) === "free" && spanIsFree(iso, hhmm, service.duree)) {
+          out.push({ dateISO: iso, date: formatDateLong(parseISO(iso)), heure: hhmm, service: service.nom });
+        }
+      }
+    }
+    return out;
+  }
+
+  function goToReservation(serviceId) {
+    if (serviceId) preselectService(serviceId);
+    const el = document.getElementById("reservation");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }
+
+  window.RufixBooking = {
+    preselectService,
+    goToReservation,
+    nextAvailableSlots,
+    refreshOccupied: () => (backendUrl() ? fetchAllOccupied().then(renderWeek) : Promise.resolve())
+  };
 
   /* =========================== INIT =========================== */
   function init() {
