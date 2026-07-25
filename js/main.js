@@ -212,11 +212,23 @@
       lundi: "Lundi", mardi: "Mardi", mercredi: "Mercredi", jeudi: "Jeudi",
       vendredi: "Vendredi", samedi: "Samedi", dimanche: "Dimanche"
     };
-    box.innerHTML = Object.keys(labels).map((k) => {
+    let hasIndispo = false;
+    let html = Object.keys(labels).map((k) => {
       const h = C.horaires[k];
-      const val = h && h.ouvert ? `${h.debut} – ${h.fin}` : "Fermé";
+      let val;
+      if (h && h.ouvert) val = `${h.debut} – ${h.fin}`;
+      else if (h && h.indispo) { val = "Indisponible"; hasIndispo = true; }
+      else val = "Fermé";
       return `<li><span>${labels[k]}</span><span>${val}</span></li>`;
     }).join("");
+
+    // Message de renvoi vers le salon partenaire (jours « indispo »).
+    const p = C.partenaireIndispo;
+    if (hasIndispo && p && p.url) {
+      html += `<li class="footer__hours-note">${p.message}
+        <a href="${p.url}" target="_blank" rel="noopener">${p.nom}</a>.</li>`;
+    }
+    box.innerHTML = html;
   }
 
   /* ============ 8. EMAILJS : initialisation ================== */
@@ -268,7 +280,7 @@
           .then(() => { done("success", "Merci ! Votre message a bien été envoyé. Nous vous répondrons rapidement."); form.reset(); })
           .catch(() => {
             // On n'ouvre PAS la messagerie : on invite simplement à réessayer.
-            done("error", `Désolé, l'envoi a échoué. Merci de réessayer, ou de nous appeler au ${C.salon.telephone}.`);
+            done("error", `Désolé, l'envoi a échoué. Merci de réessayer, ou de nous écrire à ${C.salon.email}.`);
           })
           .finally(() => { btn.disabled = false; btn.textContent = t; });
       } else {

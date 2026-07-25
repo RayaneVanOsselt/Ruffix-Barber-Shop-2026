@@ -37,16 +37,26 @@
     return C.services.map((s) => `• <strong>${esc(s.nom)}</strong> — ${s.prix} € · ${esc(s.dureeTxt)}`).join("<br>");
   }
   function listeHoraires() {
-    return JOURS_ORDRE.map((j) => {
+    const p = C.partenaireIndispo;
+    let horaires = JOURS_ORDRE.map((j) => {
       const h = C.horaires[j];
-      if (!h || !h.ouvert) return `• ${cap(j)} : <em>fermé</em>`;
-      const pause = h.pause ? ` (pause ${h.pause.debut}–${h.pause.fin})` : "";
-      return `• ${cap(j)} : ${h.debut} – ${h.fin}${pause}`;
+      if (h && h.ouvert) {
+        const pause = h.pause ? ` (pause ${h.pause.debut}–${h.pause.fin})` : "";
+        return `• ${cap(j)} : ${h.debut} – ${h.fin}${pause}`;
+      }
+      if (h && h.indispo) return `• ${cap(j)} : <em>indisponible</em>`;
+      return `• ${cap(j)} : <em>fermé</em>`;
     }).join("<br>");
+    // Renvoi vers le salon partenaire pour les jours indisponibles.
+    const hasIndispo = JOURS_ORDRE.some((j) => C.horaires[j] && C.horaires[j].indispo);
+    if (hasIndispo && p && p.url) {
+      horaires += `<br><br>${esc(p.message)} <a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.nom)}</a>.`;
+    }
+    return horaires;
   }
   function adresseTxt() {
     const s = C.salon;
-    return `${esc(s.adresse)}, ${esc(s.codePostal)} ${esc(s.ville)}`;
+    return `${esc(s.ville)} ${esc(s.codePostal)}`.trim();
   }
   // Lit la FAQ directement dans la page (reste synchronisée automatiquement)
   function faqDuSite() {
@@ -61,12 +71,13 @@
     const s = C.salon;
     const faq = faqDuSite().map((f) => `Q: ${f.q}\nR: ${f.r}`).join("\n");
     return [
-      `Salon : ${s.nom} — barbier / coiffeur homme à ${s.ville}.`,
-      `Adresse : ${s.adresse}, ${s.codePostal} ${s.ville}. Tél : ${s.telephone}. Email : ${s.email}.`,
+      `Salon : ${s.nom} — barbier / coiffeur homme à ${s.ville} (${s.codePostal}).`,
+      `Contact : email ${s.email}.`,
       `Prestations : ${C.services.map((x) => `${x.nom} ${x.prix}€ (${x.dureeTxt})`).join(" ; ")}.`,
-      `Horaires : ${JOURS_ORDRE.map((j) => { const h = C.horaires[j]; return `${j} ${h && h.ouvert ? h.debut + "-" + h.fin : "fermé"}`; }).join(" ; ")}.`,
+      `Horaires : ${JOURS_ORDRE.map((j) => { const h = C.horaires[j]; return `${j} ${h && h.ouvert ? h.debut + "-" + h.fin : (h && h.indispo ? "indisponible" : "fermé")}`; }).join(" ; ")}.`,
+      (C.partenaireIndispo && C.partenaireIndispo.url) ? `Les jours « indisponible » (mercredi, jeudi), les réservations restent possibles chez ${C.partenaireIndispo.nom} : ${C.partenaireIndispo.url}` : "",
       `Réservation : uniquement sur demande. Le client envoie une demande, le barbier confirme MANUELLEMENT par email. Rien n'est confirmé automatiquement.`,
-      `Créneaux de 15 minutes. Réservable jusqu'au ${C.reservation.dateMax}.`,
+      `Créneaux de 15 minutes. Réservable uniquement sur les 3 prochaines semaines.`,
       faq ? `FAQ du site :\n${faq}` : ""
     ].filter(Boolean).join("\n");
   }
@@ -78,7 +89,7 @@
     }
     const slots = window.RufixBooking.nextAvailableSlots(4);
     if (!slots.length) {
-      return `Je ne vois pas de créneau libre pour le moment. Les réservations s'ouvrent chaque <strong>vendredi à 21h</strong> pour la semaine suivante. <a href="${lienResa}">Voir le calendrier</a>`;
+      return `Je ne vois pas de créneau libre pour le moment. Les réservations sont ouvertes sur les <strong>3 prochaines semaines</strong>. <a href="${lienResa}">Voir le calendrier</a>`;
     }
     const l = slots.map((s) => `• <strong>${esc(s.date)}</strong> à <strong>${esc(s.heure)}</strong>`).join("<br>");
     return `Voici les prochains créneaux disponibles :<br>${l}<br><br>Les cases <strong>vertes</strong> du calendrier sont libres, les <strong>rouges</strong> déjà prises. <a href="${lienResa}">Réserver maintenant</a>`;
@@ -126,10 +137,10 @@
       rep: () => `Votre réservation n'est <strong>pas automatique</strong> : le salon étant privé, vous envoyez une <strong>demande</strong> de rendez-vous. Le barbier la valide ensuite manuellement et vous recevez un <strong>email de confirmation</strong>. Tant que vous n'avez pas cet email, le créneau n'est pas confirmé.` },
 
     { id: "annuler", mots: ["annuler", "annulation", "modifier", "changer", "reporter", "decaler"],
-      rep: () => `Pour annuler ou modifier un rendez-vous, contactez-nous au moins <strong>24 heures à l'avance</strong> :<br>• Tél : <a href="tel:${esc(String(C.salon.telephone).replace(/[^+\d]/g, ""))}">${esc(C.salon.telephone)}</a><br>• Email : <a href="mailto:${esc(C.salon.email)}">${esc(C.salon.email)}</a><br>Nous décalerons votre créneau avec plaisir.` },
+      rep: () => `Pour annuler ou modifier un rendez-vous, contactez-nous par email au moins <strong>24 heures à l'avance</strong> :<br>• Email : <a href="mailto:${esc(C.salon.email)}">${esc(C.salon.email)}</a><br>Nous décalerons votre créneau avec plaisir.` },
 
     { id: "retard", mots: ["retard", "tard", "attendre", "attente"],
-      rep: () => `En cas de retard, prévenez-nous par téléphone au <a href="tel:${esc(String(C.salon.telephone).replace(/[^+\d]/g, ""))}">${esc(C.salon.telephone)}</a>. Au-delà de <strong>10 minutes</strong>, la prestation pourra être écourtée ou reportée afin de respecter les rendez-vous suivants.` },
+      rep: () => `En cas de retard, prévenez-nous par email à <a href="mailto:${esc(C.salon.email)}">${esc(C.salon.email)}</a>. Au-delà de <strong>10 minutes</strong>, la prestation pourra être écourtée ou reportée afin de respecter les rendez-vous suivants.` },
 
     { id: "paiement", mots: ["payer", "paiement", "especes", "cash", "carte", "bancontact", "cb"],
       rep: () => `Vous pouvez payer en <strong>espèces</strong> ou par <strong>carte bancaire</strong>, directement au salon à la fin de votre prestation.` },
@@ -137,8 +148,8 @@
     { id: "adresse", mots: ["adresse", "ou", "situe", "trouver", "acces", "venir", "localisation", "plan", "parking"],
       rep: () => `Nous sommes au <strong>${adresseTxt()}</strong>.<br>Vous trouverez la carte et l'itinéraire dans la section <a href="${onHome ? "#contact" : "index.html#contact"}">Contact</a>.` },
 
-    { id: "contact", mots: ["contact", "telephone", "appeler", "numero", "mail", "email", "joindre", "ecrire"],
-      rep: () => `Vous pouvez nous joindre :<br>• Tél : <a href="tel:${esc(String(C.salon.telephone).replace(/[^+\d]/g, ""))}">${esc(C.salon.telephone)}</a><br>• Email : <a href="mailto:${esc(C.salon.email)}">${esc(C.salon.email)}</a><br>Ou via le formulaire de la section <a href="${onHome ? "#contact" : "index.html#contact"}">Contact</a>.` },
+    { id: "contact", mots: ["contact", "mail", "email", "joindre", "ecrire", "numero"],
+      rep: () => `Vous pouvez nous joindre par email :<br>• Email : <a href="mailto:${esc(C.salon.email)}">${esc(C.salon.email)}</a><br>Ou via le formulaire de la section <a href="${onHome ? "#contact" : "index.html#contact"}">Contact</a>.` },
 
     { id: "duree", mots: ["duree", "dure", "temps", "long", "minutes"],
       rep: () => `Durées de nos prestations :<br>${C.services.map((s) => `• ${esc(s.nom)} : <strong>${esc(s.dureeTxt)}</strong>`).join("<br>")}<br><br>Le calendrier bloque automatiquement le temps nécessaire.` },
@@ -148,10 +159,10 @@
 
     { id: "probleme", mots: ["probleme", "marche", "bug", "erreur", "arrive", "impossible", "bloque", "aide"],
       rep: () => `Pas de souci, je vous aide. Les cas les plus fréquents :<br>
-        • <strong>Aucune case verte ?</strong> La semaine n'est peut-être pas encore ouverte — les réservations s'ouvrent le <strong>vendredi à 21h</strong> pour la semaine suivante.<br>
+        • <strong>Aucune case verte ?</strong> Le jour est peut-être complet, fermé, ou hors des <strong>3 prochaines semaines</strong> réservables.<br>
         • <strong>Créneau refusé ?</strong> Votre prestation a besoin de plusieurs créneaux consécutifs ; essayez un autre horaire.<br>
         • <strong>Formulaire bloqué ?</strong> Vérifiez que prénom, nom, téléphone et email sont remplis.<br><br>
-        Sinon, appelez-nous au <a href="tel:${esc(String(C.salon.telephone).replace(/[^+\d]/g, ""))}">${esc(C.salon.telephone)}</a>.` }
+        Sinon, écrivez-nous à <a href="mailto:${esc(C.salon.email)}">${esc(C.salon.email)}</a>.` }
   ];
 
   function chercherFAQ(q) {
@@ -185,7 +196,7 @@
       • les <strong>horaires</strong> et <strong>disponibilités</strong><br>
       • la <strong>réservation</strong> (guide pas à pas)<br>
       • l'<strong>adresse</strong> et le <strong>contact</strong><br><br>
-      Pour une question précise, appelez-nous au <a href="tel:${esc(String(C.salon.telephone).replace(/[^+\d]/g, ""))}">${esc(C.salon.telephone)}</a>.`;
+      Pour une question précise, écrivez-nous à <a href="mailto:${esc(C.salon.email)}">${esc(C.salon.email)}</a>.`;
   }
 
   /* ====== RELAIS IA OPTIONNEL (branchable plus tard) ====== */

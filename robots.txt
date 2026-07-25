@@ -4,4 +4,4 @@ User-agent: *
 Allow: /
 
 # 👉 Remplacez l'URL ci-dessous par votre domaine réel une fois en ligne.
-Sitemap: https://rufixbarber.example.com/sitemap.xml
+Sitemap: https://rufixbarber.com/sitemap.xml

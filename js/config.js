@@ -28,11 +28,11 @@ const CONFIG = {
   salon: {
     nom:        "Rufix Barber",
     slogan:     "L'art de la coupe masculine",
-    ville:      "[VILLE]",                          // ex : "Bruxelles"
-    adresse:    "[Rue et numéro]",                  // ex : "Rue de la Coupe 12"
-    codePostal: "[Code postal]",                    // ex : "1000"
-    telephone:  "[+32 4XX XX XX XX]",               // affiché ET cliquable
-    email:      "vanosselt.rayane@gmail.com",       // email public du salon
+    ville:      "Etterbeek",                         // commune affichée
+    adresse:    "",                                  // (masqué) adresse postale non affichée
+    codePostal: "1040",                              // code postal d'Etterbeek
+    telephone:  "",                                  // (masqué) numéro non affiché
+    email:      "infos@rufixbarber.com",             // email public du salon
     // Position sur la carte Google Maps (voir README pour générer le lien).
     // Laissez tel quel pour une position fictive, ou collez votre propre iframe src.
     mapsEmbed:  "https://www.google.com/maps?q=Grand-Place%2C%20Bruxelles&output=embed",
@@ -44,7 +44,19 @@ const CONFIG = {
     tiktok:         "https://www.tiktok.com/@rufixbarber",     // TikTok du salon
     facebook:       "",                                        // pas de page Facebook (laisser vide = icône masquée)
     // Adresse du site en ligne (sert au SEO / partages). À adapter après mise en ligne.
-    siteUrl:    "https://rufixbarber.example.com/"
+    siteUrl:    "https://rufixbarber.com/"
+  },
+
+  /* -------------------------------------------------------------------
+     1 bis. JOURS INDISPONIBLES — RENVOI VERS UN SALON PARTENAIRE
+     -------------------------------------------------------------------
+     Message affiché pour les jours marqués « indispo: true » dans les
+     horaires (voir section 2). Le nom devient un lien cliquable.
+  ------------------------------------------------------------------- */
+  partenaireIndispo: {
+    message: "Indisponible, mais les réservations restent possibles chez",
+    nom:     "Mathieu Nayis Schaerbeek",
+    url:     "https://salonkee.be/salon/mathieu-nayis-schaerbeek?lang=fr"
   },
 
   /* -------------------------------------------------------------------
@@ -58,14 +70,17 @@ const CONFIG = {
                 → dernier créneau proposé = fin - durée du service.
        pause  : (optionnel) fermeture le midi. Mettez null si pas de pause.
                 Exemple de pause : { debut: "12:30", fin: "13:30" }
+       indispo: (optionnel) true = jour NON travaillé mais avec renvoi vers
+                le salon partenaire (voir section 1 bis « partenaireIndispo »).
+                Différent de « fermé » : affiche un message + lien de résa.
   ------------------------------------------------------------------- */
   horaires: {
-    lundi:    { ouvert: true,  debut: "09:00", fin: "18:00", pause: { debut: "12:30", fin: "13:30" } },
-    mardi:    { ouvert: true,  debut: "09:00", fin: "18:00", pause: { debut: "12:30", fin: "13:30" } },
-    mercredi: { ouvert: true,  debut: "09:00", fin: "18:00", pause: { debut: "12:30", fin: "13:30" } },
-    jeudi:    { ouvert: true,  debut: "09:00", fin: "19:00", pause: { debut: "12:30", fin: "13:30" } },
-    vendredi: { ouvert: true,  debut: "09:00", fin: "19:00", pause: { debut: "12:30", fin: "13:30" } },
-    samedi:   { ouvert: true,  debut: "08:30", fin: "17:00", pause: null },
+    lundi:    { ouvert: true,  debut: "11:00", fin: "21:00", pause: null },
+    mardi:    { ouvert: true,  debut: "11:00", fin: "21:00", pause: null },
+    mercredi: { ouvert: false, debut: "00:00", fin: "00:00", pause: null, indispo: true },
+    jeudi:    { ouvert: false, debut: "00:00", fin: "00:00", pause: null, indispo: true },
+    vendredi: { ouvert: true,  debut: "11:00", fin: "21:00", pause: null },
+    samedi:   { ouvert: true,  debut: "11:00", fin: "21:00", pause: null },
     dimanche: { ouvert: false, debut: "00:00", fin: "00:00", pause: null }   // fermé
   },
 
@@ -145,23 +160,30 @@ const CONFIG = {
      pasMinutes      : intervalle entre deux créneaux (15 = 09:00, 09:15…)
      delaiMiniHeures : délai minimum avant un rendez-vous (en heures).
                        Ex : 2 = on ne peut pas réserver pour dans moins de 2h.
-     dateMax         : dernière date réservable (incluse).
+     semainesMax     : nombre de semaines glissantes réservables à partir
+                       d'aujourd'hui (3 = les 3 prochaines semaines). Aucun
+                       créneau n'est proposé au-delà. Mettez 0 pour désactiver
+                       cette limite glissante et n'utiliser que dateMax.
+     dateMax         : garde-fou : dernière date réservable absolue (incluse).
      ouverture       : règle d'ouverture hebdomadaire glissante (voir ci-dessous).
   ------------------------------------------------------------------- */
   reservation: {
     pasMinutes: 15,
     delaiMiniHeures: 2,
 
-    // Date maximale réservable (incluse). Aucun créneau proposé au-delà.
+    // Limite glissante : seules les 3 prochaines semaines sont réservables.
+    semainesMax: 3,
+
+    // Garde-fou de date absolue (la limite effective est le plus proche
+    // entre « aujourd'hui + semainesMax » et cette date).
     dateMax: "2026-12-31",
 
     // OUVERTURE HEBDOMADAIRE GLISSANTE
-    // Une semaine (lundi → dimanche) s'ouvre à la réservation dès qu'on a
-    // dépassé le "vendredi 21h" de la semaine qui la précède.
-    //   → concrètement : ce vendredi 21h ouvre la semaine suivante.
-    // Les semaines pas encore ouvertes restent visibles mais verrouillées.
-    // Mettez  ouverture: null  pour tout ouvrir immédiatement (sans règle).
-    ouverture: { jour: 5, heure: 21 }   // jour : 0=dim … 5=vendredi ; heure : 21 = 21h
+    // Désactivée (null) : les 3 prochaines semaines sont toutes ouvertes
+    // immédiatement à la réservation.
+    // Pour réactiver la règle « vendredi 21h ouvre la semaine suivante »,
+    // remettez : ouverture: { jour: 5, heure: 21 }
+    ouverture: null
   },
 
   /* -------------------------------------------------------------------

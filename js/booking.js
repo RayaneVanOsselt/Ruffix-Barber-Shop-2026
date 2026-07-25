@@ -3,8 +3,8 @@
    Réservation avec CALENDRIER HEBDOMADAIRE et créneaux COLORÉS.
 
    Principes (cf. cahier des charges) :
-   - Vue par SEMAINE (lun → dim), navigation semaine par semaine, jusqu'au
-     31/12/2026 inclus (config.reservation.dateMax).
+   - Vue par SEMAINE (lun → dim), navigation semaine par semaine, limitée
+     aux 3 prochaines semaines (config.reservation.semainesMax).
    - Créneaux de 15 min. La DURÉE du service détermine automatiquement le
      nombre de créneaux consécutifs bloqués (30 min = 2, 45 = 3, 1 h = 4…).
    - Les créneaux ne DISPARAISSENT pas : ils changent d'état / de couleur.
@@ -58,7 +58,15 @@
   function mondayOf(d) { const x = startOfDay(d); const off = (x.getDay() + 6) % 7; return addDays(x, -off); }
 
   function dateMax() {
-    return startOfDay(parseISO(C.reservation.dateMax || "2026-12-31"));
+    // Garde-fou de date absolue.
+    const fixe = startOfDay(parseISO(C.reservation.dateMax || "2026-12-31"));
+    // Limite glissante : aujourd'hui + N semaines (0 = désactivée).
+    const sem = Number(C.reservation.semainesMax) || 0;
+    if (sem > 0) {
+      const glissant = addDays(startOfDay(new Date()), sem * 7);
+      return glissant < fixe ? glissant : fixe;   // on garde la plus proche
+    }
+    return fixe;
   }
 
   /* ============ OUVERTURE HEBDOMADAIRE GLISSANTE ============

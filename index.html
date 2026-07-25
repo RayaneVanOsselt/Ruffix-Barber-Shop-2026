@@ -10,7 +10,7 @@
   <meta name="description"
         content="Rufix Barber, salon de coiffure homme et barbier premium à [VILLE]. Coupe homme, barbe et rasage à l'ancienne sur rendez-vous. Réservez votre créneau en ligne." />
   <meta name="keywords" content="salon de coiffure homme, barbier, coupe homme, barbe, rasage, [VILLE]" />
-  <link rel="canonical" href="https://rufixbarber.example.com/" />
+  <link rel="canonical" href="https://rufixbarber.com/" />
   <meta name="theme-color" content="#14110f" />
 
   <!-- Open Graph / réseaux sociaux -->
@@ -19,7 +19,7 @@
   <meta property="og:title" content="Rufix Barber — Barbier & coiffure homme à [VILLE]" />
   <meta property="og:description" content="Coupe, barbe et rasage dans un cadre premium — sur rendez-vous." />
   <meta property="og:image" content="images/og-share.jpg" />
-  <meta property="og:url" content="https://rufixbarber.example.com/" />
+  <meta property="og:url" content="https://rufixbarber.com/" />
   <meta property="og:locale" content="fr_FR" />
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -53,21 +53,18 @@
     "name": "Rufix Barber",
     "image": "images/og-share.jpg",
     "description": "Salon de coiffure homme et barbier premium. Coupe, barbe et rasage sur rendez-vous.",
-    "url": "https://rufixbarber.example.com/",
-    "telephone": "[+32 4XX XX XX XX]",
+    "url": "https://rufixbarber.com/",
+    "email": "infos@rufixbarber.com",
     "priceRange": "€€",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "[Rue et numéro]",
-      "addressLocality": "[VILLE]",
-      "postalCode": "[Code postal]",
+      "addressLocality": "Etterbeek",
+      "postalCode": "1040",
       "addressCountry": "BE"
     },
     "geo": { "@type": "GeoCoordinates", "latitude": "50.8466", "longitude": "4.3528" },
     "openingHoursSpecification": [
-      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday"], "opens": "09:00", "closes": "18:00" },
-      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Thursday","Friday"], "opens": "09:00", "closes": "19:00" },
-      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "08:30", "closes": "17:00" }
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Friday","Saturday"], "opens": "11:00", "closes": "21:00" }
     ],
     "sameAs": [
       "https://www.instagram.com/rufixbarber",
@@ -558,7 +555,7 @@
               <span class="faq-item__icon"><svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></span>
             </button>
             <div class="faq-item__a"><div class="faq-item__a-inner">
-              Merci de prévenir par téléphone en cas de retard. Au-delà de 10 minutes, la prestation
+              Merci de nous prévenir par email en cas de retard. Au-delà de 10 minutes, la prestation
               pourra être écourtée ou reportée afin de respecter les rendez-vous suivants.
             </div></div>
           </div>
@@ -569,7 +566,7 @@
               <span class="faq-item__icon"><svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></span>
             </button>
             <div class="faq-item__a"><div class="faq-item__a-inner">
-              Il suffit de nous contacter par téléphone ou par email au moins 24 heures à l'avance.
+              Il suffit de nous contacter par email au moins 24 heures à l'avance.
               Nous décalerons votre rendez-vous avec plaisir selon les disponibilités.
             </div></div>
           </div>
@@ -596,18 +593,8 @@
                 <span>
                   <span class="contact-info__label">Adresse</span>
                   <span class="contact-info__value">
-                    <span data-config="salon.adresse">[Rue et numéro]</span>,
-                    <span data-config="salon.codePostal">[Code postal]</span>
-                    <span data-config="salon.ville">[VILLE]</span>
-                  </span>
-                </span>
-              </div>
-              <div class="contact-info__item">
-                <span class="contact-info__icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"></use></svg></span>
-                <span>
-                  <span class="contact-info__label">Téléphone</span>
-                  <span class="contact-info__value">
-                    <a data-config-tel data-config="salon.telephone" href="#">[+32 4XX XX XX XX]</a>
+                    <span data-config="salon.ville">Etterbeek</span>
+                    <span data-config="salon.codePostal">1040</span>
                   </span>
                 </span>
               </div>
@@ -616,7 +603,7 @@
                 <span>
                   <span class="contact-info__label">Email</span>
                   <span class="contact-info__value">
-                    <a data-config-mail data-config="salon.email" href="#">vanosselt.rayane@gmail.com</a>
+                    <a data-config-mail data-config="salon.email" href="#">infos@rufixbarber.com</a>
                   </span>
                 </span>
               </div>
@@ -698,10 +685,8 @@
         <div class="footer__col">
           <h4>Coordonnées</h4>
           <ul>
-            <li><address data-config="salon.adresse">[Rue et numéro]</address></li>
-            <li><span data-config="salon.codePostal">[Code postal]</span> <span data-config="salon.ville">[VILLE]</span></li>
-            <li><a data-config-tel data-config="salon.telephone" href="#">[+32 4XX XX XX XX]</a></li>
-            <li><a data-config-mail data-config="salon.email" href="#">vanosselt.rayane@gmail.com</a></li>
+            <li><address><span data-config="salon.ville">Etterbeek</span> <span data-config="salon.codePostal">1040</span></address></li>
+            <li><a data-config-mail data-config="salon.email" href="#">infos@rufixbarber.com</a></li>
           </ul>
         </div>
 
