@@ -93,7 +93,9 @@ const CONFIG = {
   ------------------------------------------------------------------- */
   joursFermes: [
     "2026-12-25",   // Noël
-    "2026-01-01"    // Jour de l'An
+    "2026-01-01",   // Jour de l'An
+    "2026-08-23",   // Indisponible (personnel)
+    "2026-08-24"    // Indisponible (personnel)
     // "2026-07-21",  // ← exemple : ajoutez vos propres dates ici
   ],
 
