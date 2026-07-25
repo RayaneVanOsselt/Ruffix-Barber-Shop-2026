@@ -218,6 +218,7 @@
       let val;
       if (h && h.ouvert) val = `${h.debut} – ${h.fin}`;
       else if (h && h.indispo) { val = "Indisponible"; hasIndispo = true; }
+      else if (h && h.surDemande) val = "Fermé (Sur demande)";
       else val = "Fermé";
       return `<li><span>${labels[k]}</span><span>${val}</span></li>`;
     }).join("");

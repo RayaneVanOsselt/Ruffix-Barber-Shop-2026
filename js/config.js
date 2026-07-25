@@ -81,7 +81,7 @@ const CONFIG = {
     jeudi:    { ouvert: false, debut: "00:00", fin: "00:00", pause: null, indispo: true },
     vendredi: { ouvert: true,  debut: "11:00", fin: "21:00", pause: null },
     samedi:   { ouvert: true,  debut: "11:00", fin: "21:00", pause: null },
-    dimanche: { ouvert: false, debut: "00:00", fin: "00:00", pause: null }   // fermé
+    dimanche: { ouvert: false, debut: "00:00", fin: "00:00", pause: null, surDemande: true }   // fermé, mais sur demande
   },
 
   /* -------------------------------------------------------------------
