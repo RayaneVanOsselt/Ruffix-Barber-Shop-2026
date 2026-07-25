@@ -467,6 +467,30 @@
 }
 .wcell { min-height: 30px; }
 
+/* ----- Ajustements MOBILE : colonnes nettes + défilement aligné ----- */
+@media (max-width: 560px) {
+  .week__grid {
+    grid-template-columns: 38px repeat(7, 58px);  /* colonnes fixes = jamais coupées à moitié */
+    min-width: 0;
+    gap: 3px;
+    padding: 5px;
+  }
+  .wcell { min-height: 34px; }                     /* cases un peu plus hautes = plus faciles à toucher */
+  .whead__num { font-size: 0.95rem; }
+  .whead__dow { font-size: 0.6rem; }
+  .wtime { font-size: 0.7rem; padding-right: 5px; }
+
+  /* Le défilement horizontal s'« accroche » à chaque jour (plus de colonne coupée) */
+  .week__grid-wrap {
+    scroll-snap-type: x proximity;
+    scroll-padding-left: 38px;                      /* s'aligne juste après la colonne des heures */
+    -webkit-overflow-scrolling: touch;
+    /* Léger dégradé sur le bord droit : indique qu'on peut faire glisser */
+    box-shadow: inset -20px 0 14px -14px rgba(0,0,0,0.55);
+  }
+  .whead, .wslot { scroll-snap-align: start; }
+}
+
 /* En-têtes de jours (sticky en haut) */
 .whead {
   position: sticky; top: 0; z-index: 3;
