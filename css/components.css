@@ -547,28 +547,38 @@
 }
 .wslot--past { opacity: 0.5; }
 .wslot--closed { background: var(--slot-locked-bg); }        /* jour fermé (ligne rare) */
-/* Colonne INDISPONIBLE (mercredi/jeudi) : message + lien salon partenaire,
-   couvrant toute la hauteur de la colonne. */
+/* Colonne INDISPONIBLE (jours où le barbier travaille ailleurs) : hachuré plein
+   hauteur + libellé VERTICAL discret. Le message/lien est dans .week__partner,
+   pour ne jamais déborder d'une colonne étroite. */
 .wslot--indispo {
   background: repeating-linear-gradient(45deg, var(--slot-locked-bg), var(--slot-locked-bg) 6px, transparent 6px, transparent 12px);
   border: 1px dashed var(--color-line);
   border-radius: var(--radius-sm);
   display: flex; align-items: flex-start; justify-content: center;
-  padding: 0 6px; text-align: center;
+  overflow: hidden;
 }
-/* Le message reste visible en haut de la colonne pendant le défilement vertical
-   (la colonne fait toute la hauteur du calendrier). */
-.wslot-indispo__txt {
-  position: sticky; top: 56px; z-index: 1;
-  padding: 8px 10px;
-  font-size: 0.8rem; line-height: 1.45; color: var(--color-text);
-  background: var(--color-surface);
+.wslot-indispo__label {
+  position: sticky; top: 64px;
+  writing-mode: vertical-rl;
+  padding: 12px 0;
+  font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--color-muted); white-space: nowrap;
+}
+
+/* Bannière « salon partenaire » : pleine largeur, lisible, sous la légende. */
+.week__partner {
+  display: flex; align-items: center; gap: 0.6rem;
+  margin: 0 0 0.9rem;
+  padding: 0.75rem 1rem;
+  background: rgba(201,162,75,0.08);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius);
+  font-size: 0.88rem; line-height: 1.5; color: var(--color-muted);
 }
-.wslot--indispo a { color: var(--color-accent); text-decoration: underline; font-weight: 600; }
-.wslot--indispo a:hover { color: var(--color-accent-hover); }
+.week__partner .icon { color: var(--color-accent); flex-shrink: 0; }
+.week__partner a { color: var(--color-accent); font-weight: 600; text-decoration: underline; }
+.week__partner a:hover { color: var(--color-accent-hover); }
 .wslot--locked {
   background: repeating-linear-gradient(45deg, var(--slot-locked-bg), var(--slot-locked-bg) 6px, transparent 6px, transparent 12px);
   border-color: var(--color-line);

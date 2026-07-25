@@ -232,6 +232,28 @@
     return `Semaine du ${jour(a)} ${MOIS[a.getMonth()]} au ${jour(b)} ${MOIS[b.getMonth()]} ${b.getFullYear()}`;
   }
 
+  // Bannière « salon partenaire » : lisible, pleine largeur, sous la légende.
+  // Créée à la volée et réutilisée. Masquée si pas de jour indisponible.
+  function renderPartnerBanner(show, p) {
+    const wrap = document.querySelector(".week__grid-wrap");
+    if (!wrap) return;
+    let banner = document.getElementById("weekPartner");
+    if (show && p && p.url) {
+      if (!banner) {
+        banner = document.createElement("div");
+        banner.id = "weekPartner";
+        banner.className = "week__partner";
+        wrap.parentElement.insertBefore(banner, wrap);   // juste au-dessus de la grille
+      }
+      banner.innerHTML =
+        `<svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>` +
+        `<span>${p.message} <a href="${p.url}" target="_blank" rel="noopener">${p.nom}</a>.</span>`;
+      banner.style.display = "";
+    } else if (banner) {
+      banner.style.display = "none";
+    }
+  }
+
   function renderWeek() {
     const grid = document.getElementById("weekGrid");
     const label = document.getElementById("weekLabel");
@@ -309,22 +331,28 @@
       });
     }
 
-    // Bloc-message des colonnes INDISPONIBLES (mercredi, jeudi…) : une seule
-    // cellule par colonne, couvrant toute la hauteur (ligne 2 → dernière ligne).
+    // Colonnes INDISPONIBLES (jours où le barbier travaille ailleurs) : simple
+    // cellule hachurée pleine hauteur avec un libellé VERTICAL discret. Le
+    // message + lien vers le salon partenaire est affiché dans une bannière
+    // pleine largeur sous la légende (voir renderPartnerBanner) : ainsi le texte
+    // ne déborde JAMAIS des colonnes étroites.
     const p = C.partenaireIndispo;
     if (rowIndex >= 2) {
       days.forEach((iso, i) => {
         if (!isIndispo(iso)) return;
-        const msg = (p && p.url)
-          ? `${p.message} <a href="${p.url}" target="_blank" rel="noopener">${p.nom}</a>.`
-          : "Indisponible.";
-        html += `<div class="wcell wslot--indispo" style="grid-column:${i + 2};grid-row:2 / ${rowIndex + 1}">
-                   <span class="wslot-indispo__txt">${msg}</span>
+        html += `<div class="wcell wslot--indispo" style="grid-column:${i + 2};grid-row:2 / ${rowIndex + 1}"
+                   aria-label="Jour indisponible">
+                   <span class="wslot-indispo__label">Indisponible</span>
                  </div>`;
       });
     }
 
     grid.innerHTML = html;
+
+    // Bannière « salon partenaire » — lisible, pleine largeur (remplace l'ancien
+    // message tassé dans les colonnes). Affichée seulement si la semaine contient
+    // des jours indisponibles ET qu'un partenaire est configuré.
+    renderPartnerBanner(days.some(isIndispo), p);
 
     // Navigation (bornes)
     prevBtn.disabled = state.weekStart <= mondayOf(new Date());
