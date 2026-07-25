@@ -52,11 +52,15 @@ const CONFIG = {
      -------------------------------------------------------------------
      Message affiché pour les jours marqués « indispo: true » dans les
      horaires (voir section 2). Le nom devient un lien cliquable.
+       message    : phrase affichée dans la bannière (suivie du nom + « . »)
+       labelColonne : texte vertical affiché dans les colonnes concernées
+       nom / url  : nom et lien de réservation du salon partenaire
   ------------------------------------------------------------------- */
   partenaireIndispo: {
-    message: "Indisponible, mais les réservations restent possibles chez",
-    nom:     "Mathieu Nayis Schaerbeek",
-    url:     "https://salonkee.be/salon/mathieu-nayis-schaerbeek?lang=fr"
+    message:      "Ces jours-là, Rufix vous coiffe au salon partenaire — réservez directement chez",
+    labelColonne: "Réserver chez le partenaire",
+    nom:          "Mathieu Nayis Schaerbeek",
+    url:          "https://salonkee.be/salon/mathieu-nayis-schaerbeek?lang=fr"
   },
 
   /* -------------------------------------------------------------------

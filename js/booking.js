@@ -337,13 +337,23 @@
     // pleine largeur sous la légende (voir renderPartnerBanner) : ainsi le texte
     // ne déborde JAMAIS des colonnes étroites.
     const p = C.partenaireIndispo;
+    const labelCol = (p && p.labelColonne) || "Réserver chez le partenaire";
     if (rowIndex >= 2) {
       days.forEach((iso, i) => {
         if (!isIndispo(iso)) return;
-        html += `<div class="wcell wslot--indispo" style="grid-column:${i + 2};grid-row:2 / ${rowIndex + 1}"
-                   aria-label="Jour indisponible">
-                   <span class="wslot-indispo__label">Indisponible</span>
-                 </div>`;
+        const style = `grid-column:${i + 2};grid-row:2 / ${rowIndex + 1}`;
+        if (p && p.url) {
+          // Colonne CLIQUABLE : mène directement à la réservation chez le partenaire.
+          html += `<a class="wcell wslot--indispo is-link" style="${style}"
+                     href="${p.url}" target="_blank" rel="noopener"
+                     aria-label="${labelCol} — ${p.nom}">
+                     <span class="wslot-indispo__label">${labelCol} ↗</span>
+                   </a>`;
+        } else {
+          html += `<div class="wcell wslot--indispo" style="${style}" aria-label="${labelCol}">
+                     <span class="wslot-indispo__label">${labelCol}</span>
+                   </div>`;
+        }
       });
     }
 
