@@ -77,7 +77,7 @@
       `Horaires : ${JOURS_ORDRE.map((j) => { const h = C.horaires[j]; return `${j} ${h && h.ouvert ? h.debut + "-" + h.fin : (h && h.indispo ? "indisponible" : "fermé")}`; }).join(" ; ")}.`,
       (C.partenaireIndispo && C.partenaireIndispo.url) ? `Les jours « indisponible » (mercredi, jeudi), les réservations restent possibles chez ${C.partenaireIndispo.nom} : ${C.partenaireIndispo.url}` : "",
       `Réservation : uniquement sur demande. Le client envoie une demande, le barbier confirme MANUELLEMENT par email. Rien n'est confirmé automatiquement.`,
-      `Créneaux de 15 minutes. Réservable uniquement sur les 3 prochaines semaines.`,
+      `Créneaux de 15 minutes. Réservation ouverte mois par mois : le mois suivant s'ouvre le 25 du mois en cours.`,
       faq ? `FAQ du site :\n${faq}` : ""
     ].filter(Boolean).join("\n");
   }
@@ -89,7 +89,7 @@
     }
     const slots = window.RufixBooking.nextAvailableSlots(4);
     if (!slots.length) {
-      return `Je ne vois pas de créneau libre pour le moment. Les réservations sont ouvertes sur les <strong>3 prochaines semaines</strong>. <a href="${lienResa}">Voir le calendrier</a>`;
+      return `Je ne vois pas de créneau libre pour le moment. Les réservations s'ouvrent <strong>mois par mois</strong> (le mois suivant s'ouvre le 25 du mois en cours). <a href="${lienResa}">Voir le calendrier</a>`;
     }
     const l = slots.map((s) => `• <strong>${esc(s.date)}</strong> à <strong>${esc(s.heure)}</strong>`).join("<br>");
     return `Voici les prochains créneaux disponibles :<br>${l}<br><br>Les cases <strong>vertes</strong> du calendrier sont libres, les <strong>rouges</strong> déjà prises. <a href="${lienResa}">Réserver maintenant</a>`;
@@ -159,7 +159,7 @@
 
     { id: "probleme", mots: ["probleme", "marche", "bug", "erreur", "arrive", "impossible", "bloque", "aide"],
       rep: () => `Pas de souci, je vous aide. Les cas les plus fréquents :<br>
-        • <strong>Aucune case verte ?</strong> Le jour est peut-être complet, fermé, ou hors des <strong>3 prochaines semaines</strong> réservables.<br>
+        • <strong>Aucune case verte ?</strong> Le jour est peut-être complet, fermé, ou dans un mois <strong>pas encore ouvert</strong> (le mois suivant s'ouvre le 25 du mois en cours).<br>
         • <strong>Créneau refusé ?</strong> Votre prestation a besoin de plusieurs créneaux consécutifs ; essayez un autre horaire.<br>
         • <strong>Formulaire bloqué ?</strong> Vérifiez que prénom, nom, téléphone et email sont remplis.<br><br>
         Sinon, écrivez-nous à <a href="mailto:${esc(C.salon.email)}">${esc(C.salon.email)}</a>.` }

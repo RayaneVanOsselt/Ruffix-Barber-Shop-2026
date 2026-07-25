@@ -3,8 +3,9 @@
    Réservation avec CALENDRIER HEBDOMADAIRE et créneaux COLORÉS.
 
    Principes (cf. cahier des charges) :
-   - Vue par SEMAINE (lun → dim), navigation semaine par semaine, limitée
-     aux 3 prochaines semaines (config.reservation.semainesMax).
+   - Vue par SEMAINE (lun → dim), navigation semaine par semaine. Réservation
+     ouverte MOIS par MOIS : le mois suivant s'ouvre le 25 du mois en cours
+     (config.reservation.ouvertureMensuelle).
    - Créneaux de 15 min. La DURÉE du service détermine automatiquement le
      nombre de créneaux consécutifs bloqués (30 min = 2, 45 = 3, 1 h = 4…).
    - Les créneaux ne DISPARAISSENT pas : ils changent d'état / de couleur.
@@ -61,27 +62,21 @@
     // Garde-fou de date absolue.
     const fixe = startOfDay(parseISO(C.reservation.dateMax || "2026-12-31"));
     const r = C.reservation;
-    const sem = Number(r.semainesMax) || 0;
-    if (sem <= 0) return fixe;
 
-    // RÉSERVATION PAR BLOCS de `sem` semaines, calés sur un lundi d'ancrage.
-    // Un nouveau bloc s'ouvre le LUNDI de la DERNIÈRE semaine du bloc courant
-    // (avec sem = 3 → le lundi de la 3ᵉ semaine ouvre les 3 semaines suivantes).
-    let horizon;
-    if (r.ancreLundi) {
-      const anchor = mondayOf(parseISO(r.ancreLundi));
-      const semainesEcoulees = Math.floor((startOfDay(new Date()) - anchor) / (7 * 86400000));
-      // Le bloc k s'ouvre quand on atteint le lundi de sa dernière semaine,
-      // soit `sem` semaines avant sa fin → seuil = anchor + (sem*k - 1) semaines.
-      // Nombre de blocs déjà ouverts au-delà du premier :
-      const k = Math.max(0, Math.floor((semainesEcoulees + 1) / sem));
-      // Fin (exclusive) du bloc ouvert = lundi situé (k+1)*sem semaines après l'ancre.
-      horizon = addDays(anchor, ((k + 1) * sem) * 7 - 1);   // dernier jour inclus
-    } else {
-      // Repli sans ancre : simple fenêtre glissante « aujourd'hui + sem semaines ».
-      horizon = addDays(startOfDay(new Date()), sem * 7);
+    // RÉSERVATION MOIS PAR MOIS : le mois suivant s'ouvre en entier le
+    // « jourOuvertureMoisSuivant » (par défaut le 25) du mois en cours.
+    //   → le 25 juillet, tout août est réservable ; le 25 août, tout septembre ; etc.
+    if (r.ouvertureMensuelle) {
+      const jour = Number(r.jourOuvertureMoisSuivant) || 25;
+      const now = new Date();
+      let y = now.getFullYear();
+      let mois = now.getMonth();               // mois courant (0-11)
+      if (now.getDate() >= jour) mois += 1;     // à partir du 25 → on ouvre le mois suivant
+      // Dernier jour du mois cible = « jour 0 » du mois d'après (Date normalise l'année).
+      const horizon = startOfDay(new Date(y, mois + 1, 0));
+      return horizon < fixe ? horizon : fixe;   // on garde la plus proche
     }
-    return horizon < fixe ? horizon : fixe;   // on garde la plus proche
+    return fixe;
   }
 
   /* ============ OUVERTURE HEBDOMADAIRE GLISSANTE ============
