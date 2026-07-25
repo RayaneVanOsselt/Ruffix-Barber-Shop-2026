@@ -177,7 +177,7 @@ const CONFIG = {
     // Réservation MOIS par MOIS : le mois suivant s'ouvre en entier le 25 du
     // mois en cours (25 juillet → tout août ; 25 août → tout septembre ; …).
     ouvertureMensuelle: true,
-    jourOuvertureMoisSuivant: 25,
+    jourOuvertureMoisSuivant: 24,
 
     // Garde-fou de date absolue (la limite effective est le plus proche
     // entre la fin du mois ouvert et cette date).
