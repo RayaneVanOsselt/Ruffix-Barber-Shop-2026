@@ -557,13 +557,18 @@
   display: flex; align-items: flex-start; justify-content: center;
   overflow: hidden;
 }
+/* Colonne cliquable → page de réservation du salon partenaire */
+.wslot--indispo.is-link { text-decoration: none; cursor: pointer; transition: border-color var(--t-fast) var(--ease); }
+.wslot--indispo.is-link:hover { border-color: var(--color-accent); border-style: solid; }
 .wslot-indispo__label {
   position: sticky; top: 64px;
   writing-mode: vertical-rl;
   padding: 12px 0;
-  font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--color-muted); white-space: nowrap;
+  font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--color-accent); font-weight: 600; white-space: nowrap;
+  transition: color var(--t-fast) var(--ease);
 }
+.wslot--indispo.is-link:hover .wslot-indispo__label { color: var(--color-accent-hover); }
 
 /* Bannière « salon partenaire » : pleine largeur, lisible, sous la légende. */
 .week__partner {
