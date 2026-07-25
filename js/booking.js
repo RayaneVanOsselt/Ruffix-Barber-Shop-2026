@@ -60,13 +60,28 @@
   function dateMax() {
     // Garde-fou de date absolue.
     const fixe = startOfDay(parseISO(C.reservation.dateMax || "2026-12-31"));
-    // Limite glissante : aujourd'hui + N semaines (0 = désactivée).
-    const sem = Number(C.reservation.semainesMax) || 0;
-    if (sem > 0) {
-      const glissant = addDays(startOfDay(new Date()), sem * 7);
-      return glissant < fixe ? glissant : fixe;   // on garde la plus proche
+    const r = C.reservation;
+    const sem = Number(r.semainesMax) || 0;
+    if (sem <= 0) return fixe;
+
+    // RÉSERVATION PAR BLOCS de `sem` semaines, calés sur un lundi d'ancrage.
+    // Un nouveau bloc s'ouvre le LUNDI de la DERNIÈRE semaine du bloc courant
+    // (avec sem = 3 → le lundi de la 3ᵉ semaine ouvre les 3 semaines suivantes).
+    let horizon;
+    if (r.ancreLundi) {
+      const anchor = mondayOf(parseISO(r.ancreLundi));
+      const semainesEcoulees = Math.floor((startOfDay(new Date()) - anchor) / (7 * 86400000));
+      // Le bloc k s'ouvre quand on atteint le lundi de sa dernière semaine,
+      // soit `sem` semaines avant sa fin → seuil = anchor + (sem*k - 1) semaines.
+      // Nombre de blocs déjà ouverts au-delà du premier :
+      const k = Math.max(0, Math.floor((semainesEcoulees + 1) / sem));
+      // Fin (exclusive) du bloc ouvert = lundi situé (k+1)*sem semaines après l'ancre.
+      horizon = addDays(anchor, ((k + 1) * sem) * 7 - 1);   // dernier jour inclus
+    } else {
+      // Repli sans ancre : simple fenêtre glissante « aujourd'hui + sem semaines ».
+      horizon = addDays(startOfDay(new Date()), sem * 7);
     }
-    return fixe;
+    return horizon < fixe ? horizon : fixe;   // on garde la plus proche
   }
 
   /* ============ OUVERTURE HEBDOMADAIRE GLISSANTE ============
@@ -243,36 +258,46 @@
       spanTimes(state.selectedTime, service.duree).forEach((hh) => selSet.add(state.selectedDate + " " + hh));
     }
 
-    // En-tête : coin vide + 7 jours
-    let html = `<div class="wcell wcorner" aria-hidden="true"></div>`;
-    days.forEach((iso) => {
+    // Un jour "indisponible" (mercredi/jeudi) : travaillé ailleurs → colonne
+    // remplacée par un message + lien vers le salon partenaire.
+    const isIndispo = (iso) => {
+      const h = C.horaires[JOURS[parseISO(iso).getDay()]];
+      return !!(h && h.indispo);
+    };
+
+    // Placement EXPLICITE (grid-column / grid-row) : indispensable pour qu'un
+    // seul bloc-message puisse couvrir toute la hauteur des colonnes indispo.
+    // En-tête : coin vide (col 1) + 7 jours (col 2 → 8), sur la ligne 1.
+    let html = `<div class="wcell wcorner" style="grid-column:1;grid-row:1" aria-hidden="true"></div>`;
+    days.forEach((iso, i) => {
       const d = parseISO(iso);
       const isToday = toISO(new Date()) === iso;
-      html += `<div class="wcell whead${isToday ? " is-today" : ""}">
+      html += `<div class="wcell whead${isToday ? " is-today" : ""}" style="grid-column:${i + 2};grid-row:1">
                  <span class="whead__dow">${JOURS_COURT[d.getDay()]}</span>
                  <span class="whead__num">${d.getDate()}</span>
                </div>`;
     });
 
-    // Lignes horaires
+    // Lignes horaires (ligne 2 et suivantes)
+    let rowIndex = 1;
     for (let t = min; t <= max - pas; t += pas) {
       const hhmm = toHHMM(t);
       // On n'affiche la ligne que si au moins un jour a un créneau réel à cette heure.
-      const anyReal = days.some((iso) => {
-        const st = slotStatus(iso, t);
-        return st !== "none";
-      });
+      const anyReal = days.some((iso) => slotStatus(iso, t) !== "none");
       if (!anyReal) continue;
+      rowIndex++;
 
-      html += `<div class="wcell wtime">${hhmm}</div>`;
-      days.forEach((iso) => {
+      html += `<div class="wcell wtime" style="grid-column:1;grid-row:${rowIndex}">${hhmm}</div>`;
+      days.forEach((iso, i) => {
+        if (isIndispo(iso)) return;   // colonne couverte par le bloc-message (plus bas)
+        const col = i + 2;
         const st0 = slotStatus(iso, t);
         // Tant que les créneaux pris ne sont pas chargés, on n'affiche NI vert NI rouge :
         // un état neutre non cliquable, pour ne jamais proposer un créneau déjà réservé.
         const st = (state.loadingOccupied && (st0 === "free" || st0 === "reserved" || st0 === "pending"))
                  ? "loading" : st0;
         const key = iso + " " + hhmm;
-        if (st === "none") { html += `<div class="wcell wslot wslot--none" aria-hidden="true"></div>`; return; }
+        if (st === "none") { html += `<div class="wcell wslot wslot--none" style="grid-column:${col};grid-row:${rowIndex}" aria-hidden="true"></div>`; return; }
         const isSel = selSet.has(key);
         const cls = isSel ? "wslot--sel" : ("wslot--" + st);
         // 🟠 "pending" reste cliquable : la demande n'est pas encore confirmée.
@@ -282,10 +307,25 @@
                     : st === "pending" ? "demande en attente de confirmation"
                     : st === "past" ? "passé"
                     : st === "locked" ? "pas encore ouvert" : st === "loading" ? "chargement en cours" : "indisponible";
-        html += `<button type="button" class="wcell wslot ${cls}"
+        html += `<button type="button" class="wcell wslot ${cls}" style="grid-column:${col};grid-row:${rowIndex}"
                    ${clickable ? "" : "disabled"}
                    ${clickable ? `data-date="${iso}" data-time="${hhmm}"` : ""}
                    aria-label="${dLabel} — ${stTxt}"></button>`;
+      });
+    }
+
+    // Bloc-message des colonnes INDISPONIBLES (mercredi, jeudi…) : une seule
+    // cellule par colonne, couvrant toute la hauteur (ligne 2 → dernière ligne).
+    const p = C.partenaireIndispo;
+    if (rowIndex >= 2) {
+      days.forEach((iso, i) => {
+        if (!isIndispo(iso)) return;
+        const msg = (p && p.url)
+          ? `${p.message} <a href="${p.url}" target="_blank" rel="noopener">${p.nom}</a>.`
+          : "Indisponible.";
+        html += `<div class="wcell wslot--indispo" style="grid-column:${i + 2};grid-row:2 / ${rowIndex + 1}">
+                   <span class="wslot-indispo__txt">${msg}</span>
+                 </div>`;
       });
     }
 

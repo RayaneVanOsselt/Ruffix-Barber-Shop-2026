@@ -160,10 +160,13 @@ const CONFIG = {
      pasMinutes      : intervalle entre deux créneaux (15 = 09:00, 09:15…)
      delaiMiniHeures : délai minimum avant un rendez-vous (en heures).
                        Ex : 2 = on ne peut pas réserver pour dans moins de 2h.
-     semainesMax     : nombre de semaines glissantes réservables à partir
-                       d'aujourd'hui (3 = les 3 prochaines semaines). Aucun
-                       créneau n'est proposé au-delà. Mettez 0 pour désactiver
-                       cette limite glissante et n'utiliser que dateMax.
+     semainesMax     : taille (en semaines) d'un BLOC de réservation ouvert.
+                       3 = on ouvre 3 semaines à la fois. Le bloc suivant
+                       s'ouvre AUTOMATIQUEMENT le LUNDI de la dernière semaine
+                       du bloc en cours (avec 3 → le lundi de la 3ᵉ semaine).
+                       Mettez 0 pour désactiver cette limite (n'utiliser que dateMax).
+     ancreLundi      : un LUNDI de référence (format "AAAA-MM-JJ") qui cale les
+                       blocs. À laisser tel quel une fois en ligne.
      dateMax         : garde-fou : dernière date réservable absolue (incluse).
      ouverture       : règle d'ouverture hebdomadaire glissante (voir ci-dessous).
   ------------------------------------------------------------------- */
@@ -171,16 +174,20 @@ const CONFIG = {
     pasMinutes: 15,
     delaiMiniHeures: 2,
 
-    // Limite glissante : seules les 3 prochaines semaines sont réservables.
+    // Réservation par BLOCS de 3 semaines. Le bloc suivant s'ouvre tout seul
+    // le lundi de la 3ᵉ semaine du bloc en cours.
     semainesMax: 3,
 
+    // Lundi de référence qui cale les blocs de 3 semaines (ne pas modifier
+    // après la mise en ligne). Doit être un lundi.
+    ancreLundi: "2026-07-20",
+
     // Garde-fou de date absolue (la limite effective est le plus proche
-    // entre « aujourd'hui + semainesMax » et cette date).
+    // entre l'horizon du bloc ouvert et cette date).
     dateMax: "2026-12-31",
 
     // OUVERTURE HEBDOMADAIRE GLISSANTE
-    // Désactivée (null) : les 3 prochaines semaines sont toutes ouvertes
-    // immédiatement à la réservation.
+    // Désactivée (null) : toutes les semaines du bloc ouvert sont réservables.
     // Pour réactiver la règle « vendredi 21h ouvre la semaine suivante »,
     // remettez : ouverture: { jour: 5, heure: 21 }
     ouverture: null
