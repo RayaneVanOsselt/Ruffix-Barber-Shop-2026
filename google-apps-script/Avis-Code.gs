@@ -19,9 +19,9 @@
 
 var SHEET_NAME = "Avis";
 var MAX_LEN = 500;                 // longueur max d'un commentaire
-var CODE_VERSION = 3;
+var CODE_VERSION = 4;
 
-var HEADERS = ["Horodatage", "Nom", "Note", "Commentaire", "Date", "Heure", "Statut"];
+var HEADERS = ["Horodatage", "Nom", "Note", "Commentaire", "Date", "Heure", "Statut", "Photo", "Vérifié"];
 
 function ss() { return SpreadsheetApp.getActiveSpreadsheet(); }
 
@@ -54,12 +54,16 @@ function doGet() {
       // Tout le reste (« En attente », « Refusé », « Masqué », vide) reste caché du site.
       if (statut.indexOf("confirm") !== 0) continue;
       var horod = rows[i][0];
+      // Colonne I « Vérifié » : vide = affiché (car déjà modéré). « non » = pas de badge.
+      var vraw = String(rows[i][8] || "").trim().toLowerCase();
       out.push({
         nom: nom,
         note: Math.max(1, Math.min(5, parseInt(rows[i][2], 10) || 5)),
         commentaire: commentaire,
         date: normDate(rows[i][4]),
         heure: normTime(rows[i][5]),
+        photo: clean(rows[i][7]),                              // H : URL photo (optionnel)
+        verified: !/^(non|no|n|false|faux|0)$/.test(vraw),      // I : badge « Client vérifié »
         ts: isDate(horod) ? horod.getTime() : i
       });
     }
@@ -91,7 +95,9 @@ function doPost(e) {
       commentaire,                                      // D Commentaire
       "'" + Utilities.formatDate(now, tz(), "dd/MM/yyyy"), // E Date
       "'" + Utilities.formatDate(now, tz(), "HH:mm"),      // F Heure
-      "En attente"                                      // G Statut (à valider : passe à « Confirmé » pour publier)
+      "En attente",                                     // G Statut (à valider : passe à « Confirmé » pour publier)
+      "",                                               // H Photo (optionnel, à coller à la main)
+      ""                                                // I Vérifié (vide = badge affiché)
     ]);
     return json({ ok: true });
   } catch (err) {
