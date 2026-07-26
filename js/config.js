@@ -262,17 +262,17 @@ const CONFIG = {
   /* -------------------------------------------------------------------
      10. FEED INSTAGRAM (section « Nos dernières réalisations »)
      -------------------------------------------------------------------
-     Un flux Instagram auto-actualisé n'est pas possible sur un site
-     statique sans passer par un widget tiers gratuit connecté au compte.
-     👉 Créez un widget sur l'un de ces services (gratuits), connectez
-        @rufixbarber, puis COLLEZ ici leur code d'intégration :
-          • Behold.so       (le plus élégant)
-          • SnapWidget.com  (simple, iframe)
-          • LightWidget.com
-     Tant que ce champ est vide (""), une grille de repli + un bouton
-     « Suivez-nous » s'affichent (aucune page vide).
+     LE PLUS SIMPLE : SnapWidget.com (gratuit).
+       1. Va sur snapwidget.com → « Create a Free Widget »
+       2. Connecte @rufixbarber, choisis « Grid », puis « Get Widget »
+       3. Copie le code fourni (commence par <iframe …>)
+       4. Colle-le ci-dessous ENTRE LES BACKTICKS ` ` (voir README).
+
+     ⚠️ Garde bien les backticks ` ` autour du code : ils permettent de
+        coller le code tel quel, même s'il contient des guillemets.
+     Tant que c'est vide, une jolie grille de repli s'affiche (aucune page vide).
   ------------------------------------------------------------------- */
-  instagramFeed: ""
+  instagramFeed: ``
 };
 
 /* Rendre CONFIG accessible aux autres scripts (booking.js, main.js). */
