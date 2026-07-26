@@ -5,25 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- ============================ SEO ============================ -->
-  <!-- 👉 Remplacez [VILLE] par votre ville (voir aussi js/config.js → salon.ville) -->
-  <title>Rufix Barber — Barbier & salon de coiffure homme à [VILLE]</title>
+  <!-- Ville du salon : Etterbeek (modifiable ici et dans js/config.js → salon.ville) -->
+  <title>Rufix Barber — Barbier & salon de coiffure homme à Etterbeek</title>
   <meta name="description"
-        content="Rufix Barber, salon de coiffure homme et barbier premium à [VILLE]. Coupe homme, barbe et rasage à l'ancienne sur rendez-vous. Réservez votre créneau en ligne." />
-  <meta name="keywords" content="salon de coiffure homme, barbier, coupe homme, barbe, rasage, [VILLE]" />
+        content="Rufix Barber, salon de coiffure homme et barbier premium à Etterbeek. Coupe homme, barbe et rasage à l'ancienne sur rendez-vous. Réservez votre créneau en ligne." />
+  <meta name="keywords" content="salon de coiffure homme, barbier, coupe homme, barbe, rasage, Etterbeek" />
   <link rel="canonical" href="https://rufixbarber.com/" />
   <meta name="theme-color" content="#14110f" />
 
   <!-- Open Graph / réseaux sociaux -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Rufix Barber" />
-  <meta property="og:title" content="Rufix Barber — Barbier & coiffure homme à [VILLE]" />
+  <meta property="og:title" content="Rufix Barber — Barbier & coiffure homme à Etterbeek" />
   <meta property="og:description" content="Coupe, barbe et rasage dans un cadre premium — sur rendez-vous." />
   <meta property="og:image" content="images/og-share.jpg" />
   <meta property="og:url" content="https://rufixbarber.com/" />
   <meta property="og:locale" content="fr_FR" />
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Rufix Barber — Barbier & coiffure homme à [VILLE]" />
+  <meta name="twitter:title" content="Rufix Barber — Barbier & coiffure homme à Etterbeek" />
   <meta name="twitter:description" content="Coupe, barbe et rasage dans un cadre premium — sur rendez-vous." />
   <meta name="twitter:image" content="images/og-share.jpg" />
 
@@ -39,9 +39,9 @@
         rel="stylesheet" />
 
   <!-- ========================= Styles ========================= -->
-  <link rel="stylesheet" href="css/base.css?v=20260724b" />
-  <link rel="stylesheet" href="css/components.css?v=20260724b" />
-  <link rel="stylesheet" href="css/animations.css?v=20260724b" />
+  <link rel="stylesheet" href="css/base.css?v=20260724c" />
+  <link rel="stylesheet" href="css/components.css?v=20260724c" />
+  <link rel="stylesheet" href="css/animations.css?v=20260724c" />
 
   <!-- ============= Données structurées (SEO local) =============
        👉 Éditez ces valeurs en même temps que js/config.js.
@@ -122,7 +122,7 @@
 
       <div class="container">
         <div class="hero__inner">
-          <span class="eyebrow">Barbier · Coiffure homme · [VILLE]</span>
+          <span class="eyebrow">Barbier · Coiffure homme · Etterbeek</span>
           <h1>L'art de la coupe masculine</h1>
           <p class="hero__sub">Coupe, barbe et rasage dans un cadre premium — sur rendez-vous.</p>
           <div class="hero__actions">
@@ -422,6 +422,56 @@
     </div>
 
     <!-- =========================================================
+         INSTAGRAM — dernières réalisations (@rufixbarber)
+         Le widget auto-actualisé s'injecte dans #instaFeed si
+         config.instagramFeed est renseigné (voir README). Sinon, le
+         repli #instaFallback (grille + bouton « Suivre ») s'affiche.
+         ========================================================= -->
+    <section class="insta" id="instagram">
+      <div class="container">
+        <div class="section-head center" data-reveal>
+          <span class="eyebrow" data-i18n="insta.eyebrow">Instagram</span>
+          <h2 class="section-title" data-i18n="insta.title">Nos dernières réalisations</h2>
+          <p class="lead">
+            <a href="https://www.instagram.com/rufixbarber" target="_blank" rel="noopener">@rufixbarber</a>
+            — <span data-i18n="insta.lead">suivez nos coupes au quotidien.</span>
+          </p>
+        </div>
+
+        <!-- Widget de flux Instagram (injecté depuis config.js si configuré) -->
+        <div id="instaFeed" data-reveal></div>
+
+        <!-- Repli professionnel si aucun widget n'est encore configuré -->
+        <div id="instaFallback" class="insta-fallback" data-reveal>
+          <div class="insta-grid">
+            <a class="insta-item" href="https://www.instagram.com/rufixbarber" target="_blank" rel="noopener" aria-label="Voir sur Instagram">
+              <img src="images/galerie-1.jpg" loading="lazy" alt="Réalisation Rufix Barber" />
+              <span class="insta-item__ig"><svg class="icon" aria-hidden="true"><use href="#i-instagram"></use></svg></span>
+            </a>
+            <a class="insta-item" href="https://www.instagram.com/rufixbarber" target="_blank" rel="noopener" aria-label="Voir sur Instagram">
+              <img src="images/galerie-4.jpg" loading="lazy" alt="Réalisation Rufix Barber" />
+              <span class="insta-item__ig"><svg class="icon" aria-hidden="true"><use href="#i-instagram"></use></svg></span>
+            </a>
+            <a class="insta-item" href="https://www.instagram.com/rufixbarber" target="_blank" rel="noopener" aria-label="Voir sur Instagram">
+              <img src="images/galerie-2.jpg" loading="lazy" alt="Réalisation Rufix Barber" />
+              <span class="insta-item__ig"><svg class="icon" aria-hidden="true"><use href="#i-instagram"></use></svg></span>
+            </a>
+            <a class="insta-item" href="https://www.instagram.com/rufixbarber" target="_blank" rel="noopener" aria-label="Voir sur Instagram">
+              <img src="images/galerie-5.jpg" loading="lazy" alt="Réalisation Rufix Barber" />
+              <span class="insta-item__ig"><svg class="icon" aria-hidden="true"><use href="#i-instagram"></use></svg></span>
+            </a>
+          </div>
+          <div class="insta-cta">
+            <a class="btn" href="https://www.instagram.com/rufixbarber" target="_blank" rel="noopener">
+              <svg class="icon" aria-hidden="true"><use href="#i-instagram"></use></svg>
+              <span data-i18n="insta.follow">Suivez-nous sur Instagram</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
          AVIS CLIENTS
          ⚠️ Avis de démonstration — à remplacer par de vrais avis.
          ========================================================= -->
@@ -607,19 +657,15 @@
                   </span>
                 </span>
               </div>
+              <!-- Horaires d'ouverture (injectés depuis config.js) -->
+              <div class="contact-info__item">
+                <span class="contact-info__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
+                <span style="flex:1">
+                  <span class="contact-info__label" data-i18n="contact.hours">Horaires</span>
+                  <ul id="contactHoraires" class="contact-hours"></ul>
+                </span>
+              </div>
             </div>
-
-            <div class="contact-map">
-              <!-- src injectée depuis config.js (salon.mapsEmbed) -->
-              <iframe id="mapFrame" title="Localisation du salon Rufix Barber sur Google Maps"
-                      loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-            <p style="margin-top:1rem">
-              <a class="link-arrow" data-config-maps href="#" target="_blank" rel="noopener">
-                Ouvrir l'itinéraire
-                <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg>
-              </a>
-            </p>
           </div>
 
           <!-- Formulaire de contact -->
@@ -660,7 +706,7 @@
           </div>
           <p class="footer__tagline">
             Barbier &amp; salon de coiffure homme premium à
-            <span data-config="salon.ville">[VILLE]</span>. Coupe, barbe et rasage sur rendez-vous.
+            <span data-config="salon.ville">Etterbeek</span>. Coupe, barbe et rasage sur rendez-vous.
           </p>
           <div class="footer__socials">
             <a class="footer__social" data-config-instagram href="#"
@@ -733,9 +779,9 @@
        Si les clés ne sont pas renseignées dans config.js, le site
        bascule automatiquement sur le repli mailto (aucune erreur). -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/config.js?v=20260724b"></script>
-  <script src="js/booking.js?v=20260724b" defer></script>
-  <script src="js/main.js?v=20260724b" defer></script>
-  <script src="js/assistant.js?v=20260724b" defer></script>
+  <script src="js/config.js?v=20260724c"></script>
+  <script src="js/booking.js?v=20260724c" defer></script>
+  <script src="js/main.js?v=20260724c" defer></script>
+  <script src="js/assistant.js?v=20260724c" defer></script>
 </body>
 </html>

@@ -146,7 +146,7 @@
       rep: () => `Vous pouvez payer en <strong>espèces</strong> ou par <strong>carte bancaire</strong>, directement au salon à la fin de votre prestation.` },
 
     { id: "adresse", mots: ["adresse", "ou", "situe", "trouver", "acces", "venir", "localisation", "plan", "parking"],
-      rep: () => `Nous sommes au <strong>${adresseTxt()}</strong>.<br>Vous trouverez la carte et l'itinéraire dans la section <a href="${onHome ? "#contact" : "index.html#contact"}">Contact</a>.` },
+      rep: () => `Nous sommes à <strong>${adresseTxt()}</strong>.<br>Toutes nos coordonnées et nos horaires sont dans la section <a href="${onHome ? "#contact" : "index.html#contact"}">Contact</a>.` },
 
     { id: "contact", mots: ["contact", "mail", "email", "joindre", "ecrire", "numero"],
       rep: () => `Vous pouvez nous joindre par email :<br>• Email : <a href="mailto:${esc(C.salon.email)}">${esc(C.salon.email)}</a><br>Ou via le formulaire de la section <a href="${onHome ? "#contact" : "index.html#contact"}">Contact</a>.` },

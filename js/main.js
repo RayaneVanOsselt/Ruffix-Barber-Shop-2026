@@ -171,11 +171,10 @@
       else el.textContent = val;
     });
 
-    // Liens spéciaux (tel:, mailto:, réseaux, maps)
+    // Liens spéciaux (tel:, mailto:, réseaux)
     const setHref = (sel, href) => document.querySelectorAll(sel).forEach((a) => a && (a.href = href));
     setHref("[data-config-tel]", `tel:${(C.salon.telephone || "").replace(/[^+\d]/g, "")}`);
     setHref("[data-config-mail]", `mailto:${C.salon.email}`);
-    setHref("[data-config-maps]", C.salon.mapsLink);
 
     // Réseaux sociaux : on renseigne le lien, et on masque l'icône si l'URL est vide.
     const setSocial = (sel, url) => {
@@ -189,10 +188,6 @@
     setSocial("[data-config-tiktok]", C.salon.tiktok);
     setSocial("[data-config-facebook]", C.salon.facebook);
 
-    // Carte Google Maps
-    const map = document.getElementById("mapFrame");
-    if (map) map.src = C.salon.mapsEmbed;
-
     // Année du footer
     const year = document.getElementById("year");
     if (year) year.textContent = new Date().getFullYear();
@@ -204,10 +199,10 @@
     renderHoraires();
   }
 
-  // Construit la liste des horaires depuis config.js (footer).
+  // Construit la liste des horaires depuis config.js (footer + section contact).
   function renderHoraires() {
-    const box = document.getElementById("footerHoraires");
-    if (!box || !C) return;
+    const boxes = [document.getElementById("footerHoraires"), document.getElementById("contactHoraires")].filter(Boolean);
+    if (!boxes.length || !C) return;
     const labels = {
       lundi: "Lundi", mardi: "Mardi", mercredi: "Mercredi", jeudi: "Jeudi",
       vendredi: "Vendredi", samedi: "Samedi", dimanche: "Dimanche"
@@ -229,7 +224,7 @@
       html += `<li class="footer__hours-note">${p.message}
         <a href="${p.url}" target="_blank" rel="noopener">${p.nom}</a>.</li>`;
     }
-    box.innerHTML = html;
+    boxes.forEach((box) => { box.innerHTML = html; });
   }
 
   /* ============ 8. EMAILJS : initialisation ================== */
@@ -299,6 +294,29 @@
       `mailto:${encodeURIComponent(C.salon.email)}?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
   }
 
+  /* ============ 10. FEED INSTAGRAM ========================= */
+  // Injecte le widget si config.instagramFeed est renseigné, sinon garde
+  // le repli (grille + bouton). Les <script> injectés sont ré-exécutés.
+  function initInstagram() {
+    const feed = document.getElementById("instaFeed");
+    const fallback = document.getElementById("instaFallback");
+    if (!feed) return;
+    const embed = (C && C.instagramFeed || "").trim();
+    if (embed) {
+      feed.innerHTML = embed;
+      // innerHTML n'exécute pas les <script> : on les recrée.
+      feed.querySelectorAll("script").forEach((old) => {
+        const s = document.createElement("script");
+        Array.from(old.attributes).forEach((a) => s.setAttribute(a.name, a.value));
+        s.textContent = old.textContent;
+        old.replaceWith(s);
+      });
+      if (fallback) fallback.style.display = "none";
+    } else {
+      feed.style.display = "none";   // pas de widget → on montre le repli
+    }
+  }
+
   /* =========================== INIT ========================== */
   function init() {
     injectConfig();
@@ -310,6 +328,7 @@
     initFaq();
     initLightbox();
     initContactForm();
+    initInstagram();
   }
 
   if (document.readyState !== "loading") init();
