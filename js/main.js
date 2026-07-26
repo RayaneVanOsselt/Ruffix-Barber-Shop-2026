@@ -9,6 +9,7 @@
 (function () {
   "use strict";
   const C = window.CONFIG;
+  const TR = (k, fb) => (window.RufixI18N ? window.RufixI18N.t(k) : fb);
 
   /* ================= 1. NAVBAR : opacité au scroll ============== */
   function initNavbarScroll() {
@@ -203,19 +204,19 @@
   function renderHoraires() {
     const boxes = [document.getElementById("footerHoraires"), document.getElementById("contactHoraires")].filter(Boolean);
     if (!boxes.length || !C) return;
-    const labels = {
-      lundi: "Lundi", mardi: "Mardi", mercredi: "Mercredi", jeudi: "Jeudi",
-      vendredi: "Vendredi", samedi: "Samedi", dimanche: "Dimanche"
-    };
+    const DL = TR("days.long", ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"]);
+    const idx = { lundi:1, mardi:2, mercredi:3, jeudi:4, vendredi:5, samedi:6, dimanche:0 };
+    const order = ["lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
+    const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
     let hasIndispo = false;
-    let html = Object.keys(labels).map((k) => {
+    let html = order.map((k) => {
       const h = C.horaires[k];
       let val;
       if (h && h.ouvert) val = `${h.debut} – ${h.fin}`;
-      else if (h && h.indispo) { val = "Indisponible"; hasIndispo = true; }
-      else if (h && h.surDemande) val = "Fermé (Sur demande)";
-      else val = "Fermé";
-      return `<li><span>${labels[k]}</span><span>${val}</span></li>`;
+      else if (h && h.indispo) { val = TR("hours.indispo","Indisponible"); hasIndispo = true; }
+      else if (h && h.surDemande) val = TR("hours.onRequest","Fermé (sur demande)");
+      else val = TR("hours.closed","Fermé");
+      return `<li><span>${cap(DL[idx[k]])}</span><span>${val}</span></li>`;
     }).join("");
 
     // Message de renvoi vers le salon partenaire (jours « indispo »).
@@ -273,7 +274,7 @@
         const btn = form.querySelector('button[type="submit"]');
         const t = btn.textContent; btn.disabled = true; btn.textContent = "Envoi…";
         window.emailjs.send(e.serviceId, templateId, payload)
-          .then(() => { done("success", "Merci ! Votre message a bien été envoyé. Nous vous répondrons rapidement."); form.reset(); })
+          .then(() => { done("success", TR("contact.ok","Merci ! Votre message a bien été envoyé.")); form.reset(); })
           .catch(() => {
             // On n'ouvre PAS la messagerie : on invite simplement à réessayer.
             done("error", `Désolé, l'envoi a échoué. Merci de réessayer, ou de nous écrire à ${C.salon.email}.`);
@@ -329,6 +330,7 @@
     initLightbox();
     initContactForm();
     initInstagram();
+    if (window.RufixI18N) window.RufixI18N.onChange(renderHoraires);
   }
 
   if (document.readyState !== "loading") init();

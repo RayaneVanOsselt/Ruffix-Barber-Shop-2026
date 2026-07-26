@@ -111,9 +111,11 @@
       "resa.err.slot": "Merci de choisir un créneau (case verte) dans le calendrier.",
       "resa.err.taken": "Ce créneau vient d'être réservé par quelqu'un d'autre. Merci d'en choisir un autre.",
       "resa.err.gone": "Ce créneau n'est plus disponible. Merci d'en choisir un autre.",
+      "resa.err.short": "Ce créneau est trop court pour « {s} » : un créneau suivant est déjà pris. Choisissez un autre horaire.",
       "resa.ok": "Votre demande de rendez-vous a bien été envoyée. Vous recevrez un email de confirmation dès que le coiffeur aura validé votre créneau.",
       "resa.summary": "Confirmez votre demande :",
-      "contact.ok": "Merci ! Votre message a bien été envoyé. Nous vous répondrons rapidement."
+      "contact.ok": "Merci ! Votre message a bien été envoyé. Nous vous répondrons rapidement.",
+      "hours.closed": "Fermé", "hours.indispo": "Indisponible", "hours.onRequest": "Fermé (sur demande)"
     },
 
     /* ========================== NEDERLANDS ========================== */
@@ -191,9 +193,11 @@
       "resa.err.slot": "Kies a.u.b. een tijdslot (groen vakje) in de kalender.",
       "resa.err.taken": "Dit tijdslot is net door iemand anders gereserveerd. Kies a.u.b. een ander.",
       "resa.err.gone": "Dit tijdslot is niet meer beschikbaar. Kies a.u.b. een ander.",
+      "resa.err.short": "Dit tijdslot is te kort voor « {s} »: een volgend tijdslot is al bezet. Kies een ander uur.",
       "resa.ok": "Uw afspraakaanvraag is verstuurd. U ontvangt een bevestigingsmail zodra de kapper uw tijdslot heeft gevalideerd.",
       "resa.summary": "Bevestig uw aanvraag:",
-      "contact.ok": "Bedankt! Uw bericht is verstuurd. We antwoorden u snel."
+      "contact.ok": "Bedankt! Uw bericht is verstuurd. We antwoorden u snel.",
+      "hours.closed": "Gesloten", "hours.indispo": "Niet beschikbaar", "hours.onRequest": "Gesloten (op aanvraag)"
     },
 
     /* ============================ ENGLISH ============================ */
@@ -271,9 +275,11 @@
       "resa.err.slot": "Please choose a slot (green cell) in the calendar.",
       "resa.err.taken": "This slot was just booked by someone else. Please choose another.",
       "resa.err.gone": "This slot is no longer available. Please choose another.",
+      "resa.err.short": "This slot is too short for \u201c{s}\u201d: a following slot is already taken. Please choose another time.",
       "resa.ok": "Your appointment request has been sent. You'll receive a confirmation email once the barber has approved your slot.",
       "resa.summary": "Confirm your request:",
-      "contact.ok": "Thank you! Your message has been sent. We'll reply shortly."
+      "contact.ok": "Thank you! Your message has been sent. We'll reply shortly.",
+      "hours.closed": "Closed", "hours.indispo": "Unavailable", "hours.onRequest": "Closed (on request)"
     }
   };
 
