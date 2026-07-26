@@ -1020,6 +1020,72 @@
 }
 .review-actions { text-align: center; margin-top: 1.8rem; }
 
+/* ==================== AVIS DU SITE (carrousel + formulaire) ==================== */
+.reviews-carousel {
+  display: flex; align-items: center; gap: 0.6rem;
+  max-width: 880px; margin: 0 auto 2rem;
+}
+.reviews-carousel[hidden] { display: none; }
+.reviews-viewport {
+  flex: 1; min-width: 0;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.reviews-viewport::-webkit-scrollbar { display: none; }
+.reviews-track { display: flex; gap: 18px; padding: 6px 2px; }
+.review-slide {
+  scroll-snap-align: center;
+  flex: 0 0 min(100%, 460px);
+  display: flex; flex-direction: column; gap: 0.9rem;
+  padding: 1.8rem clamp(1.3rem, 4vw, 2rem);
+  background: linear-gradient(165deg, var(--color-surface), var(--color-surface-2));
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.review-slide__stars { display: inline-flex; gap: 3px; }
+.review-slide__stars .review-star { width: 22px; height: 22px; color: var(--color-line); }
+.review-slide__stars .review-star.is-on { color: var(--color-accent); }
+.review-slide__text {
+  color: var(--color-text); line-height: 1.65; font-size: 1.02rem;
+  overflow-wrap: anywhere;
+}
+.review-slide__meta {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 0.8rem; flex-wrap: wrap; margin-top: auto;
+}
+.review-slide__name { font-weight: 600; color: var(--color-accent); }
+.review-slide__date { color: var(--color-muted); font-size: 0.85rem; }
+.reviews-arrow {
+  flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  background: var(--color-surface); border: 1px solid var(--color-line);
+  color: var(--color-text); transition: border-color .2s, color .2s, opacity .2s;
+}
+.reviews-arrow .icon { width: 20px; height: 20px; }
+.reviews-arrow:hover:not(:disabled) { border-color: var(--color-accent); color: var(--color-accent); }
+.reviews-arrow:disabled { opacity: 0.35; cursor: default; }
+.reviews-empty { text-align: center; color: var(--color-muted); margin: 0 auto 2rem; }
+
+.review-form-wrap { max-width: 620px; margin: 0 auto; text-align: center; }
+.review-form-actions { margin-bottom: 1.2rem; }
+.review-form {
+  text-align: left; padding: clamp(1.4rem, 4vw, 2rem);
+  background: var(--color-surface); border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-card);
+}
+.review-form[hidden] { display: none; }
+.star-input { display: inline-flex; gap: 4px; }
+.star-btn {
+  background: none; border: 0; padding: 2px; cursor: pointer;
+  color: var(--color-line); line-height: 0; transition: color .15s, transform .15s;
+}
+.star-btn .icon { width: 32px; height: 32px; }
+.star-btn:hover { transform: scale(1.1); }
+.star-btn.is-on { color: var(--color-accent); }
+.review-count { display: block; text-align: right; color: var(--color-muted); font-size: 0.8rem; margin-top: 0.35rem; }
+.review-google-note { margin-top: 1.4rem; font-size: 0.92rem; }
+
 /* ==================== ASSISTANT (chat flottant) ==================== */
 /* Bouton flottant */
 .chat-fab {
