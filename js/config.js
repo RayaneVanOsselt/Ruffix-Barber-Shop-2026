@@ -33,11 +33,6 @@ const CONFIG = {
     codePostal: "1040",                              // code postal d'Etterbeek
     telephone:  "",                                  // (masqué) numéro non affiché
     email:      "infos@rufixbarber.com",             // email public du salon
-    // Position sur la carte Google Maps (voir README pour générer le lien).
-    // Laissez tel quel pour une position fictive, ou collez votre propre iframe src.
-    mapsEmbed:  "https://www.google.com/maps?q=Grand-Place%2C%20Bruxelles&output=embed",
-    // Lien "Itinéraire" (bouton) — ouvre Google Maps avec l'adresse.
-    mapsLink:   "https://www.google.com/maps/search/?api=1&query=Rufix+Barber",
     // --- Réseaux sociaux (URL nettoyées des paramètres de suivi) ---
     instagram:      "https://www.instagram.com/rufixbarber",   // compte du salon
     instagramPerso: "https://www.instagram.com/rufiiix___",    // compte personnel
@@ -262,7 +257,22 @@ const CONFIG = {
     nom: "Assistant Rufix",
     messageAccueil: "Bonjour 👋 Je suis l'assistant de Rufix Barber. Je peux vous renseigner sur les prestations, les tarifs, les horaires, et vous guider pour réserver.",
     aiProxyUrl: ""
-  }
+  },
+
+  /* -------------------------------------------------------------------
+     10. FEED INSTAGRAM (section « Nos dernières réalisations »)
+     -------------------------------------------------------------------
+     Un flux Instagram auto-actualisé n'est pas possible sur un site
+     statique sans passer par un widget tiers gratuit connecté au compte.
+     👉 Créez un widget sur l'un de ces services (gratuits), connectez
+        @rufixbarber, puis COLLEZ ici leur code d'intégration :
+          • Behold.so       (le plus élégant)
+          • SnapWidget.com  (simple, iframe)
+          • LightWidget.com
+     Tant que ce champ est vide (""), une grille de repli + un bouton
+     « Suivez-nous » s'affichent (aucune page vide).
+  ------------------------------------------------------------------- */
+  instagramFeed: ""
 };
 
 /* Rendre CONFIG accessible aux autres scripts (booking.js, main.js). */
