@@ -7,9 +7,9 @@
    👉 Installation : voir AVIS-GOOGLE-SHEET.md.
 
    Résumé :
-     1. Nouveau Google Sheet → onglet nommé « Avis » avec, en ligne 1,
-        ces 7 en-têtes (colonnes A→G) :
-        Horodatage | Nom | Note | Commentaire | Date | Heure | Statut
+     1. Nouveau Google Sheet (vide, c'est tout — le script crée les
+        en-têtes tout seul au 1er appel, sur l'onglet « Avis » ou, à
+        défaut, sur le premier onglet du fichier).
      2. Extensions → Apps Script → colle ce code → Enregistrer.
      3. Déployer → Nouveau déploiement → « Application Web »
           - Exécuter en tant que : Moi
@@ -19,10 +19,19 @@
 
 var SHEET_NAME = "Avis";
 var MAX_LEN = 500;                 // longueur max d'un commentaire
-var CODE_VERSION = 1;
+var CODE_VERSION = 2;
+
+var HEADERS = ["Horodatage", "Nom", "Note", "Commentaire", "Date", "Heure", "Statut"];
 
 function ss() { return SpreadsheetApp.getActiveSpreadsheet(); }
-function sheet() { return ss().getSheetByName(SHEET_NAME); }
+
+// Récupère l'onglet « Avis ». S'il n'existe pas, prend le 1er onglet du fichier.
+// S'il est vide, écrit automatiquement la ligne d'en-têtes → aucun réglage requis.
+function sheet() {
+  var s = ss().getSheetByName(SHEET_NAME) || ss().getSheets()[0];
+  if (s && s.getLastRow() === 0) s.appendRow(HEADERS);
+  return s;
+}
 function tz() { return ss().getSpreadsheetTimeZone(); }
 function json(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 function isDate(v) { return v && typeof v.getTime === "function" && !isNaN(v.getTime()); }

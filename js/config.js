@@ -306,7 +306,7 @@ const CONFIG = {
         Google Sheet (voir AVIS-GOOGLE-SHEET.md). Vide = section masquée.
   ------------------------------------------------------------------- */
   reviewsBackend: {
-    url: "mock-avis.json"   // ex : "https://script.google.com/macros/s/AKfy.../exec"
+    url: "https://script.google.com/macros/s/AKfycby912I7_0qVlI8Zzdg_NfIkP8gaR7ExErIOYCzbIgjrw-EbuOB8B67koX5EGXNpnlg/exec"
   }
 };
 
