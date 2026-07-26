@@ -318,6 +318,36 @@
     }
   }
 
+  /* ============ 11. AVIS GOOGLE ============================ */
+  // Injecte le widget d'avis Google si configuré, sinon garde la carte de repli.
+  // Renseigne aussi le lien « Laisser un avis » (tous les [data-review-link]).
+  function initReviews() {
+    const g = (C && C.googleReviews) || {};
+    // Lien pour laisser un avis (repli : recherche Google du salon)
+    const link = (g.reviewLink || "").trim() ||
+      "https://www.google.com/search?q=" + encodeURIComponent(`${C.salon.nom || "Rufix Barber"} ${C.salon.ville || ""}`.trim());
+    document.querySelectorAll("[data-review-link]").forEach((a) => { a.href = link; });
+
+    const slot = document.getElementById("googleReviews");
+    const fallback = document.getElementById("reviewsFallback");
+    const actions = document.getElementById("reviewsActions");
+    if (!slot) return;
+    const embed = (g.embed || "").trim();
+    if (embed) {
+      slot.innerHTML = embed;
+      slot.querySelectorAll("script").forEach((old) => {
+        const s = document.createElement("script");
+        Array.from(old.attributes).forEach((a) => s.setAttribute(a.name, a.value));
+        s.textContent = old.textContent;
+        old.replaceWith(s);
+      });
+      if (fallback) fallback.style.display = "none";
+      if (actions) actions.style.display = "";   // bouton sous le widget
+    } else {
+      slot.style.display = "none";               // pas de widget → carte de repli
+    }
+  }
+
   /* =========================== INIT ========================== */
   function init() {
     injectConfig();
@@ -330,6 +360,7 @@
     initLightbox();
     initContactForm();
     initInstagram();
+    initReviews();
     if (window.RufixI18N) window.RufixI18N.onChange(renderHoraires);
   }
 
