@@ -140,10 +140,10 @@
       .then((r) => r.json())
       .then((d) => {
         if (d && d.ok) {
-          show("success", T("rev.thanks", "Merci ! Votre avis a bien été publié."));
+          // L'avis passe en modération (« En attente ») : il n'apparaît pas encore.
+          show("success", T("rev.thanks", "Merci ! Votre avis a bien été reçu. Il sera vérifié puis publié."));
           form.reset(); selectedNote = 0; paintStars(); updateCount();
-          form.hidden = true;
-          return fetchReviews().then((list) => { reviews = list; render(); });
+          return;
         }
         show("error", T("rev.errGen", "Une erreur est survenue. Merci de réessayer."));
       })
