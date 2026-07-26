@@ -292,7 +292,7 @@ const CONFIG = {
   ------------------------------------------------------------------- */
   googleReviews: {
     embed: ``,
-    reviewLink: ""
+    reviewLink: "https://g.page/r/CRbBr1JnQnJBECE/review"
   }
 };
 
