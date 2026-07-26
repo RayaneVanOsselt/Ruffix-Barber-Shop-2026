@@ -272,7 +272,28 @@ const CONFIG = {
         coller le code tel quel, même s'il contient des guillemets.
      Tant que c'est vide, une jolie grille de repli s'affiche (aucune page vide).
   ------------------------------------------------------------------- */
-  instagramFeed: ``
+  instagramFeed: ``,
+
+  /* -------------------------------------------------------------------
+     11. AVIS GOOGLE (section « Avis clients »)
+     -------------------------------------------------------------------
+     Affiche tes VRAIS avis Google (bien plus crédibles que de faux avis)
+     et invite les clients à en laisser.
+
+     embed : code d'un widget d'avis Google gratuit, connecté à ta fiche
+       Google Business. Les meilleurs (gratuits) :
+         • Trustindex.io   (le plus simple, carrousel inclus)
+         • Elfsight.com
+       Colle leur code ENTRE LES BACKTICKS ci-dessous. Vide = carte de repli.
+
+     reviewLink : lien direct pour LAISSER un avis. Récupère-le dans ta fiche
+       Google Business → « Demander des avis » (type https://g.page/r/…).
+       Tant qu'il est vide, le bouton renvoie vers une recherche Google du salon.
+  ------------------------------------------------------------------- */
+  googleReviews: {
+    embed: ``,
+    reviewLink: ""
+  }
 };
 
 /* Rendre CONFIG accessible aux autres scripts (booking.js, main.js). */
