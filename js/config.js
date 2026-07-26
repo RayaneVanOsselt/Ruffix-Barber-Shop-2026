@@ -293,6 +293,20 @@ const CONFIG = {
   googleReviews: {
     embed: ``,
     reviewLink: "https://g.page/r/CRbBr1JnQnJBECE/review"
+  },
+
+  /* -------------------------------------------------------------------
+     12. AVIS SUR LE SITE (formulaire + carrousel) — Google Sheet DÉDIÉ
+     -------------------------------------------------------------------
+     Système d'avis maison : les clients laissent un avis depuis le site,
+     il s'enregistre dans un Google Sheet SÉPARÉ (pas celui des
+     réservations) et s'affiche automatiquement en carrousel.
+
+     👉 url = l'URL /exec du script « Avis-Code.gs » déployé sur un NOUVEAU
+        Google Sheet (voir AVIS-GOOGLE-SHEET.md). Vide = section masquée.
+  ------------------------------------------------------------------- */
+  reviewsBackend: {
+    url: "mock-avis.json"   // ex : "https://script.google.com/macros/s/AKfy.../exec"
   }
 };
 

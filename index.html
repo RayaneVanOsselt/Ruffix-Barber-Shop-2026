@@ -39,9 +39,9 @@
         rel="stylesheet" />
 
   <!-- ========================= Styles ========================= -->
-  <link rel="stylesheet" href="css/base.css?v=20260724j" />
-  <link rel="stylesheet" href="css/components.css?v=20260724j" />
-  <link rel="stylesheet" href="css/animations.css?v=20260724j" />
+  <link rel="stylesheet" href="css/base.css?v=20260726a" />
+  <link rel="stylesheet" href="css/components.css?v=20260726a" />
+  <link rel="stylesheet" href="css/animations.css?v=20260726a" />
 
   <!-- ============= Données structurées (SEO local) =============
        👉 Éditez ces valeurs en même temps que js/config.js.
@@ -474,31 +474,60 @@
         <div class="section-head center" data-reveal>
           <span class="eyebrow" data-i18n="rev.eyebrow">Avis clients</span>
           <h2 class="section-title" data-i18n="rev.title">Ils nous font confiance</h2>
-          <p class="lead" data-i18n="rev.lead">Vos avis, directement depuis Google.</p>
+          <p class="lead" data-i18n="rev.lead">L'avis de nos clients, en toute transparence.</p>
         </div>
 
-        <!-- Widget d'avis Google (injecté depuis config.js si configuré) -->
-        <div id="googleReviews" data-reveal></div>
-
-        <!-- Repli premium : invitation à laisser / consulter un avis Google -->
-        <div id="reviewsFallback" class="review-cta" data-reveal>
-          <span class="review-cta__glow" aria-hidden="true"></span>
-          <span class="review-cta__stars" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg><svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg><svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg><svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg><svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg></span>
-          <span class="review-cta__label" data-i18n="rev.badge">Avis vérifiés Google</span>
-          <h3 class="review-cta__title" data-i18n="rev.ctaTitle">Votre avis compte</h3>
-          <p class="review-cta__text" data-i18n="rev.ctaText">Vous avez apprécié votre passage chez Rufix Barber ? Partagez votre expérience sur Google — ça aide énormément le salon et les futurs clients.</p>
-          <a class="btn" href="#" target="_blank" rel="noopener" data-review-link>
-            <svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg>
-            <span data-i18n="rev.leave">Laisser un avis sur Google</span>
-          </a>
+        <!-- Carrousel des avis (rempli depuis le backend par reviews.js) -->
+        <div class="reviews-carousel" id="reviewsCarousel" data-reveal hidden>
+          <button type="button" class="reviews-arrow reviews-arrow--prev" id="revPrev" aria-label="Avis précédent">
+            <svg class="icon" aria-hidden="true"><use href="#i-chevron-left"></use></svg>
+          </button>
+          <div class="reviews-viewport" id="reviewsViewport">
+            <div class="reviews-track" id="reviewsTrack"></div>
+          </div>
+          <button type="button" class="reviews-arrow reviews-arrow--next" id="revNext" aria-label="Avis suivant">
+            <svg class="icon" aria-hidden="true"><use href="#i-chevron-right"></use></svg>
+          </button>
         </div>
 
-        <!-- Bouton visible sous le widget quand celui-ci est actif -->
-        <div id="reviewsActions" class="review-actions" style="display:none">
-          <a class="btn" href="#" target="_blank" rel="noopener" data-review-link>
-            <svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg>
-            <span data-i18n="rev.leave">Laisser un avis sur Google</span>
-          </a>
+        <!-- État vide / chargement -->
+        <p class="reviews-empty" id="reviewsEmpty" data-reveal></p>
+
+        <!-- Bouton « laisser un avis » + formulaire -->
+        <div class="review-form-wrap" data-reveal>
+          <div class="review-form-actions">
+            <button type="button" class="btn" id="reviewToggle">
+              <svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg>
+              <span data-i18n="rev.leave2">Laisser un avis</span>
+            </button>
+          </div>
+
+          <form id="reviewForm" class="review-form" novalidate hidden>
+            <div class="field">
+              <label for="rv-nom"><span data-i18n="form.nom">Nom</span> <span class="req">*</span></label>
+              <input class="input" type="text" id="rv-nom" name="nom" maxlength="60" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <label><span data-i18n="rev.note">Votre note</span> <span class="req">*</span></label>
+              <div class="star-input" id="starInput" role="radiogroup" aria-label="Note (1 à 5 étoiles)"></div>
+            </div>
+            <div class="field">
+              <label for="rv-com"><span data-i18n="contact.msg">Message</span> <span class="req">*</span></label>
+              <textarea class="textarea" id="rv-com" name="commentaire" maxlength="500" required
+                        data-i18n-ph="rev.comPh" placeholder="Partagez votre expérience…"></textarea>
+              <span class="review-count" id="rvCount">0 / 500</span>
+            </div>
+            <button type="submit" class="btn btn--block" data-i18n="rev.publish">Publier mon avis</button>
+            <div class="booking-feedback" id="reviewFeedback"></div>
+          </form>
+
+          <!-- Option secondaire : avis Google -->
+          <p class="review-google-note">
+            <a href="#" target="_blank" rel="noopener" data-review-link class="link-arrow">
+              <span data-i18n="rev.orGoogle">Ou laissez un avis sur Google</span>
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg>
+            </a>
+          </p>
         </div>
       </div>
     </section>
@@ -729,10 +758,11 @@
        Si les clés ne sont pas renseignées dans config.js, le site
        bascule automatiquement sur le repli mailto (aucune erreur). -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/config.js?v=20260724j"></script>
-  <script src="js/i18n.js?v=20260724j"></script>
-  <script src="js/booking.js?v=20260724j" defer></script>
-  <script src="js/main.js?v=20260724j" defer></script>
-  <script src="js/assistant.js?v=20260724j" defer></script>
+  <script src="js/config.js?v=20260726a"></script>
+  <script src="js/i18n.js?v=20260726a"></script>
+  <script src="js/booking.js?v=20260726a" defer></script>
+  <script src="js/reviews.js?v=20260726a" defer></script>
+  <script src="js/main.js?v=20260726a" defer></script>
+  <script src="js/assistant.js?v=20260726a" defer></script>
 </body>
 </html>
