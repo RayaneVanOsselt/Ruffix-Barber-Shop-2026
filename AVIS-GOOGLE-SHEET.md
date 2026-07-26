@@ -63,16 +63,25 @@ carrousel se remplissent automatiquement. 🎉
 
 ---
 
-## Comment ça marche au quotidien
+## Comment ça marche au quotidien — MODÉRATION
 
-- Un client remplit le formulaire → l'avis apparaît **immédiatement** sur le site.
-- Chaque ligne de la feuille `Avis` a une colonne **Statut** (mise à `Publié`
-  automatiquement).
-- Pour **cacher un faux avis / du spam** : ouvre la feuille, remplace `Publié`
-  par **`Masqué`** (ou `Refusé`) sur la ligne concernée → il disparaît du site.
-- Pour **modérer avant publication** (avis validés à la main) : remplace la
-  valeur écrite dans le code (`"Publié"`) par `"En attente"`. Les avis
-  n'apparaîtront qu'une fois que tu écris `Publié` toi-même dans la colonne.
+Chaque avis est **vérifié par toi avant d'être visible sur le site**. Rien ne
+s'affiche automatiquement.
+
+1. Un client remplit le formulaire → il voit le message *« Votre avis a bien été
+   reçu. Il sera vérifié puis publié. »*
+2. La ligne arrive dans la feuille `Avis` avec le **Statut `En attente`**.
+   → l'avis **n'apparaît PAS** encore sur le site.
+3. Tu lis l'avis dans la feuille. Dans la colonne **Statut** (colonne G) :
+
+   | Tu écris… | Effet sur le site |
+   |---|---|
+   | **`Confirmé`** | ✅ L'avis est **publié** (visible dans le carrousel). |
+   | **`En attente`** | ⏳ En attente de ta validation (caché) — c'est la valeur de départ. |
+   | **`Refusé`** ou **`Masqué`** (ou n'importe quoi d'autre) | 🚫 Reste caché du site. |
+
+> 💡 Astuce : pour valider vite, remplace `En attente` par `Confirmé` sur la
+> ligne, et l'avis apparaît en quelques secondes (au prochain chargement de la page).
 
 ## Sécurité intégrée
 

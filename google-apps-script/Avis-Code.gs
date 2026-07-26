@@ -19,7 +19,7 @@
 
 var SHEET_NAME = "Avis";
 var MAX_LEN = 500;                 // longueur max d'un commentaire
-var CODE_VERSION = 2;
+var CODE_VERSION = 3;
 
 var HEADERS = ["Horodatage", "Nom", "Note", "Commentaire", "Date", "Heure", "Statut"];
 
@@ -40,7 +40,7 @@ function normTime(v) { return isDate(v) ? Utilities.formatDate(v, tz(), "HH:mm")
 // Retire toute balise HTML (sécurité anti-injection / XSS côté serveur).
 function clean(s) { return String(s || "").replace(/<[^>]*>/g, "").trim(); }
 
-/* ============ GET : liste des avis publiés, du plus récent au plus ancien ============ */
+/* ============ GET : liste des avis CONFIRMÉS, du plus récent au plus ancien ============ */
 function doGet() {
   try {
     var rows = sheet().getDataRange().getValues();
@@ -50,8 +50,9 @@ function doGet() {
       var commentaire = clean(rows[i][3]);
       var statut = String(rows[i][6] || "").toLowerCase();
       if (!nom || !commentaire) continue;
-      // On masque les avis « Masqué / Refusé / En attente ».
-      if (statut.indexOf("masqu") === 0 || statut.indexOf("refus") === 0 || statut.indexOf("attente") === 0) continue;
+      // On n'affiche QUE les avis « Confirmé » (validés à la main dans la colonne Statut).
+      // Tout le reste (« En attente », « Refusé », « Masqué », vide) reste caché du site.
+      if (statut.indexOf("confirm") !== 0) continue;
       var horod = rows[i][0];
       out.push({
         nom: nom,
@@ -90,7 +91,7 @@ function doPost(e) {
       commentaire,                                      // D Commentaire
       "'" + Utilities.formatDate(now, tz(), "dd/MM/yyyy"), // E Date
       "'" + Utilities.formatDate(now, tz(), "HH:mm"),      // F Heure
-      "Publié"                                          // G Statut (auto-affiché)
+      "En attente"                                      // G Statut (à valider : passe à « Confirmé » pour publier)
     ]);
     return json({ ok: true });
   } catch (err) {
