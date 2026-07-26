@@ -32,6 +32,16 @@
   const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin",
                 "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
 
+  // JOURS/MOIS restent en FRANÇAIS pour lire config.horaires (clés françaises).
+  // Pour l'AFFICHAGE, on passe par i18n (jourL/jourC/moisL) qui suivent la langue.
+  const I18 = () => window.RufixI18N;
+  const tr = (k, fb) => (I18() ? I18().t(k) : fb);
+  const jourL = () => tr("days.long", JOURS);
+  const jourC = () => tr("days.short", JOURS_COURT);
+  const moisL = () => tr("months", MOIS);
+  const SVC_KEY = { "coupe": "svc.coupe.name", "barbe": "svc.barbe.name", "coupe-barbe": "svc.cb.name" };
+  const svcName = (s) => (I18() && SVC_KEY[s.id]) ? I18().t(SVC_KEY[s.id]) : s.nom;
+
   /* --- État de la réservation --- */
   const state = {
     weekStart: null,       // lundi de la semaine affichée (Date)
@@ -226,10 +236,11 @@
   function labelWeek() {
     const a = state.weekStart, b = addDays(a, 6);
     const jour = (x) => x.getDate();
+    const W = tr("cal.week", "Semaine du"), TO = tr("cal.to", "au"), M = moisL();
     if (a.getMonth() === b.getMonth()) {
-      return `Semaine du ${jour(a)} au ${jour(b)} ${MOIS[b.getMonth()]} ${b.getFullYear()}`;
+      return `${W} ${jour(a)} ${TO} ${jour(b)} ${M[b.getMonth()]} ${b.getFullYear()}`;
     }
-    return `Semaine du ${jour(a)} ${MOIS[a.getMonth()]} au ${jour(b)} ${MOIS[b.getMonth()]} ${b.getFullYear()}`;
+    return `${W} ${jour(a)} ${M[a.getMonth()]} ${TO} ${jour(b)} ${M[b.getMonth()]} ${b.getFullYear()}`;
   }
 
   // Bannière « salon partenaire » : lisible, pleine largeur, sous la légende.
@@ -290,7 +301,7 @@
       const d = parseISO(iso);
       const isToday = toISO(new Date()) === iso;
       html += `<div class="wcell whead${isToday ? " is-today" : ""}" style="grid-column:${i + 2};grid-row:1">
-                 <span class="whead__dow">${JOURS_COURT[d.getDay()]}</span>
+                 <span class="whead__dow">${jourC()[d.getDay()]}</span>
                  <span class="whead__num">${d.getDate()}</span>
                </div>`;
     });
@@ -319,7 +330,7 @@
         const cls = isSel ? "wslot--sel" : ("wslot--" + st);
         // 🟠 "pending" reste cliquable : la demande n'est pas encore confirmée.
         const clickable = (st === "free" || st === "pending");
-        const dLabel = `${JOURS_COURT[parseISO(iso).getDay()]} ${parseISO(iso).getDate()} à ${hhmm}`;
+        const dLabel = `${jourC()[parseISO(iso).getDay()]} ${parseISO(iso).getDate()} · ${hhmm}`;
         const stTxt = st === "free" ? "disponible" : st === "reserved" ? "réservé (confirmé)"
                     : st === "pending" ? "demande en attente de confirmation"
                     : st === "past" ? "passé"
@@ -370,14 +381,14 @@
 
     // Note : chargement des disponibilités en cours ?
     if (state.loadingOccupied) {
-      note.textContent = "⏳ Chargement des disponibilités en cours…";
+      note.textContent = tr("cal.loading", "⏳ Chargement des disponibilités en cours…");
       note.classList.add("is-visible");
     } else if (!isWeekOpen(state.weekStart)) {
       const o = weekOpensAt(state.weekStart);
-      note.textContent = `🔒 Les réservations pour cette semaine ouvrent le ${JOURS[o.getDay()]} ${o.getDate()} ${MOIS[o.getMonth()]} à ${pad(o.getHours())}h.`;
+      note.textContent = `${tr("cal.closedFrom","🔒 Les réservations pour cette semaine ouvrent le")} ${jourL()[o.getDay()]} ${o.getDate()} ${moisL()[o.getMonth()]} · ${pad(o.getHours())}h.`;
       note.classList.add("is-visible");
     } else if (!state.serviceId) {
-      note.textContent = "Choisissez d'abord une prestation (étape 1), puis cliquez un créneau vert.";
+      note.textContent = tr("cal.chooseDate", "Choisissez d'abord une prestation (étape 1), puis cliquez un créneau vert.");
       note.classList.add("is-visible");
     } else {
       note.classList.remove("is-visible");
@@ -390,12 +401,12 @@
     const note = document.getElementById("weekNote");
     const service = C.services.find((s) => s.id === state.serviceId);
     if (!service) {
-      note.textContent = "Choisissez d'abord une prestation (étape 1).";
+      note.textContent = tr("cal.chooseDate", "Choisissez d'abord une prestation (étape 1).");
       note.classList.add("is-visible");
       return;
     }
     if (!spanIsFree(dateISO, hhmm, service.duree)) {
-      note.textContent = `Ce créneau est trop court pour « ${service.nom} » (${service.dureeTxt}) : un créneau suivant est déjà pris. Choisissez un autre horaire.`;
+      note.textContent = tr("resa.err.short", "Ce créneau est trop court.").replace("{s}", svcName(service));
       note.classList.add("is-visible");
       return;
     }
@@ -412,7 +423,7 @@
     box.innerHTML = C.services.map((s) => `
       <label class="service-radio">
         <input type="radio" name="service" value="${s.id}" ${state.serviceId === s.id ? "checked" : ""}>
-        <span class="service-radio__name">${s.nom}</span>
+        <span class="service-radio__name">${svcName(s)}</span>
         <span class="service-radio__meta">${s.prix} € · ${s.dureeTxt}</span>
       </label>`).join("");
 
@@ -434,7 +445,7 @@
 
   /* ================= RÉCAPITULATIF DE CONFIRMATION ============= */
   function formatDateLong(d) {
-    return `${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
+    return `${jourL()[d.getDay()]} ${d.getDate()} ${moisL()[d.getMonth()]} ${d.getFullYear()}`;
   }
   function updateSummary() {
     const el = document.getElementById("bookingSummary");
@@ -442,8 +453,8 @@
     const service = C.services.find((s) => s.id === state.serviceId);
     if (state.selectedDate && state.selectedTime && service) {
       const dateTxt = formatDateLong(parseISO(state.selectedDate));
-      el.innerHTML = `Confirmez votre demande : <strong>${service.nom}</strong>
-        le <strong>${dateTxt}</strong> à <strong>${state.selectedTime}</strong>
+      el.innerHTML = `${tr("resa.summary","Confirmez votre demande :")} <strong>${svcName(service)}</strong>
+        · <strong>${dateTxt}</strong> · <strong>${state.selectedTime}</strong>
         <br><span style="color:var(--color-muted)">${service.prix} € · ${service.dureeTxt}</span>`;
       el.classList.remove("is-hidden");
     } else {
@@ -502,14 +513,14 @@ Merci de me confirmer ce créneau.
     const feedback = document.getElementById("bookingFeedback");
     const service = C.services.find((s) => s.id === state.serviceId);
 
-    if (!service)            return showFeedback(feedback, "error", "Merci de choisir une prestation.");
+    if (!service)            return showFeedback(feedback, "error", tr("resa.err.service","Merci de choisir une prestation."));
     if (!state.selectedDate || !state.selectedTime)
-                             return showFeedback(feedback, "error", "Merci de choisir un créneau (case verte) dans le calendrier.");
+                             return showFeedback(feedback, "error", tr("resa.err.slot","Merci de choisir un créneau (case verte) dans le calendrier."));
     if (!form.checkValidity()) { form.reportValidity(); return; }
 
     // Dernière vérification côté client (la plage est-elle toujours libre ?)
     if (!spanIsFree(state.selectedDate, state.selectedTime, service.duree)) {
-      return showFeedback(feedback, "error", "Ce créneau n'est plus disponible. Merci d'en choisir un autre.");
+      return showFeedback(feedback, "error", tr("resa.err.gone","Ce créneau n'est plus disponible. Merci d'en choisir un autre."));
     }
 
     const data = new FormData(form);
@@ -538,7 +549,7 @@ Merci de me confirmer ce créneau.
       if (rec.taken) {
         restore();
         showFeedback(feedback, "error",
-          "Ce créneau vient d'être réservé par quelqu'un d'autre. Merci d'en choisir un autre.");
+          tr("resa.err.taken","Ce créneau vient d'être réservé par quelqu'un d'autre. Merci d'en choisir un autre."));
         fetchAllOccupied().then(() => { state.selectedTime = null; state.selectedDate = null; renderWeek(); updateSummary(); });
         return;
       }
@@ -550,7 +561,7 @@ Merci de me confirmer ce créneau.
               "Votre messagerie s'est ouverte avec la demande pré-remplie. Envoyez l'email pour finaliser votre demande de rendez-vous.");
           } else {
             showFeedback(feedback, "success",
-              "Votre demande de rendez-vous a bien été envoyée. Vous recevrez un email de confirmation dès que le coiffeur aura validé votre créneau.");
+              tr("resa.ok","Votre demande de rendez-vous a bien été envoyée."));
             // La demande passe en ATTENTE (orange) : elle ne bloque pas encore le
             // créneau, c'est le barbier qui la confirmera (statut "Confirmé" dans le Sheet).
             const set = state.pendingByDate[payload.dateISO] || (state.pendingByDate[payload.dateISO] = new Set());
@@ -674,6 +685,9 @@ Merci de me confirmer ce créneau.
         renderWeek();
       });
     }
+
+    // Re-rendu à chaque changement de langue
+    if (window.RufixI18N) window.RufixI18N.onChange(() => { renderServiceChoices(); renderWeek(); updateSummary(); });
   }
 
   if (document.readyState !== "loading") init();

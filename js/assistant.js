@@ -21,6 +21,7 @@
   if (!C || !C.assistant || C.assistant.actif === false) return;
 
   const A = C.assistant;
+  const T = (k, fb) => (window.RufixI18N ? window.RufixI18N.t(k) : fb);
   const onHome = !!document.getElementById("reservation");     // page d'accueil ?
   const lienResa = onHome ? "#reservation" : "index.html#reservation";
 
@@ -219,11 +220,11 @@
   const SVG_SEND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
 
   const CHIPS = [
-    { txt: "Vos tarifs", q: "tarifs" },
-    { txt: "Prendre RDV", q: "comment reserver" },
-    { txt: "Prochaines dispos", q: "disponibilites" },
-    { txt: "Horaires", q: "horaires" },
-    { txt: "Où êtes-vous ?", q: "adresse" }
+    { key: "chip.tarifs", q: "tarifs" },
+    { key: "chip.rdv", q: "comment reserver" },
+    { key: "chip.dispo", q: "disponibilites" },
+    { key: "chip.horaires", q: "horaires" },
+    { key: "chip.adresse", q: "adresse" }
   ];
 
   let ui = {}, ouvert = false;
@@ -261,7 +262,8 @@
       body: wrap.querySelector("#chatBody"),
       chips: wrap.querySelector("#chatChips"),
       form: wrap.querySelector("#chatForm"),
-      input: wrap.querySelector("#chatInput")
+      input: wrap.querySelector("#chatInput"),
+      status: wrap.querySelector(".chat-head__status")
     };
   }
 
@@ -280,8 +282,9 @@
       const b = document.createElement("button");
       b.type = "button";
       b.className = "chat-chip";
-      b.textContent = c.txt;
-      b.addEventListener("click", () => envoyer(c.q, c.txt));
+      const txt = T(c.key, c.q);
+      b.textContent = txt;
+      b.addEventListener("click", () => envoyer(c.q, txt));
       ui.chips.appendChild(b);
     });
   }
@@ -308,7 +311,7 @@
     ui.fab.classList.toggle("is-open", ouvert);
     if (ouvert) {
       if (!ui.body.dataset.init) {
-        ajouterMessage(esc(A.messageAccueil), "bot");
+        ajouterMessage(esc(T("chat.welcome", A.messageAccueil)), "bot");
         afficherChips();
         ui.body.dataset.init = "1";
       }
@@ -322,6 +325,13 @@
     ui.close.addEventListener("click", () => basculer(false));
     ui.form.addEventListener("submit", (e) => { e.preventDefault(); envoyer(ui.input.value); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && ouvert) basculer(false); });
+    const applyLangUI = () => {
+      if (ui.status) ui.status.textContent = T("chat.status", "Réponse immédiate");
+      if (ui.input) ui.input.placeholder = T("chat.placeholder", "Posez votre question…");
+      if (ui.chips && ui.body.dataset.init && ui.chips.style.display !== "none") afficherChips();
+    };
+    applyLangUI();
+    if (window.RufixI18N) window.RufixI18N.onChange(applyLangUI);
   }
 
   if (document.readyState !== "loading") init();

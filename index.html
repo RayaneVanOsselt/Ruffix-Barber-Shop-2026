@@ -39,9 +39,9 @@
         rel="stylesheet" />
 
   <!-- ========================= Styles ========================= -->
-  <link rel="stylesheet" href="css/base.css?v=20260724c" />
-  <link rel="stylesheet" href="css/components.css?v=20260724c" />
-  <link rel="stylesheet" href="css/animations.css?v=20260724c" />
+  <link rel="stylesheet" href="css/base.css?v=20260724e" />
+  <link rel="stylesheet" href="css/components.css?v=20260724e" />
+  <link rel="stylesheet" href="css/animations.css?v=20260724e" />
 
   <!-- ============= Données structurées (SEO local) =============
        👉 Éditez ces valeurs en même temps que js/config.js.
@@ -90,15 +90,20 @@
       </a>
 
       <div class="navbar__links" id="navLinks">
-        <a class="navbar__link" href="#accueil">Accueil</a>
-        <a class="navbar__link" href="#services">Services</a>
-        <a class="navbar__link" href="#reservation">Réservation</a>
-        <a class="navbar__link" href="#galerie">Galerie</a>
-        <a class="navbar__link" href="#avis">Avis</a>
-        <a class="navbar__link" href="#contact">Contact</a>
+        <a class="navbar__link" href="#accueil" data-i18n="nav.accueil">Accueil</a>
+        <a class="navbar__link" href="#services" data-i18n="nav.services">Services</a>
+        <a class="navbar__link" href="#reservation" data-i18n="nav.reservation">Réservation</a>
+        <a class="navbar__link" href="#galerie" data-i18n="nav.galerie">Galerie</a>
+        <a class="navbar__link" href="#avis" data-i18n="nav.avis">Avis</a>
+        <a class="navbar__link" href="#contact" data-i18n="nav.contact">Contact</a>
         <span class="navbar__cta">
-          <a class="btn btn--sm" href="#reservation">Réserver</a>
+          <a class="btn btn--sm" href="#reservation" data-i18n="nav.reserver">Réserver</a>
         </span>
+        <div class="lang-switch" role="group" aria-label="Langue">
+          <button type="button" class="lang-btn" data-lang="fr">FR</button>
+          <button type="button" class="lang-btn" data-lang="nl">NL</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+        </div>
       </div>
 
       <button class="navbar__burger" id="burger" aria-label="Ouvrir le menu"
@@ -122,21 +127,21 @@
 
       <div class="container">
         <div class="hero__inner">
-          <span class="eyebrow">Barbier · Coiffure homme · Etterbeek</span>
-          <h1>L'art de la coupe masculine</h1>
-          <p class="hero__sub">Coupe, barbe et rasage dans un cadre premium — sur rendez-vous.</p>
+          <span class="eyebrow" data-i18n="hero.eyebrow">Barbier · Coiffure homme · Etterbeek</span>
+          <h1 data-i18n="hero.title">L'art de la coupe masculine</h1>
+          <p class="hero__sub" data-i18n="hero.sub">Coupe, barbe et rasage dans un cadre premium — sur rendez-vous.</p>
           <div class="hero__actions">
             <a class="btn" href="#reservation">
-              Réserver maintenant
+              <span data-i18n="hero.cta1">Réserver maintenant</span>
               <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg>
             </a>
-            <a class="btn btn--ghost" href="#services">Découvrir nos services</a>
+            <a class="btn btn--ghost" href="#services" data-i18n="hero.cta2">Découvrir nos services</a>
           </div>
         </div>
       </div>
 
       <div class="hero__scroll" aria-hidden="true">
-        <span>Défiler</span>
+        <span data-i18n="hero.scroll">Défiler</span>
         <span class="dot"></span>
       </div>
     </section>
@@ -151,8 +156,8 @@
                alt="Intérieur élégant et chaleureux du salon Rufix Barber" />
         </div>
         <div class="about__text" data-reveal="right">
-          <span class="eyebrow">Le salon</span>
-          <h2 class="section-title">Un savoir-faire, une exigence</h2>
+          <span class="eyebrow" data-i18n="about.eyebrow">Le salon</span>
+          <h2 class="section-title" data-i18n="about.title">Un savoir-faire, une exigence</h2>
           <p class="lead">
             Chez Rufix Barber, chaque prestation est pensée comme un moment à part.
             Dans un cadre feutré et raffiné, nos barbiers allient techniques
@@ -163,20 +168,20 @@
           <div class="about__stats">
             <div class="about__stat">
               <div class="num">10+</div>
-              <div class="label">années d'expérience</div>
+              <div class="label" data-i18n="about.stat1">années d'expérience</div>
             </div>
             <div class="about__stat">
               <div class="num">100%</div>
-              <div class="label">sur rendez-vous</div>
+              <div class="label" data-i18n="about.stat2">sur rendez-vous</div>
             </div>
             <div class="about__stat">
               <div class="num">4,9★</div>
-              <div class="label">satisfaction client</div>
+              <div class="label" data-i18n="about.stat3">satisfaction client</div>
             </div>
           </div>
           <p style="margin-top:1.6rem">
             <a class="link-arrow" href="#services">
-              Voir nos prestations
+              <span data-i18n="about.link">Voir nos prestations</span>
               <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg>
             </a>
           </p>
@@ -192,9 +197,9 @@
     <section class="services" id="services">
       <div class="container">
         <div class="section-head center" data-reveal>
-          <span class="eyebrow">Nos prestations</span>
-          <h2 class="section-title">Des services taillés sur-mesure</h2>
-          <p class="lead">Trois formules pour un résultat impeccable, réalisées avec des produits premium.</p>
+          <span class="eyebrow" data-i18n="services.eyebrow">Nos prestations</span>
+          <h2 class="section-title" data-i18n="services.title">Des services taillés sur-mesure</h2>
+          <p class="lead" data-i18n="services.lead">Trois formules pour un résultat impeccable, réalisées avec des produits premium.</p>
         </div>
 
         <div class="grid grid-3">
@@ -207,16 +212,16 @@
             </div>
             <div class="service-card__body">
               <div class="service-card__head">
-                <h3 class="service-card__name">Coupe</h3>
+                <h3 class="service-card__name" data-i18n="svc.coupe.name">Coupe</h3>
                 <span class="service-card__price">30 €</span>
               </div>
               <span class="service-card__meta">
                 <svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg> 45 minutes
               </span>
-              <p class="service-card__desc">
+              <p class="service-card__desc" data-i18n="svc.coupe.desc">
                 Coupe sur-mesure au ciseau et à la tondeuse, finitions au rasoir et coiffage soigné.
               </p>
-              <button class="btn btn--block" data-book-service="coupe">Réserver</button>
+              <button class="btn btn--block" data-book-service="coupe" data-i18n="btn.reserver">Réserver</button>
             </div>
           </article>
 
@@ -228,16 +233,16 @@
             </div>
             <div class="service-card__body">
               <div class="service-card__head">
-                <h3 class="service-card__name">Barbe</h3>
+                <h3 class="service-card__name" data-i18n="svc.barbe.name">Barbe</h3>
                 <span class="service-card__price">25 €</span>
               </div>
               <span class="service-card__meta">
                 <svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg> 30 minutes
               </span>
-              <p class="service-card__desc">
+              <p class="service-card__desc" data-i18n="svc.barbe.desc">
                 Taille, dessin des contours et rasage à l'ancienne, serviette chaude et soin apaisant.
               </p>
-              <button class="btn btn--block" data-book-service="barbe">Réserver</button>
+              <button class="btn btn--block" data-book-service="barbe" data-i18n="btn.reserver">Réserver</button>
             </div>
           </article>
 
@@ -249,16 +254,16 @@
             </div>
             <div class="service-card__body">
               <div class="service-card__head">
-                <h3 class="service-card__name">Coupe + barbe</h3>
+                <h3 class="service-card__name" data-i18n="svc.cb.name">Coupe + barbe</h3>
                 <span class="service-card__price">45 €</span>
               </div>
               <span class="service-card__meta">
                 <svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg> 1 heure
               </span>
-              <p class="service-card__desc">
+              <p class="service-card__desc" data-i18n="svc.cb.desc">
                 L'expérience complète : coupe sur-mesure et barbe travaillée pour un résultat impeccable.
               </p>
-              <button class="btn btn--block" data-book-service="coupe-barbe">Réserver</button>
+              <button class="btn btn--block" data-book-service="coupe-barbe" data-i18n="btn.reserver">Réserver</button>
             </div>
           </article>
 
@@ -272,11 +277,12 @@
     <section class="reservation section--surface" id="reservation">
       <div class="container">
         <div class="section-head center" data-reveal>
-          <span class="eyebrow">Réservation</span>
-          <h2 class="section-title">Demandez votre rendez-vous</h2>
+          <span class="eyebrow" data-i18n="resa.eyebrow">Réservation</span>
+          <h2 class="section-title" data-i18n="resa.title">Demandez votre rendez-vous</h2>
           <p class="lead">
-            Choisissez une date, un créneau et votre prestation. Votre demande sera
-            <strong class="text-accent">confirmée manuellement</strong> par le barbier.
+            <span data-i18n="resa.lead1">Choisissez une date, un créneau et votre prestation. Votre demande sera</span>
+            <strong class="text-accent" data-i18n="resa.lead2">confirmée manuellement</strong>
+            <span data-i18n="resa.lead3">par le barbier.</span>
           </p>
         </div>
 
@@ -284,14 +290,14 @@
 
           <!-- Étape 1 : prestation (la durée détermine les créneaux bloqués) -->
           <div class="booking-panel" data-reveal style="margin-bottom:1.5rem">
-            <p class="booking-panel__title"><span class="step-num">1</span> Choisissez votre prestation</p>
+            <p class="booking-panel__title"><span class="step-num">1</span> <span data-i18n="resa.step1">Choisissez votre prestation</span></p>
             <!-- Radios générées depuis config.js par booking.js -->
             <div class="service-choice" id="serviceChoice" role="radiogroup" aria-label="Choix de la prestation"></div>
           </div>
 
           <!-- Étape 2 : créneau — grille hebdomadaire colorée -->
           <div class="booking-panel" data-reveal style="margin-bottom:1.5rem">
-            <p class="booking-panel__title"><span class="step-num">2</span> Choisissez votre créneau</p>
+            <p class="booking-panel__title"><span class="step-num">2</span> <span data-i18n="resa.step2">Choisissez votre créneau</span></p>
             <div class="week">
               <div class="week__header">
                 <button type="button" class="calendar__nav" id="weekPrev" aria-label="Semaine précédente">
@@ -304,10 +310,10 @@
               </div>
               <!-- Légende des couleurs -->
               <div class="week__legend" aria-hidden="true">
-                <span class="legend-item"><span class="legend-dot legend-dot--free"></span> Disponible</span>
-                <span class="legend-item"><span class="legend-dot legend-dot--pending"></span> Demande en attente</span>
-                <span class="legend-item"><span class="legend-dot legend-dot--taken"></span> Réservé / indisponible</span>
-                <span class="legend-item"><span class="legend-dot legend-dot--sel"></span> Votre sélection</span>
+                <span class="legend-item"><span class="legend-dot legend-dot--free"></span> <span data-i18n="legend.free">Disponible</span></span>
+                <span class="legend-item"><span class="legend-dot legend-dot--pending"></span> <span data-i18n="legend.pending">Demande en attente</span></span>
+                <span class="legend-item"><span class="legend-dot legend-dot--taken"></span> <span data-i18n="legend.taken">Réservé / indisponible</span></span>
+                <span class="legend-item"><span class="legend-dot legend-dot--sel"></span> <span data-i18n="legend.sel">Votre sélection</span></span>
               </div>
               <div class="week__grid-wrap">
                 <div class="week__grid" id="weekGrid" role="grid" aria-label="Créneaux de la semaine"></div>
@@ -318,25 +324,25 @@
 
           <!-- Étape 3 : coordonnées + confirmation -->
           <div class="booking-panel" data-reveal>
-            <p class="booking-panel__title"><span class="step-num">3</span> Vos informations</p>
+            <p class="booking-panel__title"><span class="step-num">3</span> <span data-i18n="resa.step3">Vos informations</span></p>
 
             <div class="field-row">
               <div class="field">
-                <label for="prenom">Prénom <span class="req">*</span></label>
+                <label for="prenom"><span data-i18n="form.prenom">Prénom</span> <span class="req">*</span></label>
                 <input class="input" type="text" id="prenom" name="prenom" autocomplete="given-name" required />
               </div>
               <div class="field">
-                <label for="nom">Nom <span class="req">*</span></label>
+                <label for="nom"><span data-i18n="form.nom">Nom</span> <span class="req">*</span></label>
                 <input class="input" type="text" id="nom" name="nom" autocomplete="family-name" required />
               </div>
             </div>
             <div class="field-row">
               <div class="field">
-                <label for="telephone">Téléphone <span class="req">*</span></label>
+                <label for="telephone"><span data-i18n="form.tel">Téléphone</span> <span class="req">*</span></label>
                 <input class="input" type="tel" id="telephone" name="telephone" autocomplete="tel" required />
               </div>
               <div class="field">
-                <label for="email">Email <span class="req">*</span></label>
+                <label for="email"><span data-i18n="form.email">Email</span> <span class="req">*</span></label>
                 <input class="input" type="email" id="email" name="email" autocomplete="email" required />
               </div>
             </div>
@@ -344,11 +350,11 @@
             <!-- Récapitulatif de confirmation -->
             <div class="booking-summary is-hidden" id="bookingSummary" aria-live="polite"></div>
 
-            <button type="submit" class="btn btn--block">Envoyer ma demande de rendez-vous</button>
+            <button type="submit" class="btn btn--block" data-i18n="resa.submit">Envoyer ma demande de rendez-vous</button>
 
             <p class="booking-note">
               <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
-              <span>Il s'agit d'une <strong>demande</strong> : vous recevrez un email de confirmation
+              <span data-i18n-html="resa.note">Il s'agit d'une <strong>demande</strong> : vous recevrez un email de confirmation
               dès que le barbier aura validé votre créneau. Le salon étant privé, aucune réservation
               n'est confirmée automatiquement.</span>
             </p>
@@ -366,41 +372,41 @@
     <section class="gallery" id="galerie">
       <div class="container">
         <div class="section-head center" data-reveal>
-          <span class="eyebrow">Galerie</span>
-          <h2 class="section-title">L'atelier en images</h2>
-          <p class="lead">Un aperçu de l'ambiance, des détails et du savoir-faire du salon.</p>
+          <span class="eyebrow" data-i18n="gal.eyebrow">Galerie</span>
+          <h2 class="section-title" data-i18n="gal.title">L'atelier en images</h2>
+          <p class="lead" data-i18n="gal.lead">Un aperçu de l'ambiance, des détails et du savoir-faire du salon.</p>
         </div>
 
         <div class="gallery-grid" data-reveal>
           <figure class="gallery-item is-tall">
             <img src="images/galerie-1.jpg" data-full="images/galerie-1.jpg" loading="lazy"
                  alt="Coupe homme en cours de réalisation au salon" />
-            <span class="gallery-item__plus"><svg class="icon" aria-hidden="true"><use href="#i-expand"></use></svg> Agrandir</span>
+            <span class="gallery-item__plus"><svg class="icon" aria-hidden="true"><use href="#i-expand"></use></svg> <span data-i18n="gal.zoom">Agrandir</span></span>
           </figure>
           <figure class="gallery-item">
             <img src="images/galerie-2.jpg" data-full="images/galerie-2.jpg" loading="lazy"
                  alt="Fauteuil de barbier vintage dans le salon" />
-            <span class="gallery-item__plus"><svg class="icon" aria-hidden="true"><use href="#i-expand"></use></svg> Agrandir</span>
+            <span class="gallery-item__plus"><svg class="icon" aria-hidden="true"><use href="#i-expand"></use></svg> <span data-i18n="gal.zoom">Agrandir</span></span>
           </figure>
           <figure class="gallery-item is-wide">
             <img src="images/galerie-3.jpg" data-full="images/galerie-3.jpg" loading="lazy"
                  alt="Outils du barbier : rasoir, ciseaux et tondeuse" />
-            <span class="gallery-item__plus"><svg class="icon" aria-hidden="true"><use href="#i-expand"></use></svg> Agrandir</span>
+            <span class="gallery-item__plus"><svg class="icon" aria-hidden="true"><use href="#i-expand"></use></svg> <span data-i18n="gal.zoom">Agrandir</span></span>
           </figure>
           <figure class="gallery-item">
             <img src="images/galerie-4.jpg" data-full="images/galerie-4.jpg" loading="lazy"
                  alt="Détail d'une coupe homme parfaitement finie" />
-            <span class="gallery-item__plus"><svg class="icon" aria-hidden="true"><use href="#i-expand"></use></svg> Agrandir</span>
+            <span class="gallery-item__plus"><svg class="icon" aria-hidden="true"><use href="#i-expand"></use></svg> <span data-i18n="gal.zoom">Agrandir</span></span>
           </figure>
           <figure class="gallery-item">
             <img src="images/galerie-5.jpg" data-full="images/galerie-5.jpg" loading="lazy"
                  alt="Rasage à l'ancienne à la serviette chaude" />
-            <span class="gallery-item__plus"><svg class="icon" aria-hidden="true"><use href="#i-expand"></use></svg> Agrandir</span>
+            <span class="gallery-item__plus"><svg class="icon" aria-hidden="true"><use href="#i-expand"></use></svg> <span data-i18n="gal.zoom">Agrandir</span></span>
           </figure>
           <figure class="gallery-item">
             <img src="images/galerie-6.jpg" data-full="images/galerie-6.jpg" loading="lazy"
                  alt="Ambiance générale du salon de barbier Rufix" />
-            <span class="gallery-item__plus"><svg class="icon" aria-hidden="true"><use href="#i-expand"></use></svg> Agrandir</span>
+            <span class="gallery-item__plus"><svg class="icon" aria-hidden="true"><use href="#i-expand"></use></svg> <span data-i18n="gal.zoom">Agrandir</span></span>
           </figure>
         </div>
       </div>
@@ -478,9 +484,9 @@
     <section class="reviews section--surface" id="avis">
       <div class="container">
         <div class="section-head center" data-reveal>
-          <span class="eyebrow">Avis clients</span>
-          <h2 class="section-title">Ils nous font confiance</h2>
-          <p class="lead">Quelques retours de nos clients (à remplacer par vos vrais avis).</p>
+          <span class="eyebrow" data-i18n="rev.eyebrow">Avis clients</span>
+          <h2 class="section-title" data-i18n="rev.title">Ils nous font confiance</h2>
+          <p class="lead" data-i18n="rev.lead">Quelques retours de nos clients.</p>
         </div>
 
         <div class="grid grid-3">
@@ -493,12 +499,12 @@
               <svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg>
               <svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg>
             </div>
-            <p class="review-card__text">Meilleur barbier de la ville. Accueil au top, coupe nette et ambiance vraiment premium. Je ne vais plus ailleurs.</p>
+            <p class="review-card__text" data-i18n="rev.1.text">Meilleur barbier de la ville. Accueil au top, coupe nette et ambiance vraiment premium. Je ne vais plus ailleurs.</p>
             <div class="review-card__author">
               <span class="review-card__avatar">T</span>
               <span>
                 <span class="review-card__name">Thomas L.</span><br />
-                <span class="review-card__role">Client depuis 2 ans</span>
+                <span class="review-card__role" data-i18n="rev.1.role">Client depuis 2 ans</span>
               </span>
             </div>
           </article>
@@ -511,12 +517,12 @@
               <svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg>
               <svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg>
             </div>
-            <p class="review-card__text">Le rasage à l'ancienne est un vrai moment de détente. Travail précis et soigné, je recommande les yeux fermés.</p>
+            <p class="review-card__text" data-i18n="rev.2.text">Le rasage à l'ancienne est un vrai moment de détente. Travail précis et soigné, je recommande les yeux fermés.</p>
             <div class="review-card__author">
               <span class="review-card__avatar">K</span>
               <span>
                 <span class="review-card__name">Karim B.</span><br />
-                <span class="review-card__role">Coupe + barbe</span>
+                <span class="review-card__role" data-i18n="rev.2.role">Coupe + barbe</span>
               </span>
             </div>
           </article>
@@ -529,12 +535,12 @@
               <svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg>
               <svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg>
             </div>
-            <p class="review-card__text">Prise de rendez-vous simple et barbier à l'écoute. Le résultat correspond exactement à ce que je voulais. Parfait.</p>
+            <p class="review-card__text" data-i18n="rev.3.text">Prise de rendez-vous simple et barbier à l'écoute. Le résultat correspond exactement à ce que je voulais. Parfait.</p>
             <div class="review-card__author">
               <span class="review-card__avatar">M</span>
               <span>
                 <span class="review-card__name">Maxime D.</span><br />
-                <span class="review-card__role">Coupe homme</span>
+                <span class="review-card__role" data-i18n="rev.3.role">Coupe homme</span>
               </span>
             </div>
           </article>
@@ -548,17 +554,17 @@
     <section class="faq-section" id="faq">
       <div class="container">
         <div class="section-head center" data-reveal>
-          <span class="eyebrow">Questions fréquentes</span>
-          <h2 class="section-title">Tout ce qu'il faut savoir</h2>
+          <span class="eyebrow" data-i18n="faq.eyebrow">Questions fréquentes</span>
+          <h2 class="section-title" data-i18n="faq.title">Tout ce qu'il faut savoir</h2>
         </div>
 
         <div class="faq" data-reveal>
           <div class="faq-item">
             <button class="faq-item__q" aria-expanded="false">
-              Faut-il réserver ?
+              <span data-i18n="faq.q1">Faut-il réserver ?</span>
               <span class="faq-item__icon"><svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></span>
             </button>
-            <div class="faq-item__a"><div class="faq-item__a-inner">
+            <div class="faq-item__a"><div class="faq-item__a-inner" data-i18n="faq.a1">
               Oui, le salon fonctionne uniquement sur rendez-vous afin de vous garantir un accueil
               personnalisé et sans attente. Envoyez votre demande via le formulaire de réservation :
               le barbier vous confirme le créneau par email.
@@ -567,10 +573,10 @@
 
           <div class="faq-item">
             <button class="faq-item__q" aria-expanded="false">
-              Combien de temps dure une coupe ?
+              <span data-i18n="faq.q2">Combien de temps dure une coupe ?</span>
               <span class="faq-item__icon"><svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></span>
             </button>
-            <div class="faq-item__a"><div class="faq-item__a-inner">
+            <div class="faq-item__a"><div class="faq-item__a-inner" data-i18n="faq.a2">
               Comptez environ 45 minutes pour une coupe, 30 minutes pour la barbe, et 1 heure pour
               la formule coupe + barbe. Nous prenons le temps qu'il faut pour un résultat impeccable.
             </div></div>
@@ -578,10 +584,10 @@
 
           <div class="faq-item">
             <button class="faq-item__q" aria-expanded="false">
-              Peut-on payer en espèces ?
+              <span data-i18n="faq.q3">Peut-on payer en espèces ?</span>
               <span class="faq-item__icon"><svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></span>
             </button>
-            <div class="faq-item__a"><div class="faq-item__a-inner">
+            <div class="faq-item__a"><div class="faq-item__a-inner" data-i18n="faq.a3">
               Oui, le paiement est possible en espèces comme par carte bancaire directement au salon,
               à la fin de votre prestation.
             </div></div>
@@ -589,10 +595,10 @@
 
           <div class="faq-item">
             <button class="faq-item__q" aria-expanded="false">
-              Comment fonctionne la réservation en ligne ?
+              <span data-i18n="faq.q4">Comment fonctionne la réservation en ligne ?</span>
               <span class="faq-item__icon"><svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></span>
             </button>
-            <div class="faq-item__a"><div class="faq-item__a-inner">
+            <div class="faq-item__a"><div class="faq-item__a-inner" data-i18n="faq.a4">
               Vous choisissez une date, un créneau et votre prestation, puis vous envoyez votre demande.
               Ce n'est pas une réservation ferme : le barbier valide manuellement votre créneau et vous
               confirme par email. Vous êtes ainsi certain d'être attendu.
@@ -601,10 +607,10 @@
 
           <div class="faq-item">
             <button class="faq-item__q" aria-expanded="false">
-              Que se passe-t-il en cas de retard ?
+              <span data-i18n="faq.q5">Que se passe-t-il en cas de retard ?</span>
               <span class="faq-item__icon"><svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></span>
             </button>
-            <div class="faq-item__a"><div class="faq-item__a-inner">
+            <div class="faq-item__a"><div class="faq-item__a-inner" data-i18n="faq.a5">
               Merci de nous prévenir par email en cas de retard. Au-delà de 10 minutes, la prestation
               pourra être écourtée ou reportée afin de respecter les rendez-vous suivants.
             </div></div>
@@ -612,10 +618,10 @@
 
           <div class="faq-item">
             <button class="faq-item__q" aria-expanded="false">
-              Comment annuler ou modifier un rendez-vous ?
+              <span data-i18n="faq.q6">Comment annuler ou modifier un rendez-vous ?</span>
               <span class="faq-item__icon"><svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></span>
             </button>
-            <div class="faq-item__a"><div class="faq-item__a-inner">
+            <div class="faq-item__a"><div class="faq-item__a-inner" data-i18n="faq.a6">
               Il suffit de nous contacter par email au moins 24 heures à l'avance.
               Nous décalerons votre rendez-vous avec plaisir selon les disponibilités.
             </div></div>
@@ -630,8 +636,8 @@
     <section class="contact section--surface" id="contact">
       <div class="container">
         <div class="section-head center" data-reveal>
-          <span class="eyebrow">Contact</span>
-          <h2 class="section-title">Nous trouver &amp; nous écrire</h2>
+          <span class="eyebrow" data-i18n="contact.eyebrow">Contact</span>
+          <h2 class="section-title" data-i18n="contact.title">Nous trouver &amp; nous écrire</h2>
         </div>
 
         <div class="contact__grid">
@@ -641,7 +647,7 @@
               <div class="contact-info__item">
                 <span class="contact-info__icon"><svg class="icon" aria-hidden="true"><use href="#i-pin"></use></svg></span>
                 <span>
-                  <span class="contact-info__label">Adresse</span>
+                  <span class="contact-info__label" data-i18n="contact.address">Adresse</span>
                   <span class="contact-info__value">
                     <span data-config="salon.ville">Etterbeek</span>
                     <span data-config="salon.codePostal">1040</span>
@@ -651,7 +657,7 @@
               <div class="contact-info__item">
                 <span class="contact-info__icon"><svg class="icon" aria-hidden="true"><use href="#i-mail"></use></svg></span>
                 <span>
-                  <span class="contact-info__label">Email</span>
+                  <span class="contact-info__label" data-i18n="contact.email">Email</span>
                   <span class="contact-info__value">
                     <a data-config-mail data-config="salon.email" href="#">infos@rufixbarber.com</a>
                   </span>
@@ -670,22 +676,22 @@
 
           <!-- Formulaire de contact -->
           <div class="booking-panel" data-reveal="right">
-            <p class="booking-panel__title"><svg class="icon" aria-hidden="true"><use href="#i-mail"></use></svg> Envoyez-nous un message</p>
+            <p class="booking-panel__title"><svg class="icon" aria-hidden="true"><use href="#i-mail"></use></svg> <span data-i18n="contact.formTitle">Envoyez-nous un message</span></p>
             <form id="contactForm" novalidate>
               <div class="field">
-                <label for="c-nom">Nom <span class="req">*</span></label>
+                <label for="c-nom"><span data-i18n="form.nom">Nom</span> <span class="req">*</span></label>
                 <input class="input" type="text" id="c-nom" name="nom" autocomplete="name" required />
               </div>
               <div class="field">
-                <label for="c-email">Email <span class="req">*</span></label>
+                <label for="c-email"><span data-i18n="form.email">Email</span> <span class="req">*</span></label>
                 <input class="input" type="email" id="c-email" name="email" autocomplete="email" required />
               </div>
               <div class="field">
-                <label for="c-message">Message <span class="req">*</span></label>
+                <label for="c-message"><span data-i18n="contact.msg">Message</span> <span class="req">*</span></label>
                 <textarea class="textarea" id="c-message" name="message" required
-                          placeholder="Votre message…"></textarea>
+                          placeholder="Votre message…" data-i18n-ph="contact.msgPh"></textarea>
               </div>
-              <button type="submit" class="btn btn--block">Envoyer le message</button>
+              <button type="submit" class="btn btn--block" data-i18n="contact.send">Envoyer le message</button>
               <div class="booking-feedback" id="contactFeedback"></div>
             </form>
           </div>
@@ -704,10 +710,7 @@
           <div class="footer__logo">
             <img src="images/logo.png" alt="Logo Rufix Barber" width="240" height="240" loading="lazy" />
           </div>
-          <p class="footer__tagline">
-            Barbier &amp; salon de coiffure homme premium à
-            <span data-config="salon.ville">Etterbeek</span>. Coupe, barbe et rasage sur rendez-vous.
-          </p>
+          <p class="footer__tagline" data-i18n="footer.tagline">Barbier &amp; salon de coiffure homme premium à Etterbeek. Coupe, barbe et rasage sur rendez-vous.</p>
           <div class="footer__socials">
             <a class="footer__social" data-config-instagram href="#"
                aria-label="Instagram du salon Rufix Barber" target="_blank" rel="noopener">
@@ -729,7 +732,7 @@
         </div>
 
         <div class="footer__col">
-          <h4>Coordonnées</h4>
+          <h4 data-i18n="footer.coord">Coordonnées</h4>
           <ul>
             <li><address><span data-config="salon.ville">Etterbeek</span> <span data-config="salon.codePostal">1040</span></address></li>
             <li><a data-config-mail data-config="salon.email" href="#">infos@rufixbarber.com</a></li>
@@ -737,16 +740,16 @@
         </div>
 
         <div class="footer__col">
-          <h4>Horaires</h4>
+          <h4 data-i18n="footer.hours">Horaires</h4>
           <ul id="footerHoraires" class="footer__hours"><!-- injecté depuis config.js --></ul>
         </div>
       </div>
 
       <div class="footer__bottom">
-        <span>© <span id="year">2026</span> Rufix Barber. Tous droits réservés.</span>
+        <span>© <span id="year">2026</span> Rufix Barber. <span data-i18n="footer.rights">Tous droits réservés.</span></span>
         <span class="footer__legal">
-          <a href="mentions-legales.html">Mentions légales</a>
-          <a href="politique-confidentialite.html">Politique de confidentialité</a>
+          <a href="mentions-legales.html" data-i18n="footer.legal1">Mentions légales</a>
+          <a href="politique-confidentialite.html" data-i18n="footer.legal2">Politique de confidentialité</a>
         </span>
       </div>
     </div>
@@ -779,9 +782,10 @@
        Si les clés ne sont pas renseignées dans config.js, le site
        bascule automatiquement sur le repli mailto (aucune erreur). -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/config.js?v=20260724c"></script>
-  <script src="js/booking.js?v=20260724c" defer></script>
-  <script src="js/main.js?v=20260724c" defer></script>
-  <script src="js/assistant.js?v=20260724c" defer></script>
+  <script src="js/config.js?v=20260724e"></script>
+  <script src="js/i18n.js?v=20260724e"></script>
+  <script src="js/booking.js?v=20260724e" defer></script>
+  <script src="js/main.js?v=20260724e" defer></script>
+  <script src="js/assistant.js?v=20260724e" defer></script>
 </body>
 </html>
