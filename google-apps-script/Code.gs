@@ -20,7 +20,7 @@
 
 var SHEET_NAME = "Reservations";   // nom de l'onglet du Google Sheet
 var PAS_MIN = 15;                  // pas des créneaux (doit correspondre à config.js)
-var CODE_VERSION = 3;              // témoin : permet de vérifier quelle version est déployée
+var CODE_VERSION = 4;              // témoin : permet de vérifier quelle version est déployée
 
 /* ---------------------------------------------------------------------
    STATUTS (colonne J du Sheet) — pilotent la couleur sur le site :
@@ -183,12 +183,234 @@ function doPost(e) {
       data.nom || "",                 // G Nom
       "'" + (data.telephone || ""),   // H Telephone (apostrophe = garde le format texte)
       data.email || "",               // I Email
-      "En attente de confirmation"    // J Statut → 🟠 orange tant que non validé
+      "En attente de confirmation",   // J Statut → 🟠 orange tant que non validé
+      data.notes || ""                // K Notes (optionnel)
     ]);
+    // Synchro Google Agenda immédiate (ne JAMAIS bloquer l'enregistrement si l'agenda échoue).
+    try { syncCalendar_(); } catch (calErr) { /* la réservation est déjà sauvegardée */ }
     return jsonOut({ ok: true });
   } catch (err) {
     return jsonOut({ ok: false, error: String(err) });
   } finally {
     lock.releaseLock();
   }
+}
+
+/* =====================================================================
+   =====================================================================
+                    INTÉGRATION GOOGLE AGENDA (Calendar)
+   =====================================================================
+   =====================================================================
+   Synchronise la feuille « Reservations » avec un calendrier Google
+   Agenda DÉDIÉ (créé automatiquement au 1er lancement) :
+     • nouvelle ligne          -> crée un événement ;
+     • ligne modifiée          -> met à jour l'événement ;
+     • statut « Annulé/Refusé » -> supprime l'événement.
+
+   Chaque réservation retient l'ID de son événement (colonne L) + une
+   signature (colonne M) pour retrouver / mettre à jour / supprimer le bon
+   événement, sans jamais créer de doublon.
+
+   👉 Installation : voir AGENDA-GOOGLE.md. En résumé, une seule fois :
+        Menu « Rufix Agenda » → « 1) Installer la synchro auto ».
+   ===================================================================== */
+
+var CAL_NAME  = "Rufix Barber — Réservations";   // nom du calendrier dédié (partageable)
+var CAL_PROP  = "RUFIX_CAL_ID";                  // clé de stockage de l'ID du calendrier
+var EVENT_TAG = "rufix-resa";                    // marqueur posé sur nos événements
+
+// Colonnes (0-based). A→J déjà utilisées par les réservations ; on ajoute :
+var COL_DATE = 1, COL_HEURE = 2, COL_SERVICE = 3, COL_DUREE = 4,
+    COL_PRENOM = 5, COL_NOM = 6, COL_TEL = 7, COL_EMAIL = 8, COL_STATUT = 9,
+    COL_NOTES = 10,   // K Notes (optionnel)
+    COL_EVENT = 11,   // L ID de l'événement Agenda (géré par le script)
+    COL_HASH  = 12;   // M Signature de synchro (géré par le script)
+
+/* ---------- Calendrier dédié : le retrouve ou le crée ---------- */
+function getBookingCalendar_() {
+  var props = PropertiesService.getScriptProperties();
+  var id = props.getProperty(CAL_PROP);
+  if (id) {
+    var c = CalendarApp.getCalendarById(id);
+    if (c) return c;
+  }
+  // Pas encore mémorisé : on cherche par nom, sinon on le crée.
+  var found = CalendarApp.getCalendarsByName(CAL_NAME);
+  var cal = (found && found.length) ? found[0]
+    : CalendarApp.createCalendar(CAL_NAME, {
+        summary: "Réservations du salon Rufix Barber (synchronisé depuis le Google Sheet).",
+        color: CalendarApp.Color.BROWN
+      });
+  props.setProperty(CAL_PROP, cal.getId());
+  return cal;
+}
+
+/* ---------- S'assure que les en-têtes K/L/M existent ---------- */
+function ensureSyncHeaders_(sheet) {
+  var head = sheet.getRange(1, 1, 1, Math.max(13, sheet.getLastColumn())).getValues()[0];
+  if (!head[COL_NOTES]) sheet.getRange(1, COL_NOTES + 1).setValue("Notes");
+  if (!head[COL_EVENT]) sheet.getRange(1, COL_EVENT + 1).setValue("ID Agenda");
+  if (!head[COL_HASH])  sheet.getRange(1, COL_HASH + 1).setValue("Sync");
+}
+
+/* ---------- Construit le titre / la description de l'événement ---------- */
+function eventTitle_(prenom, nom, service) {
+  var client = String(prenom || "").trim() + " " + String(nom || "").trim();
+  client = client.trim() || "Client";
+  return client + " – " + (String(service || "").trim() || "Rendez-vous");
+}
+function eventDescription_(o) {
+  var L = [];
+  L.push("Client : " + (o.client || "—"));
+  L.push("Service : " + (o.service || "—"));
+  L.push("Date : " + o.dateISO);
+  L.push("Heure : " + o.heure + " – " + o.heureFin + "  (" + o.dureeMin + " min)");
+  if (o.tel)   L.push("Téléphone : " + o.tel);
+  if (o.email) L.push("Email : " + o.email);
+  if (o.notes) L.push("Notes : " + o.notes);
+  L.push("Statut : " + (o.statut || "—"));
+  L.push("");
+  L.push("[" + EVENT_TAG + "] Événement synchronisé automatiquement depuis le Google Sheet.");
+  L.push("Ne modifiez pas cet événement à la main : éditez la ligne dans le Sheet.");
+  return L.join("\n");
+}
+
+/* ---------- Signature d'une ligne (pour détecter les changements) ---------- */
+function rowHash_(title, start, end, desc) {
+  var raw = title + "|" + start.getTime() + "|" + end.getTime() + "|" + desc;
+  var bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, raw, Utilities.Charset.UTF_8);
+  return Utilities.base64Encode(bytes);
+}
+
+/* =====================================================================
+   CŒUR DE LA SYNCHRO — réconcilie la feuille avec le calendrier.
+   (sans verrou : appelé soit sous le verrou de doPost, soit via le
+    wrapper verrouillé syncReservationsToCalendar)
+   ===================================================================== */
+function syncCalendar_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var tz = ss.getSpreadsheetTimeZone();
+  var sheet = getSheet();
+  if (!sheet) return;
+  ensureSyncHeaders_(sheet);
+
+  var cal = getBookingCalendar_();
+  var rng = sheet.getDataRange();
+  var rows = rng.getValues();
+  // On écrit L (ID) et M (hash) en une fois à la fin : on prépare 2 colonnes.
+  var evCol = [], hashCol = [], dirty = false;
+
+  for (var i = 1; i < rows.length; i++) {
+    var r = rows[i];
+    var eventId = String(r[COL_EVENT] || "").trim();
+    var hash    = String(r[COL_HASH] || "").trim();
+
+    var dateISO = normDate(r[COL_DATE], tz);
+    var heure   = normTime(r[COL_HEURE], tz);
+    var type    = statutType(r[COL_STATUT]);
+    var hasCore = dateISO && heure && (String(r[COL_NOM] || "").trim() || String(r[COL_PRENOM] || "").trim());
+
+    // --- Cas 1 : l'événement NE doit PAS exister (annulé / refusé / ligne vide) ---
+    if (type === "ignore" || !hasCore) {
+      if (eventId) {
+        try { var ex = cal.getEventById(eventId); if (ex) ex.deleteEvent(); } catch (e) {}
+        eventId = ""; hash = ""; dirty = true;
+      }
+      evCol.push([eventId]); hashCol.push([hash]);
+      continue;
+    }
+
+    // --- Cas 2 : l'événement DOIT exister (création ou mise à jour) ---
+    var dureeMin = Math.max(PAS_MIN, parseInt(r[COL_DUREE], 10) || PAS_MIN);
+    var start = Utilities.parseDate(dateISO + " " + heure, tz, "yyyy-MM-dd HH:mm");
+    var end   = new Date(start.getTime() + dureeMin * 60000);
+    var client = (String(r[COL_PRENOM] || "").trim() + " " + String(r[COL_NOM] || "").trim()).trim();
+    var title = eventTitle_(r[COL_PRENOM], r[COL_NOM], r[COL_SERVICE]);
+    var desc = eventDescription_({
+      client: client, service: r[COL_SERVICE], dateISO: dateISO, heure: heure,
+      heureFin: Utilities.formatDate(end, tz, "HH:mm"), dureeMin: dureeMin,
+      tel: String(r[COL_TEL] || "").trim(), email: String(r[COL_EMAIL] || "").trim(),
+      notes: String(r[COL_NOTES] || "").trim(), statut: String(r[COL_STATUT] || "").trim()
+    });
+    var sig = rowHash_(title, start, end, desc);
+
+    if (!eventId) {
+      // Création
+      var ev = cal.createEvent(title, start, end, { description: desc, location: "Etterbeek" });
+      ev.setTag("app", EVENT_TAG);
+      eventId = ev.getId(); hash = sig; dirty = true;
+    } else if (sig !== hash) {
+      // Mise à jour (ou re-création si l'événement a été supprimé à la main)
+      var cur = null;
+      try { cur = cal.getEventById(eventId); } catch (e) {}
+      if (!cur) {
+        var ev2 = cal.createEvent(title, start, end, { description: desc, location: "Etterbeek" });
+        ev2.setTag("app", EVENT_TAG);
+        eventId = ev2.getId();
+      } else {
+        cur.setTitle(title);
+        cur.setTime(start, end);
+        cur.setDescription(desc);
+      }
+      hash = sig; dirty = true;
+    }
+
+    evCol.push([eventId]); hashCol.push([hash]);
+  }
+
+  // Écriture groupée des colonnes L et M (seulement si quelque chose a changé)
+  if (dirty && evCol.length) {
+    sheet.getRange(2, COL_EVENT + 1, evCol.length, 1).setValues(evCol);
+    sheet.getRange(2, COL_HASH + 1, hashCol.length, 1).setValues(hashCol);
+  }
+}
+
+/* ---------- Wrapper VERROUILLÉ (déclencheurs + lancement manuel) ---------- */
+function syncReservationsToCalendar() {
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000);
+    syncCalendar_();
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* ---------- Déclencheur d'édition manuelle (modif / annulation) ---------- */
+function onEditSync_(e) {
+  // On resynchronise dès qu'une cellule de la feuille des réservations change.
+  try {
+    if (e && e.range && e.range.getSheet().getName() !== SHEET_NAME) return;
+  } catch (err) {}
+  syncReservationsToCalendar();
+}
+
+/* =====================================================================
+   INSTALLATION AUTOMATIQUE DES DÉCLENCHEURS (à lancer UNE fois)
+   - onEditSync_            : synchro immédiate quand on édite la feuille ;
+   - syncReservationsToCalendar : filet de sécurité toutes les minutes.
+   Relançable sans risque : les anciens déclencheurs identiques sont retirés.
+   ===================================================================== */
+function installTriggers() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var keep = ["onEditSync_", "syncReservationsToCalendar"];
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (keep.indexOf(t.getHandlerFunction()) !== -1) ScriptApp.deleteTrigger(t);
+  });
+  // Édition manuelle → synchro instantanée
+  ScriptApp.newTrigger("onEditSync_").forSpreadsheet(ss).onEdit().create();
+  // Filet de sécurité (nouvelles résas du site, changements ratés) toutes les minutes
+  ScriptApp.newTrigger("syncReservationsToCalendar").timeBased().everyMinutes(1).create();
+  // Première synchro immédiate + on garantit l'existence du calendrier
+  syncReservationsToCalendar();
+  return "Synchro installée. Calendrier : " + getBookingCalendar_().getName();
+}
+
+/* ---------- Menu pratique dans le Google Sheet ---------- */
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu("Rufix Agenda")
+    .addItem("1) Installer la synchro auto", "installTriggers")
+    .addItem("2) Synchroniser maintenant", "syncReservationsToCalendar")
+    .addToUi();
 }
