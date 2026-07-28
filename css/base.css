@@ -33,7 +33,12 @@
   /* --- Ombres très douces (aspect premium) --- */
   --shadow-soft:  0 10px 30px -12px rgba(0,0,0,0.55);
   --shadow-card:  0 18px 40px -20px rgba(0,0,0,0.65);
+  --shadow-hover: 0 30px 60px -28px rgba(0,0,0,0.8);
   --shadow-glow:  0 8px 26px -8px rgba(201,162,75,0.45);
+
+  /* --- Accent doré : dégradé & or profond (touches premium) --- */
+  --color-accent-deep: #a6802f;
+  --grad-gold: linear-gradient(120deg, #e6c878, #c9a24b 52%, #a6802f);
 
   /* --- Rayons d'angles (coins légèrement arrondis) --- */
   --radius-sm: 8px;
@@ -61,10 +66,18 @@
 /* --------------------------- Reset léger --------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
 * { margin: 0; }
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* Ancres : on décale la cible pour qu'elle ne passe pas sous la navbar fixe */
+  scroll-padding-top: calc(var(--navbar-h) + 12px);
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+/* Sélection de texte aux couleurs de la marque */
+::selection { background: var(--color-accent); color: #1a1712; }
 
 body {
   font-family: var(--font-body);
