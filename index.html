@@ -39,9 +39,9 @@
         rel="stylesheet" />
 
   <!-- ========================= Styles ========================= -->
-  <link rel="stylesheet" href="css/base.css?v=20260726f" />
-  <link rel="stylesheet" href="css/components.css?v=20260726f" />
-  <link rel="stylesheet" href="css/animations.css?v=20260726f" />
+  <link rel="stylesheet" href="css/base.css?v=20260726g" />
+  <link rel="stylesheet" href="css/components.css?v=20260726g" />
+  <link rel="stylesheet" href="css/animations.css?v=20260726g" />
 
   <!-- ============= Données structurées (SEO local) =============
        👉 Éditez ces valeurs en même temps que js/config.js.
@@ -489,23 +489,27 @@
         <div id="instaFeed" data-reveal></div>
 
         <!-- Repli : carte d'invitation premium (aucune photo) — entièrement cliquable -->
-        <a id="instaFallback" class="insta-card" data-reveal
+        <a id="instaFallback" class="insta-card insta-card--row" data-reveal
            href="https://www.instagram.com/rufixbarber" target="_blank" rel="noopener"
            aria-label="Ouvrir notre Instagram @rufixbarber">
           <span class="insta-card__glow" aria-hidden="true"></span>
-          <span class="insta-card__badge"><svg class="icon" aria-hidden="true"><use href="#i-instagram"></use></svg></span>
-          <span class="insta-card__handle">@rufixbarber</span>
-          <h3 class="insta-card__title" data-i18n="insta.cardTitle">Suivez le quotidien du salon</h3>
-          <p class="insta-card__text" data-i18n="insta.cardText">Coupes du jour, coulisses et inspirations — retrouvez nos dernières réalisations et toute l'ambiance Rufix directement sur Instagram.</p>
-          <ul class="insta-card__features">
-            <li><span class="insta-card__dot" aria-hidden="true"></span> <span data-i18n="insta.f1">Coupes du jour</span></li>
-            <li><span class="insta-card__dot" aria-hidden="true"></span> <span data-i18n="insta.f2">Coulisses du salon</span></li>
-            <li><span class="insta-card__dot" aria-hidden="true"></span> <span data-i18n="insta.f3">Avant / après</span></li>
-          </ul>
-          <span class="btn insta-card__btn">
-            <svg class="icon" aria-hidden="true"><use href="#i-instagram"></use></svg>
-            <span data-i18n="insta.follow">Suivez-nous sur Instagram</span>
-          </span>
+          <div class="insta-card__aside">
+            <span class="insta-card__badge"><svg class="icon" aria-hidden="true"><use href="#i-instagram"></use></svg></span>
+            <span class="insta-card__handle">@rufixbarber</span>
+          </div>
+          <div class="insta-card__main">
+            <h3 class="insta-card__title" data-i18n="insta.cardTitle">Suivez le quotidien du salon</h3>
+            <p class="insta-card__text" data-i18n="insta.cardText">Coupes du jour, coulisses et inspirations — retrouvez nos dernières réalisations et toute l'ambiance Rufix directement sur Instagram.</p>
+            <ul class="insta-card__features">
+              <li><span class="insta-card__dot" aria-hidden="true"></span> <span data-i18n="insta.f1">Coupes du jour</span></li>
+              <li><span class="insta-card__dot" aria-hidden="true"></span> <span data-i18n="insta.f2">Coulisses du salon</span></li>
+              <li><span class="insta-card__dot" aria-hidden="true"></span> <span data-i18n="insta.f3">Avant / après</span></li>
+            </ul>
+            <span class="btn insta-card__btn">
+              <svg class="icon" aria-hidden="true"><use href="#i-instagram"></use></svg>
+              <span data-i18n="insta.follow">Suivez-nous sur Instagram</span>
+            </span>
+          </div>
         </a>
       </div>
     </section>
@@ -776,6 +780,19 @@
        ========================================================= -->
   <footer class="footer">
     <div class="container">
+
+      <!-- Bande d'appel à l'action (invite à réserver) -->
+      <div class="footer__cta" data-reveal>
+        <div class="footer__cta-text">
+          <h2 data-i18n="footer.ctaTitle">Prêt à passer au fauteuil ?</h2>
+          <p data-i18n="footer.ctaText">Réservez votre créneau en quelques clics — confirmation par email du barbier.</p>
+        </div>
+        <a class="btn" href="#reservation">
+          <span data-i18n="footer.ctaBtn">Prendre rendez-vous</span>
+          <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg>
+        </a>
+      </div>
+
       <div class="footer__grid">
         <div>
           <div class="footer__logo">
@@ -854,11 +871,11 @@
        Si les clés ne sont pas renseignées dans config.js, le site
        bascule automatiquement sur le repli mailto (aucune erreur). -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/config.js?v=20260726f"></script>
-  <script src="js/i18n.js?v=20260726f"></script>
-  <script src="js/booking.js?v=20260726f" defer></script>
-  <script src="js/reviews.js?v=20260726f" defer></script>
-  <script src="js/main.js?v=20260726f" defer></script>
-  <script src="js/assistant.js?v=20260726f" defer></script>
+  <script src="js/config.js?v=20260726g"></script>
+  <script src="js/i18n.js?v=20260726g"></script>
+  <script src="js/booking.js?v=20260726g" defer></script>
+  <script src="js/reviews.js?v=20260726g" defer></script>
+  <script src="js/main.js?v=20260726g" defer></script>
+  <script src="js/assistant.js?v=20260726g" defer></script>
 </body>
 </html>
