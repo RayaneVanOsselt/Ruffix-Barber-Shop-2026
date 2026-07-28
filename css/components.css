@@ -1594,3 +1594,50 @@
     position: sticky; top: calc(var(--navbar-h) + 26px);
   }
 }
+
+/* ---- Kicker doré aussi pour l'intro Réservation ---- */
+.resa__intro .eyebrow {
+  display: inline-flex; align-items: center; gap: 0.7rem; align-self: flex-start;
+}
+.resa__intro .eyebrow::before {
+  content: ""; width: 26px; height: 1px;
+  background: linear-gradient(90deg, var(--color-accent), transparent);
+}
+
+/* ---- RÉSERVATION : 2 colonnes (rail d'intro sticky + formulaire) ---- */
+.resa__layout { display: grid; grid-template-columns: 1fr; gap: clamp(1.6rem, 4vw, 3rem); }
+@media (min-width: 980px) {
+  .resa__layout { grid-template-columns: 0.8fr 1.2fr; align-items: start; }
+  .resa__intro { position: sticky; top: calc(var(--navbar-h) + 26px); }
+}
+.resa__intro .section-title { margin: 0.4rem 0 1rem; }
+.resa__points { display: grid; gap: 0.9rem; margin-top: 1.9rem; }
+.resa__points li {
+  display: flex; align-items: center; gap: 0.85rem;
+  color: var(--color-text); font-size: 0.98rem;
+}
+.resa__point-ic {
+  flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center; color: var(--color-accent);
+  background: var(--color-surface-2); border: 1px solid var(--color-line);
+}
+.resa__point-ic .icon { width: 18px; height: 18px; }
+
+/* ---- En-tête « split » éditorial (titre à gauche, description à droite) ---- */
+.split-head {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 1rem 2.5rem;
+  margin-bottom: clamp(2rem, 4vw, 3.2rem);
+  padding-bottom: 1.4rem; border-bottom: 1px solid var(--color-line);
+}
+.split-head__left { max-width: 640px; }
+.split-head__lead { max-width: 42ch; margin-bottom: 0.15rem; }
+.split-head .eyebrow { display: inline-flex; align-items: center; gap: 0.7rem; }
+.split-head .eyebrow::before {
+  content: ""; width: 26px; height: 1px;
+  background: linear-gradient(90deg, var(--color-accent), transparent);
+}
+@media (max-width: 700px) {
+  .split-head { align-items: flex-start; }
+  .split-head__lead { max-width: none; }
+}
