@@ -39,9 +39,9 @@
         rel="stylesheet" />
 
   <!-- ========================= Styles ========================= -->
-  <link rel="stylesheet" href="css/base.css?v=20260726d" />
-  <link rel="stylesheet" href="css/components.css?v=20260726d" />
-  <link rel="stylesheet" href="css/animations.css?v=20260726d" />
+  <link rel="stylesheet" href="css/base.css?v=20260726e" />
+  <link rel="stylesheet" href="css/components.css?v=20260726e" />
+  <link rel="stylesheet" href="css/animations.css?v=20260726e" />
 
   <!-- ============= Données structurées (SEO local) =============
        👉 Éditez ces valeurs en même temps que js/config.js.
@@ -137,6 +137,22 @@
             </a>
             <a class="btn btn--ghost" href="#services" data-i18n="hero.cta2">Découvrir nos services</a>
           </div>
+
+          <!-- Bande de piliers : repères clés, look éditorial premium -->
+          <ul class="hero__pillars">
+            <li>
+              <strong data-i18n="hero.pill1t">Sur rendez-vous</strong>
+              <span data-i18n="hero.pill1s">Accueil privé, sans attente</span>
+            </li>
+            <li>
+              <strong data-i18n="hero.pill2t">Coupe · Barbe · Rasage</strong>
+              <span data-i18n="hero.pill2s">Techniques traditionnelles</span>
+            </li>
+            <li>
+              <strong data-i18n="hero.pill3t">Etterbeek · 1040</strong>
+              <span data-i18n="hero.pill3s">Barbier & coiffure homme</span>
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -154,6 +170,14 @@
         <div class="about__media" data-reveal="left">
           <img src="images/salon-interieur.jpg" loading="lazy"
                alt="Intérieur élégant et chaleureux du salon Rufix Barber" />
+          <!-- Badge de marque flottant (chevauche l'image) -->
+          <div class="about__badge">
+            <span class="about__badge-mark">RB</span>
+            <span class="about__badge-txt">
+              <strong>Rufix Barber</strong>
+              <span data-i18n="about.badge">Barbier premium · Etterbeek</span>
+            </span>
+          </div>
         </div>
         <div class="about__text" data-reveal="right">
           <span class="eyebrow" data-i18n="about.eyebrow">Le salon</span>
@@ -196,13 +220,18 @@
          ========================================================= -->
     <section class="services" id="services">
       <div class="container">
-        <div class="section-head center" data-reveal>
-          <span class="eyebrow" data-i18n="services.eyebrow">Nos prestations</span>
-          <h2 class="section-title" data-i18n="services.title">Des services taillés sur-mesure</h2>
-          <p class="lead" data-i18n="services.lead">Trois formules pour un résultat impeccable, réalisées avec des produits premium.</p>
-        </div>
+        <div class="services__bento">
 
-        <div class="grid grid-3">
+          <!-- Bloc d'introduction (première tuile du bento) -->
+          <div class="services__intro" data-reveal>
+            <span class="eyebrow" data-i18n="services.eyebrow">Nos prestations</span>
+            <h2 class="section-title" data-i18n="services.title">Des services taillés sur-mesure</h2>
+            <p class="lead" data-i18n="services.lead">Trois formules pour un résultat impeccable, réalisées avec des produits premium.</p>
+            <a class="link-arrow" href="#reservation">
+              <span data-i18n="services.cta">Réserver un créneau</span>
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg>
+            </a>
+          </div>
 
           <!-- Carte 1 : Coupe — 30 € — 45 min -->
           <article class="service-card" data-reveal data-delay="1">
@@ -576,10 +605,17 @@
          FAQ — accordéon accessible (un item ouvert à la fois)
          ========================================================= -->
     <section class="faq-section" id="faq">
-      <div class="container">
-        <div class="section-head center" data-reveal>
+      <div class="container faq__layout">
+        <div class="faq__intro" data-reveal>
           <span class="eyebrow" data-i18n="faq.eyebrow">Questions fréquentes</span>
           <h2 class="section-title" data-i18n="faq.title">Tout ce qu'il faut savoir</h2>
+          <p class="faq__more">
+            <span data-i18n="faq.more">Une autre question ?</span>
+            <a class="link-arrow" href="#contact">
+              <span data-i18n="faq.contact">Écrivez-nous</span>
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg>
+            </a>
+          </p>
         </div>
 
         <div class="faq" data-reveal>
@@ -799,11 +835,11 @@
        Si les clés ne sont pas renseignées dans config.js, le site
        bascule automatiquement sur le repli mailto (aucune erreur). -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/config.js?v=20260726d"></script>
-  <script src="js/i18n.js?v=20260726d"></script>
-  <script src="js/booking.js?v=20260726d" defer></script>
-  <script src="js/reviews.js?v=20260726d" defer></script>
-  <script src="js/main.js?v=20260726d" defer></script>
-  <script src="js/assistant.js?v=20260726d" defer></script>
+  <script src="js/config.js?v=20260726e"></script>
+  <script src="js/i18n.js?v=20260726e"></script>
+  <script src="js/booking.js?v=20260726e" defer></script>
+  <script src="js/reviews.js?v=20260726e" defer></script>
+  <script src="js/main.js?v=20260726e" defer></script>
+  <script src="js/assistant.js?v=20260726e" defer></script>
 </body>
 </html>

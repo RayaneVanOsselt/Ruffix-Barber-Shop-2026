@@ -1499,3 +1499,98 @@
   .about__stats { gap: 1.4rem 1.8rem; }
   .about__stat:not(:last-child)::after { display: none; }
 }
+
+/* =====================================================================
+   =====================================================================
+     REFONTE 2 — DISPOSITIONS ÉDITORIALES (mises en page moins « basiques »)
+   =====================================================================
+   Toujours du style/mise en page uniquement. La section « Avis » n'est
+   pas ciblée. Les IDs et hooks JS (data-book-service, .faq-item…) sont
+   conservés : seule la disposition change.
+   ===================================================================== */
+
+/* ---- Kicker doré (trait en amont) pour les intros alignées à gauche ---- */
+.services__intro .eyebrow,
+.faq__intro .eyebrow {
+  display: inline-flex; align-items: center; gap: 0.7rem; align-self: flex-start;
+}
+.services__intro .eyebrow::before,
+.faq__intro .eyebrow::before {
+  content: ""; width: 26px; height: 1px;
+  background: linear-gradient(90deg, var(--color-accent), transparent);
+}
+
+/* ---- HERO : bande de piliers (repères clés) ---- */
+.hero__pillars {
+  display: flex; flex-wrap: wrap; gap: 0.7rem 2.4rem;
+  margin-top: 2.6rem; padding-top: 1.6rem;
+  border-top: 1px solid rgba(244,239,231,0.16);
+  max-width: 640px;
+}
+.hero__pillars li { display: flex; flex-direction: column; gap: 3px; }
+.hero__pillars strong {
+  font-family: var(--font-body); font-weight: 600; font-size: 0.98rem;
+  color: var(--color-text); letter-spacing: 0.01em;
+}
+.hero__pillars span { color: var(--color-muted); font-size: 0.82rem; }
+@media (max-width: 560px) {
+  .hero__pillars { gap: 1rem 1.4rem; margin-top: 2rem; }
+  .hero__pillars li { flex: 1 1 42%; }
+}
+
+/* ---- À PROPOS : composition asymétrique + badge de marque flottant ---- */
+@media (min-width: 901px) {
+  .about__grid { grid-template-columns: 1.15fr 0.92fr; }
+}
+.about__badge {
+  position: absolute; left: 18px; bottom: 18px; z-index: 2;
+  display: inline-flex; align-items: center; gap: 0.75rem;
+  padding: 0.6rem 1.05rem 0.6rem 0.6rem;
+  background: rgba(20,17,15,0.74); backdrop-filter: blur(10px) saturate(140%);
+  border: 1px solid var(--color-line); border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+.about__badge-mark {
+  display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px;
+  background: var(--grad-gold); color: #1a1712;
+  font-family: var(--font-title); font-weight: 700; font-size: 1.05rem;
+}
+.about__badge-txt { display: flex; flex-direction: column; line-height: 1.25; }
+.about__badge-txt strong { font-size: 0.95rem; }
+.about__badge-txt span { color: var(--color-muted); font-size: 0.78rem; }
+@media (max-width: 560px) {
+  .about__badge { left: 12px; bottom: 12px; padding: 0.5rem 0.85rem 0.5rem 0.5rem; }
+  .about__badge-mark { width: 36px; height: 36px; font-size: 0.95rem; }
+}
+
+/* ---- SERVICES : bento (tuile d'intro + 3 cartes en 2×2) ---- */
+.services__bento {
+  display: grid; gap: clamp(1.1rem, 2.4vw, 1.8rem);
+  grid-template-columns: repeat(2, 1fr);
+}
+.services__intro {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(1.2rem, 3vw, 2.2rem) clamp(0.2rem, 2vw, 1rem);
+}
+.services__intro .section-title { margin: 0.4rem 0 1rem; }
+.services__intro .lead { margin-bottom: 1.6rem; }
+@media (max-width: 720px) {
+  .services__bento { grid-template-columns: 1fr; }
+  .services__intro { text-align: left; padding: 0 0 0.6rem; }
+}
+
+/* ---- FAQ : 2 colonnes (titre sticky à gauche + questions à droite) ---- */
+.faq__layout {
+  display: grid; grid-template-columns: 1fr;
+  gap: clamp(1.6rem, 4vw, 3.6rem);
+}
+.faq__intro .section-title { margin-top: 0.4rem; }
+.faq__more { margin-top: 1.5rem; color: var(--color-muted); font-size: 0.95rem; }
+.faq__more .link-arrow { margin-left: 0.3rem; }
+.faq__layout .faq { max-width: none; margin: 0; }   /* pleine largeur de sa colonne */
+@media (min-width: 900px) {
+  .faq__layout { grid-template-columns: 0.82fr 1.18fr; align-items: start; }
+  .faq__intro {
+    position: sticky; top: calc(var(--navbar-h) + 26px);
+  }
+}
