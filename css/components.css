@@ -488,28 +488,26 @@
 }
 .wcell { min-height: 30px; }
 
-/* ----- Ajustements MOBILE : colonnes nettes + défilement aligné ----- */
+/* ----- Ajustements MOBILE : les 7 jours TIENNENT dans l'écran (aucun scroll horizontal) ----- */
 @media (max-width: 560px) {
   .week__grid {
-    grid-template-columns: 38px repeat(7, 58px);  /* colonnes fixes = jamais coupées à moitié */
+    grid-template-columns: 34px repeat(7, minmax(0, 1fr));  /* 1fr = s'adapte à la largeur, jamais de débordement */
     min-width: 0;
     gap: 3px;
     padding: 5px;
   }
-  .wcell { min-height: 34px; }                     /* cases un peu plus hautes = plus faciles à toucher */
-  .whead__num { font-size: 0.95rem; }
-  .whead__dow { font-size: 0.6rem; }
-  .wtime { font-size: 0.7rem; padding-right: 5px; }
-
-  /* Le défilement horizontal s'« accroche » à chaque jour (plus de colonne coupée) */
-  .week__grid-wrap {
-    scroll-snap-type: x proximity;
-    scroll-padding-left: 38px;                      /* s'aligne juste après la colonne des heures */
-    -webkit-overflow-scrolling: touch;
-    /* Léger dégradé sur le bord droit : indique qu'on peut faire glisser */
-    box-shadow: inset -20px 0 14px -14px rgba(0,0,0,0.55);
-  }
-  .whead, .wslot { scroll-snap-align: start; }
+  /* Plus de défilement horizontal : tout est visible d'un coup */
+  .week__grid-wrap { overflow-x: hidden; overflow-y: auto; }
+  .wcell { min-height: 38px; }                     /* cases confortables à toucher */
+  .whead { padding: 5px 1px; }
+  .whead__num { font-size: 0.88rem; }
+  .whead__dow { font-size: 0.56rem; letter-spacing: 0.01em; }
+  .wtime { font-size: 0.62rem; padding-right: 3px; }
+  .wslot-indispo__label { font-size: 0.56rem; letter-spacing: 0.08em; padding: 8px 0; }
+}
+@media (max-width: 380px) {
+  .whead__dow { font-size: 0.5rem; }
+  .wtime { font-size: 0.56rem; }
 }
 
 /* En-têtes de jours (sticky en haut) */
@@ -1735,3 +1733,44 @@ body { overflow-wrap: break-word; }
 /* 5) Sécurité anti-débordement : jamais de scroll horizontal parasite */
 .hero__pillars, .about__stats, .split-head, .footer__cta { max-width: 100%; }
 .about__stat .num, .service-card__price, .reviews-summary__score { overflow-wrap: normal; }
+
+/* =====================================================================
+   =====================================================================
+     MOBILE BLINDÉ — structure 100% adaptée, zéro débordement
+   =====================================================================
+   Cause n°1 des débordements mobiles : un enfant flex/grid qui refuse de
+   rétrécir (min-width:auto = largeur du contenu). On l'autorise à rétrécir
+   partout, et on verrouille toute largeur au maximum de l'écran.
+   ===================================================================== */
+
+/* Garde-fou racine : jamais de scroll horizontal (clip = pas de conteneur de scroll) */
+html { overflow-x: clip; }
+
+/* Les enfants des lignes flex/grid peuvent rétrécir (sinon ils débordent) */
+.split-head > *, .footer__cta > *, .reviews-summary > *, .contact-info__item > *,
+.service-card__head > *, .service-radio > *, .booking-panel__title > *,
+.footer__hours li > *, .footer__bottom > *, .week__partner > *,
+.rv-card__top > *, .rv-card__id, .contact-info__item > span,
+.hero__actions > *, .about__stat, .navbar__inner > * { min-width: 0; }
+
+/* Le carrousel d'avis reste strictement dans son cadre (double sécurité) */
+.reviews-stage, .reviews-marquee { overflow: hidden; max-width: 100%; }
+
+/* Rien ne dépasse jamais la largeur de l'écran */
+img, svg, video, iframe, table, pre { max-width: 100%; }
+
+@media (max-width: 640px) {
+  /* Tous les grands blocs : largeur maximale = l'écran */
+  .booking-panel, form, .service-card, .rv-card, .insta-card, .about__media,
+  .split-head, .footer__cta, .contact__grid, .about__grid, .week, .week__grid-wrap {
+    max-width: 100%;
+  }
+  /* Espacements verticaux homogènes et plus compacts sur petit écran */
+  section { padding-block: clamp(3rem, 11vw, 4.5rem); }
+  /* Le texte long (emails, noms de rue…) passe toujours à la ligne */
+  .contact-info__value a, .footer__col a, .week__partner a { overflow-wrap: anywhere; }
+}
+
+/* Enfants directs des mises en page en grille : autorisés à rétrécir */
+.about__grid > *, .contact__grid > *, .resa__layout > *, .faq__layout > *,
+.services__bento > *, .grid > *, .footer__grid > *, .reviews-grid > * { min-width: 0; }
