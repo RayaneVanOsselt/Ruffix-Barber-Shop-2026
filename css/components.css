@@ -1690,3 +1690,41 @@
   transition: opacity var(--t-med) var(--ease), transform var(--t-med) var(--ease);
 }
 .gallery-item:hover::before { opacity: 0.85; transform: translateY(0); }
+
+/* =====================================================================
+   =====================================================================
+     AUDIT RESPONSIVE — garde-fous mobile / iPhone
+   =====================================================================
+   Corrections transverses pour un rendu irréprochable sur tous les
+   appareils (notamment iPhone). N'altère ni le design ni les fonctions.
+   ===================================================================== */
+
+/* 1) iOS : champs à 16px minimum = pas de zoom automatique au focus */
+.input, .textarea, select { font-size: 16px; }
+
+/* 2) Mots/emails/URL très longs : on coupe au lieu de déborder */
+body { overflow-wrap: break-word; }
+.lead, .footer__tagline, .contact-info__value, .faq-item__a-inner,
+.insta-card__text, .booking-note, .week__partner { overflow-wrap: anywhere; }
+
+/* 3) Encoches iPhone (avec viewport-fit=cover) : on respecte les zones sûres */
+.navbar__inner,
+.container {
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
+}
+/* Menu mobile plein écran : marge de sécurité en bas (barre gestuelle) */
+@media (max-width: 860px) {
+  .navbar__links.is-open { padding-bottom: max(1.6rem, env(safe-area-inset-bottom)); }
+}
+
+/* 4) Cibles tactiles : minimum confortable (>= ~42px) */
+.calendar__nav { width: 42px; height: 42px; }
+@media (hover: none) and (pointer: coarse) {
+  .lang-btn { padding-top: 0.42rem; padding-bottom: 0.42rem; }
+  .navbar__link { padding-block: 0.35rem; }
+}
+
+/* 5) Sécurité anti-débordement : jamais de scroll horizontal parasite */
+.hero__pillars, .about__stats, .split-head, .footer__cta { max-width: 100%; }
+.about__stat .num, .service-card__price, .reviews-summary__score { overflow-wrap: normal; }
