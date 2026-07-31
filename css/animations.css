@@ -19,6 +19,13 @@
 [data-reveal="right"] { transform: translateX(32px); }
 [data-reveal="zoom"]  { transform: scale(0.94); }
 
+/* MOBILE : révélation VERTICALE uniquement.
+   Le décalage horizontal (±32px) des éléments non encore révélés
+   élargissait la page et provoquait un débordement latéral sur iPhone. */
+@media (max-width: 640px) {
+  [data-reveal="left"], [data-reveal="right"] { transform: translateY(26px); }
+}
+
 [data-reveal].is-visible {
   opacity: 1;
   transform: none;
