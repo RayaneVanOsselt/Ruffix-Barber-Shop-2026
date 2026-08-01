@@ -14,9 +14,14 @@ sur tous tes appareils. Modifs et annulations sont répercutées toutes seules,
 
 | Dans la feuille… | …dans Google Agenda |
 |---|---|
-| Nouvelle ligne de réservation | ✅ Événement **créé** |
-| Tu modifies l'heure / la date / le service / les infos | 🔄 Événement **mis à jour** |
-| Statut passé à **`Annulé`** ou **`Refusé`** | 🗑️ Événement **supprimé** |
+| Nouvelle demande (statut **« En attente de confirmation »**) | ⏳ **Aucun** événement (en attente de ta validation) |
+| Tu passes le statut à **`Confirmé`** | ✅ Événement **créé** |
+| Tu modifies l'heure / la date / le service (rendez-vous confirmé) | 🔄 Événement **mis à jour** |
+| Statut repassé à **`En attente`**, **`Annulé`** ou **`Refusé`** | 🗑️ Événement **supprimé** |
+
+> 🔑 **Un événement n'apparaît dans l'agenda que si le statut est exactement
+> « Confirmé » (ou « Validé »).** Tant qu'une demande est « En attente de
+> confirmation », rien n'est ajouté au calendrier.
 
 - **Titre** de l'événement : `Prénom Nom – Service`
 - **Description** : client, service, date, heure début → fin, durée, téléphone,
