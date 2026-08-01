@@ -20,7 +20,7 @@
 
 var SHEET_NAME = "Reservations";   // nom de l'onglet du Google Sheet
 var PAS_MIN = 15;                  // pas des créneaux (doit correspondre à config.js)
-var CODE_VERSION = 4;              // témoin : permet de vérifier quelle version est déployée
+var CODE_VERSION = 5;              // témoin : permet de vérifier quelle version est déployée
 
 /* ---------------------------------------------------------------------
    STATUTS (colonne J du Sheet) — pilotent la couleur sur le site :
@@ -310,8 +310,11 @@ function syncCalendar_() {
     var type    = statutType(r[COL_STATUT]);
     var hasCore = dateISO && heure && (String(r[COL_NOM] || "").trim() || String(r[COL_PRENOM] || "").trim());
 
-    // --- Cas 1 : l'événement NE doit PAS exister (annulé / refusé / ligne vide) ---
-    if (type === "ignore" || !hasCore) {
+    // --- Cas 1 : l'événement NE doit PAS exister ---
+    // On ne crée l'événement QUE si le statut est « Confirmé ».
+    // « En attente de confirmation », « Annulé », « Refusé », ligne vide → aucun
+    // événement (et on supprime celui qui existerait déjà, ex. après un retour en attente).
+    if (type !== "confirmed" || !hasCore) {
       if (eventId) {
         try { var ex = cal.getEventById(eventId); if (ex) ex.deleteEvent(); } catch (e) {}
         eventId = ""; hash = ""; dirty = true;
@@ -320,7 +323,7 @@ function syncCalendar_() {
       continue;
     }
 
-    // --- Cas 2 : l'événement DOIT exister (création ou mise à jour) ---
+    // --- Cas 2 : statut « Confirmé » → l'événement DOIT exister (création ou mise à jour) ---
     var dureeMin = Math.max(PAS_MIN, parseInt(r[COL_DUREE], 10) || PAS_MIN);
     var start = Utilities.parseDate(dateISO + " " + heure, tz, "yyyy-MM-dd HH:mm");
     var end   = new Date(start.getTime() + dureeMin * 60000);
