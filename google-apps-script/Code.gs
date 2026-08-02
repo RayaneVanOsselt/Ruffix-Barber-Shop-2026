@@ -20,7 +20,7 @@
 
 var SHEET_NAME = "Reservations";   // nom de l'onglet du Google Sheet
 var PAS_MIN = 15;                  // pas des créneaux (doit correspondre à config.js)
-var CODE_VERSION = 6;              // témoin : permet de vérifier quelle version est déployée
+var CODE_VERSION = 7;              // témoin : permet de vérifier quelle version est déployée
 
 /* ---------------------------------------------------------------------
    STATUTS (colonne J du Sheet) — pilotent la couleur sur le site :
@@ -427,7 +427,22 @@ function installTriggers() {
   ScriptApp.newTrigger("syncReservationsToCalendar").timeBased().everyMinutes(1).create();
   // Première synchro immédiate + on garantit l'existence du calendrier
   syncReservationsToCalendar();
+  hideTechnicalColumns_();   // n'affiche que les colonnes utiles
   return "Synchro installée. Calendrier : " + getBookingCalendar_().getName();
+}
+
+/* ---------- Affichage épuré : masque les colonnes techniques (L→R) ----------
+   Garde visibles A→K (Date, Heure, Service, Prénom, Nom, Tél, Email, Statut,
+   Notes…). Masque ID Agenda, Sync, booking_id et le suivi des e-mails, dont
+   le script a besoin mais qui n'ont pas à encombrer l'affichage. */
+function hideTechnicalColumns_() {
+  var sheet = getSheet(); if (!sheet) return;
+  ensureSyncHeaders_(sheet);
+  sheet.hideColumns(COL_EVENT + 1, (COL_MTRY + 1) - (COL_EVENT + 1) + 1); // colonnes 12 → 18 (L → R)
+}
+function showTechnicalColumns_() {
+  var sheet = getSheet(); if (!sheet) return;
+  sheet.showColumns(COL_EVENT + 1, (COL_MTRY + 1) - (COL_EVENT + 1) + 1);
 }
 
 /* ---------- Menu pratique dans le Google Sheet ---------- */
@@ -446,6 +461,9 @@ function onOpen() {
     .addItem("🗑️ Annuler la réservation", "cancelSelectedBooking")
     .addSeparator()
     .addItem("⚠️ Voir la dernière erreur d'envoi", "showLastErrorForSelected")
+    .addSeparator()
+    .addItem("🙈 Masquer les colonnes techniques", "hideTechnicalColumns_")
+    .addItem("👁️ Afficher toutes les colonnes", "showTechnicalColumns_")
     .addToUi();
 }
 
