@@ -32,6 +32,12 @@
   <!-- Écran d'accueil mobile : le vrai logo (rendu net en grand format) -->
   <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
 
+  <!-- ============= Performance : chargement prioritaire ============= -->
+  <!-- Précharge l'image du hero (élément LCP) → affichage plus rapide -->
+  <link rel="preload" as="image" href="images/hero-barbershop.jpg" fetchpriority="high" />
+  <!-- Ouvre la connexion au CDN EmailJS en avance (gagne du temps au 1er appel) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
   <!-- ===================== Polices Google ===================== -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -120,7 +126,8 @@
          ========================================================= -->
     <section class="hero" id="accueil">
       <div class="hero__media">
-        <img src="images/hero-barbershop.jpg"
+        <img src="images/hero-barbershop.jpg" width="1600" height="1063"
+             fetchpriority="high" decoding="async"
              alt="Ambiance intérieure premium du salon de barbier Rufix Barber" />
       </div>
       <div class="hero__overlay"></div>
@@ -870,9 +877,9 @@
        EmailJS (CDN) : chargé pour permettre l'envoi si configuré.
        Si les clés ne sont pas renseignées dans config.js, le site
        bascule automatiquement sur le repli mailto (aucune erreur). -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/config.js?v=20260726m"></script>
-  <script src="js/i18n.js?v=20260726m"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
+  <script src="js/config.js?v=20260726m" defer></script>
+  <script src="js/i18n.js?v=20260726m" defer></script>
   <script src="js/booking.js?v=20260726m" defer></script>
   <script src="js/reviews.js?v=20260726m" defer></script>
   <script src="js/main.js?v=20260726m" defer></script>
