@@ -107,10 +107,13 @@ const CONFIG = {
      💡 Comme il n'y a pas de serveur (site 100% statique), c'est ici
         que vous « rayez » manuellement les créneaux déjà pris.
   ------------------------------------------------------------------- */
-  creneauxBloques: [
-    // { date: "2026-07-14", heure: "10:00" },
-    // { date: "2026-07-14", heure: "10:15" },
-  ],
+ const creneauxBloques = [
+  {
+    date: "2026-08-03",
+    debut: "15:30",
+    fin: "23:59",
+  },
+];
 
   /* -------------------------------------------------------------------
      5. SERVICES (prix et durées)
