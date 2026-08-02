@@ -107,10 +107,31 @@ const CONFIG = {
      💡 Comme il n'y a pas de serveur (site 100% statique), c'est ici
         que vous « rayez » manuellement les créneaux déjà pris.
   ------------------------------------------------------------------- */
-creneauxBloques: [
-    { date: "2026-08-03", heure: "15:30" },
-    // { date: "2026-07-14", heure: "10:15" },
-  ],
+creneauxBloques = [
+  { date: "2026-08-03", heure: "15:30" },
+  { date: "2026-08-03", heure: "15:45" },
+  { date: "2026-08-03", heure: "16:00" },
+  { date: "2026-08-03", heure: "16:15" },
+  { date: "2026-08-03", heure: "16:30" },
+  { date: "2026-08-03", heure: "16:45" },
+  { date: "2026-08-03", heure: "17:00" },
+  { date: "2026-08-03", heure: "17:15" },
+  { date: "2026-08-03", heure: "17:30" },
+  { date: "2026-08-03", heure: "17:45" },
+  { date: "2026-08-03", heure: "18:00" },
+  { date: "2026-08-03", heure: "18:15" },
+  { date: "2026-08-03", heure: "18:30" },
+  { date: "2026-08-03", heure: "18:45" },
+  { date: "2026-08-03", heure: "19:00" },
+  { date: "2026-08-03", heure: "19:15" },
+  { date: "2026-08-03", heure: "19:30" },
+  { date: "2026-08-03", heure: "19:45" },
+  { date: "2026-08-03", heure: "20:00" },
+  { date: "2026-08-03", heure: "20:15" },
+  { date: "2026-08-03", heure: "20:30" },
+  { date: "2026-08-03", heure: "20:45" },
+  { date: "2026-08-03", heure: "21:00" },
+];
 
   /* -------------------------------------------------------------------
      5. SERVICES (prix et durées)
