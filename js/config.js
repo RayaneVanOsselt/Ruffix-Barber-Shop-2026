@@ -28,9 +28,9 @@ const CONFIG = {
   salon: {
     nom:        "Rufix Barber",
     slogan:     "L'art de la coupe masculine",
-    ville:      "Etterbeek",                         // commune affichée
+    ville:      "",                                  // commune (vide = non affichée)
     adresse:    "",                                  // (masqué) adresse postale non affichée
-    codePostal: "1040",                              // code postal d'Etterbeek
+    codePostal: "",                                  // code postal (vide = non affiché)
     telephone:  "",                                  // (masqué) numéro non affiché
     email:      "infos@rufixbarber.com",             // email public du salon
     // --- Réseaux sociaux (URL nettoyées des paramètres de suivi) ---
