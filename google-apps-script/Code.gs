@@ -359,7 +359,7 @@ function syncCalendar_() {
 
     if (!eventId) {
       // Création
-      var ev = cal.createEvent(title, start, end, { description: desc, location: "Etterbeek" });
+      var ev = cal.createEvent(title, start, end, { description: desc, location: "Rufix Barber" });
       ev.setTag("app", EVENT_TAG);
       eventId = ev.getId(); hash = sig; dirty = true;
     } else if (sig !== hash) {
@@ -367,7 +367,7 @@ function syncCalendar_() {
       var cur = null;
       try { cur = cal.getEventById(eventId); } catch (e) {}
       if (!cur) {
-        var ev2 = cal.createEvent(title, start, end, { description: desc, location: "Etterbeek" });
+        var ev2 = cal.createEvent(title, start, end, { description: desc, location: "Rufix Barber" });
         ev2.setTag("app", EVENT_TAG);
         eventId = ev2.getId();
       } else {
@@ -573,14 +573,14 @@ function buildIcs_(d){
     "DTSTART:" + icsUtc_(d.start), "DTEND:" + icsUtc_(d.end),
     "SUMMARY:" + icsEsc_(title),
     "DESCRIPTION:" + icsEsc_("Réservation " + d.bookingId + " — " + d.service),
-    "LOCATION:" + icsEsc_("Etterbeek"),
+    "LOCATION:" + icsEsc_("Rufix Barber"),
     "END:VEVENT", "END:VCALENDAR"
   ].join("\r\n");
 }
 function gcalLink_(d){
   var title = encodeURIComponent(BIZ.name + " – " + d.service);
   return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title +
-         "&dates=" + icsUtc_(d.start) + "/" + icsUtc_(d.end) + "&location=" + encodeURIComponent("Etterbeek");
+         "&dates=" + icsUtc_(d.start) + "/" + icsUtc_(d.end) + "&location=" + encodeURIComponent("Rufix Barber");
 }
 
 /* --------- Gabarits d'e-mails (HTML responsive, lisible sur téléphone) --------- */
@@ -592,7 +592,7 @@ function emailShell_(preheader, contentHtml){
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.08);font-family:Arial,Helvetica,sans-serif;color:#2b2620;">' +
         '<tr><td style="background:#14110f;padding:22px 28px;">' +
           '<div style="font-family:Georgia,serif;font-size:22px;font-weight:bold;color:#f4efe7;">' + esc_(BIZ.name) + '</div>' +
-          '<div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c9a24b;margin-top:2px;">Barbier · Etterbeek</div>' +
+          '<div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c9a24b;margin-top:2px;">Barbier</div>' +
         '</td></tr>' +
         '<tr><td style="padding:28px;">' + contentHtml + '</td></tr>' +
         '<tr><td style="padding:18px 28px;background:#faf8f4;border-top:1px solid #eee;font-size:12px;color:#8a8378;">' +
