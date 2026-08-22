@@ -20,7 +20,7 @@
 
 var SHEET_NAME = "Reservations";   // nom de l'onglet du Google Sheet
 var PAS_MIN = 15;                  // pas des créneaux (doit correspondre à config.js)
-var CODE_VERSION = 7;              // témoin : permet de vérifier quelle version est déployée
+var CODE_VERSION = 8;              // témoin : permet de vérifier quelle version est déployée
 
 /* ---------------------------------------------------------------------
    STATUTS (colonne J du Sheet) — pilotent la couleur sur le site :
@@ -462,6 +462,8 @@ function onOpen() {
     .addSeparator()
     .addItem("⚠️ Voir la dernière erreur d'envoi", "showLastErrorForSelected")
     .addSeparator()
+    .addItem("🗄️ Archiver les réservations passées", "archivePastReservations_")
+    .addSeparator()
     .addItem("🙈 Masquer les colonnes techniques", "hideTechnicalColumns_")
     .addItem("👁️ Afficher toutes les colonnes", "showTechnicalColumns_")
     .addToUi();
@@ -892,4 +894,58 @@ function notifyAdminNewBooking_(){
     '<p style="font-size:12px;color:#8a8378;text-align:center;margin:8px 0 0;">Boutons sécurisés (jeton unique). Vous pouvez aussi gérer la réservation depuis le Google Sheet.</p>';
   try { MailApp.sendEmail({ to: BIZ.adminEmail, subject: "Nouvelle réservation " + d.bookingId + " – " + (d.prenom + " " + d.nom).trim(), htmlBody: emailShell_("Nouvelle demande de rendez-vous", body), name: BIZ.name }); }
   catch (err) { Logger.log("Échec e-mail admin : " + err); }
+}
+
+/* =====================================================================
+   ARCHIVAGE PROPRE DES RÉSERVATIONS PASSÉES
+   ---------------------------------------------------------------------
+   Déplace les réservations dont la DATE est passée vers un onglet
+   « Archives », puis les retire de la liste active. Résultat : la table
+   reste courte et lisible, les nouvelles réservations se rangent juste
+   après la dernière ligne, et RIEN n'est cassé (chaque réservation est
+   identifiée par son booking_id, pas par son numéro de ligne).
+   ⚠️ Bien plus sûr que supprimer les lignes à la main :
+     - ne touche jamais l'en-tête (ligne 1) ;
+     - n'efface aucun rendez-vous À VENIR (pas d'événement agenda orphelin) ;
+     - garde une copie complète dans « Archives » (historique / RGPD).
+   ===================================================================== */
+function archivePastReservations_() {
+  var ui = SpreadsheetApp.getUi();
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = getSheet();
+  if (!sheet) { ui.alert("Onglet « " + SHEET_NAME + " » introuvable."); return; }
+  ensureSyncHeaders_(sheet);
+
+  var tz = (typeof TZ !== "undefined" && TZ) ? TZ : ss.getSpreadsheetTimeZone();
+  var todayISO = Utilities.formatDate(new Date(), tz, "yyyy-MM-dd");
+  var data = sheet.getDataRange().getValues();
+  var width = data[0].length;
+
+  // Lignes dont la date est STRICTEMENT passée (< aujourd'hui)
+  var pastRows = [];   // numéros de ligne 1-based
+  for (var i = 1; i < data.length; i++) {
+    var dateISO = normDate(data[i][COL_DATE], tz);
+    if (dateISO && dateISO < todayISO) pastRows.push(i + 1);
+  }
+  if (!pastRows.length) { ui.alert("Aucune réservation passée à archiver. ✅"); return; }
+
+  var resp = ui.alert(
+    "Archiver " + pastRows.length + " réservation(s) passée(s) ?",
+    "Elles seront déplacées dans l'onglet « Archives » (rien n'est perdu) et retirées de la liste active. "
+    + "Les rendez-vous À VENIR ne sont pas touchés, et les confirmations restent intactes.",
+    ui.ButtonSet.YES_NO);
+  if (resp !== ui.Button.YES) return;
+
+  // Onglet « Archives » (créé au besoin, avec les mêmes en-têtes)
+  var arch = ss.getSheetByName("Archives");
+  if (!arch) { arch = ss.insertSheet("Archives"); arch.getRange(1, 1, 1, width).setValues([data[0]]); }
+
+  // Copie des lignes passées dans « Archives »
+  var rowsToCopy = pastRows.map(function (r) { return data[r - 1]; });
+  arch.getRange(arch.getLastRow() + 1, 1, rowsToCopy.length, width).setValues(rowsToCopy);
+
+  // Suppression DU BAS VERS LE HAUT (évite tout décalage d'index) → la table se compacte
+  pastRows.sort(function (a, b) { return b - a; }).forEach(function (r) { sheet.deleteRow(r); });
+
+  ss.toast(pastRows.length + " réservation(s) archivée(s). Table à jour ✅", "Rufix", 5);
 }
