@@ -27,7 +27,11 @@
       "lang.name": "Français",
       // Navigation
       "nav.accueil": "Accueil", "nav.services": "Services", "nav.reservation": "Réservation",
-      "nav.galerie": "Galerie", "nav.avis": "Avis", "nav.contact": "Contact", "nav.reserver": "Réserver",
+      "nav.galerie": "Galerie", "nav.avis": "Avis", "nav.collab": "Collaborations", "nav.contact": "Contact", "nav.reserver": "Réserver",
+      "collab.eyebrow": "Collaborations & partenaires", "collab.title": "Nos collaborations",
+      "collab.lead": "Au-delà du salon, nous accompagnons aussi des clubs, des sportifs et des structures professionnelles, avec le même sérieux et la même fiabilité.",
+      "collab.sport": "Collaboration sportive", "collab.season": "Saison 2026/2027", "collab.cta": "Voir sur Instagram",
+      "collab.text": "Nous sommes fiers de collaborer avec Blue Star Futsal pour la saison 2026/2027. Une collaboration qui illustre notre volonté d'accompagner les clubs et les acteurs du sport avec un service sérieux, fiable et adapté à leurs besoins.",
       // Hero
       "hero.eyebrow": "Barbier · Coiffure homme",
       "hero.title": "L'art de la coupe masculine",
@@ -147,7 +151,11 @@
     nl: {
       "lang.name": "Nederlands",
       "nav.accueil": "Home", "nav.services": "Diensten", "nav.reservation": "Reserveren",
-      "nav.galerie": "Galerij", "nav.avis": "Reviews", "nav.contact": "Contact", "nav.reserver": "Reserveren",
+      "nav.galerie": "Galerij", "nav.avis": "Reviews", "nav.collab": "Samenwerkingen", "nav.contact": "Contact", "nav.reserver": "Reserveren",
+      "collab.eyebrow": "Samenwerkingen & partners", "collab.title": "Onze samenwerkingen",
+      "collab.lead": "Naast het salon begeleiden we ook clubs, sporters en professionele structuren, met dezelfde ernst en betrouwbaarheid.",
+      "collab.sport": "Sportieve samenwerking", "collab.season": "Seizoen 2026/2027", "collab.cta": "Bekijk op Instagram",
+      "collab.text": "We zijn trots op onze samenwerking met Blue Star Futsal voor het seizoen 2026/2027. Een samenwerking die onze wil toont om ook clubs en sportactoren te begeleiden met een serieuze, betrouwbare service, aangepast aan hun noden.",
       "hero.eyebrow": "Kapper · Herenkapsel",
       "hero.title": "De kunst van het herenkapsel",
       "hero.sub": "Knippen, baard en scheren in een premium kader — op afspraak.",
@@ -254,7 +262,11 @@
     en: {
       "lang.name": "English",
       "nav.accueil": "Home", "nav.services": "Services", "nav.reservation": "Booking",
-      "nav.galerie": "Gallery", "nav.avis": "Reviews", "nav.contact": "Contact", "nav.reserver": "Book",
+      "nav.galerie": "Gallery", "nav.avis": "Reviews", "nav.collab": "Collaborations", "nav.contact": "Contact", "nav.reserver": "Book",
+      "collab.eyebrow": "Collaborations & partners", "collab.title": "Our collaborations",
+      "collab.lead": "Beyond the salon, we also support clubs, athletes and professional organisations, with the same seriousness and reliability.",
+      "collab.sport": "Sports collaboration", "collab.season": "Season 2026/2027", "collab.cta": "View on Instagram",
+      "collab.text": "We are proud to collaborate with Blue Star Futsal for the 2026/2027 season. A collaboration that reflects our commitment to supporting clubs and sports organisations with a serious, reliable service tailored to their needs.",
       "hero.eyebrow": "Barber · Men's hair",
       "hero.title": "The art of the men's cut",
       "hero.sub": "Haircut, beard and shave in a premium setting — by appointment.",

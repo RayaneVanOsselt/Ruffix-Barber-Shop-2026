@@ -348,7 +348,7 @@
     // pleine largeur sous la légende (voir renderPartnerBanner) : ainsi le texte
     // ne déborde JAMAIS des colonnes étroites.
     const p = C.partenaireIndispo;
-    const labelCol = (p && p.labelColonne) || "Réserver chez le partenaire";
+    const labelCol = (p && p.labelColonne) || "Réserver chez Mathieu Nayis Scharbeek";
     if (rowIndex >= 2) {
       days.forEach((iso, i) => {
         if (!isIndispo(iso)) return;

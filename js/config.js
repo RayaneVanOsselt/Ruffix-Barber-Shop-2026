@@ -53,7 +53,7 @@ const CONFIG = {
   ------------------------------------------------------------------- */
   partenaireIndispo: {
     message:      "Ces jours-là, Rufix vous coiffe au salon partenaire — réservez directement chez",
-    labelColonne: "Réserver chez le partenaire",
+    labelColonne: "Réserver chez Mathieu Nayis Scharbeek",
     nom:          "Mathieu Nayis Schaerbeek",
     url:          "https://salonkee.be/salon/mathieu-nayis-schaerbeek?lang=fr"
   },
