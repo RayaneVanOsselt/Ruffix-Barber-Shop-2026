@@ -44,9 +44,9 @@
         rel="stylesheet" />
 
   <!-- ========================= Styles ========================= -->
-  <link rel="stylesheet" href="css/base.css?v=20260726o" />
-  <link rel="stylesheet" href="css/components.css?v=20260726o" />
-  <link rel="stylesheet" href="css/animations.css?v=20260726o" />
+  <link rel="stylesheet" href="css/base.css?v=20260726p" />
+  <link rel="stylesheet" href="css/components.css?v=20260726p" />
+  <link rel="stylesheet" href="css/animations.css?v=20260726p" />
 
   <!-- ============= Données structurées (SEO local) =============
        👉 Éditez ces valeurs en même temps que js/config.js.
@@ -97,6 +97,7 @@
         <a class="navbar__link" href="#reservation" data-i18n="nav.reservation">Réservation</a>
         <a class="navbar__link" href="#galerie" data-i18n="nav.galerie">Galerie</a>
         <a class="navbar__link" href="#avis" data-i18n="nav.avis">Avis</a>
+        <a class="navbar__link" href="#collaborations" data-i18n="nav.collab">Collaborations</a>
         <a class="navbar__link" href="#contact" data-i18n="nav.contact">Contact</a>
         <span class="navbar__cta">
           <a class="btn btn--sm" href="#reservation" data-i18n="nav.reserver">Réserver</a>
@@ -625,6 +626,41 @@
     </section>
 
     <!-- =========================================================
+         COLLABORATIONS & PARTENAIRES — clubs, sportifs, structures pro
+         Dupliquez la carte .collab-card pour ajouter d'autres partenaires.
+         ========================================================= -->
+    <section class="collab" id="collaborations">
+      <div class="container">
+        <div class="section-head center" data-reveal>
+          <span class="eyebrow" data-i18n="collab.eyebrow">Collaborations &amp; partenaires</span>
+          <h2 class="section-title" data-i18n="collab.title">Nos collaborations</h2>
+          <p class="lead" data-i18n="collab.lead">Au-delà du salon, nous accompagnons aussi des clubs, des sportifs et des structures professionnelles, avec le même sérieux et la même fiabilité.</p>
+        </div>
+
+        <div class="collab-grid" data-reveal>
+          <article class="collab-card">
+            <span class="collab-card__emblem" aria-hidden="true">
+              <!-- Emplacement du logo : remplacez ce SVG par <img src="images/blue-star-futsal.png" alt="Blue Star Futsal"> quand le logo sera disponible -->
+              <svg class="icon"><use href="#i-star"></use></svg>
+            </span>
+            <div class="collab-card__body">
+              <span class="collab-card__tag" data-i18n="collab.sport">Collaboration sportive</span>
+              <h3 class="collab-card__name">Blue Star Futsal</h3>
+              <span class="collab-card__season" data-i18n="collab.season">Saison 2026/2027</span>
+              <p class="collab-card__text" data-i18n="collab.text">Nous sommes fiers de collaborer avec Blue Star Futsal pour la saison 2026/2027. Une collaboration qui illustre notre volonté d'accompagner les clubs et les acteurs du sport avec un service sérieux, fiable et adapté à leurs besoins.</p>
+              <a class="btn btn--sm" href="https://www.instagram.com/blue_star_futsal?igsi=emMyYTZpODR5Yjhy"
+                 target="_blank" rel="noopener"
+                 aria-label="Voir Blue Star Futsal sur Instagram (nouvel onglet)">
+                <svg class="icon" aria-hidden="true"><use href="#i-instagram"></use></svg>
+                <span data-i18n="collab.cta">Voir sur Instagram</span>
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
          FAQ — accordéon accessible (un item ouvert à la fois)
          ========================================================= -->
     <section class="faq-section" id="faq">
@@ -863,11 +899,11 @@
        Si les clés ne sont pas renseignées dans config.js, le site
        bascule automatiquement sur le repli mailto (aucune erreur). -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
-  <script src="js/config.js?v=20260726o" defer></script>
-  <script src="js/i18n.js?v=20260726o" defer></script>
-  <script src="js/booking.js?v=20260726o" defer></script>
-  <script src="js/reviews.js?v=20260726o" defer></script>
-  <script src="js/main.js?v=20260726o" defer></script>
-  <script src="js/assistant.js?v=20260726o" defer></script>
+  <script src="js/config.js?v=20260726p" defer></script>
+  <script src="js/i18n.js?v=20260726p" defer></script>
+  <script src="js/booking.js?v=20260726p" defer></script>
+  <script src="js/reviews.js?v=20260726p" defer></script>
+  <script src="js/main.js?v=20260726p" defer></script>
+  <script src="js/assistant.js?v=20260726p" defer></script>
 </body>
 </html>
