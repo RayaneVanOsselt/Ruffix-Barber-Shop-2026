@@ -44,9 +44,9 @@
         rel="stylesheet" />
 
   <!-- ========================= Styles ========================= -->
-  <link rel="stylesheet" href="css/base.css?v=20260726p" />
-  <link rel="stylesheet" href="css/components.css?v=20260726p" />
-  <link rel="stylesheet" href="css/animations.css?v=20260726p" />
+  <link rel="stylesheet" href="css/base.css?v=20260726s" />
+  <link rel="stylesheet" href="css/components.css?v=20260726s" />
+  <link rel="stylesheet" href="css/animations.css?v=20260726s" />
 
   <!-- ============= Données structurées (SEO local) =============
        👉 Éditez ces valeurs en même temps que js/config.js.
@@ -639,9 +639,13 @@
 
         <div class="collab-grid" data-reveal>
           <article class="collab-card">
-            <span class="collab-card__emblem" aria-hidden="true">
-              <!-- Emplacement du logo : remplacez ce SVG par <img src="images/blue-star-futsal.png" alt="Blue Star Futsal"> quand le logo sera disponible -->
-              <svg class="icon"><use href="#i-star"></use></svg>
+            <span class="collab-card__emblem">
+              <!-- Dépose le logo dans images/blue-star-united.png (fond transparent de préférence).
+                   Tant qu'il est absent, l'étoile de repli s'affiche automatiquement. -->
+              <img class="collab-card__logo" src="images/blue-star-united.png"
+                   alt="Logo Blue Star United Football Club" loading="lazy" decoding="async"
+                   onerror="var f=this.parentNode.querySelector('.collab-card__emblem-fallback');if(f){f.hidden=false;}this.remove();" />
+              <span class="collab-card__emblem-fallback" hidden aria-hidden="true"><svg class="icon"><use href="#i-star"></use></svg></span>
             </span>
             <div class="collab-card__body">
               <span class="collab-card__tag" data-i18n="collab.sport">Collaboration sportive</span>
@@ -899,11 +903,11 @@
        Si les clés ne sont pas renseignées dans config.js, le site
        bascule automatiquement sur le repli mailto (aucune erreur). -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
-  <script src="js/config.js?v=20260726p" defer></script>
-  <script src="js/i18n.js?v=20260726p" defer></script>
-  <script src="js/booking.js?v=20260726p" defer></script>
-  <script src="js/reviews.js?v=20260726p" defer></script>
-  <script src="js/main.js?v=20260726p" defer></script>
-  <script src="js/assistant.js?v=20260726p" defer></script>
+  <script src="js/config.js?v=20260726s" defer></script>
+  <script src="js/i18n.js?v=20260726s" defer></script>
+  <script src="js/booking.js?v=20260726s" defer></script>
+  <script src="js/reviews.js?v=20260726s" defer></script>
+  <script src="js/main.js?v=20260726s" defer></script>
+  <script src="js/assistant.js?v=20260726s" defer></script>
 </body>
 </html>
