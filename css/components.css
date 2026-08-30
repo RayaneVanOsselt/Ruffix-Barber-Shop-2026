@@ -1777,45 +1777,121 @@ img, svg, video, iframe, table, pre { max-width: 100%; }
 
 /* ==================== COLLABORATIONS & PARTENAIRES ==================== */
 .collab-grid {
-  display: grid; gap: clamp(1.2rem, 3vw, 1.8rem);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-  max-width: 760px; margin-inline: auto;   /* accueille facilement d'autres cartes */
+  display: grid; gap: clamp(1.4rem, 3vw, 2rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  max-width: 880px; margin-inline: auto;   /* accueille facilement d'autres cartes */
 }
 .collab-card {
+  position: relative; isolation: isolate; overflow: hidden;
   display: grid; grid-template-columns: auto 1fr; align-items: center;
-  gap: clamp(1.2rem, 3.5vw, 1.9rem);
-  padding: clamp(1.5rem, 4vw, 2.2rem);
-  background: linear-gradient(165deg, var(--color-surface-2), var(--color-surface));
+  gap: clamp(1.5rem, 4vw, 2.8rem);
+  padding: clamp(1.9rem, 4.5vw, 2.9rem);
+  background:
+    radial-gradient(135% 130% at 100% 0%, rgba(201,162,75,0.10), transparent 55%),
+    linear-gradient(165deg, var(--color-surface-2), var(--color-surface));
   border: 1px solid var(--color-line); border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   transition: transform var(--t-med) var(--ease), border-color var(--t-med) var(--ease), box-shadow var(--t-med) var(--ease);
 }
-.collab-card:hover { transform: translateY(-5px); border-color: rgba(201,162,75,0.45); box-shadow: var(--shadow-hover); }
+.collab-card:hover { transform: translateY(-6px); border-color: rgba(201,162,75,0.5); box-shadow: var(--shadow-hover); }
+
+/* Barre dorée supérieure */
+.collab-card::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: var(--grad-gold); opacity: 0.9; z-index: 2;
+}
+
+/* Filigrane décoratif (étoile fantôme) */
+.collab-card__watermark {
+  position: absolute; right: -38px; bottom: -54px;
+  width: 240px; height: 240px; color: var(--color-accent);
+  opacity: 0.05; z-index: 0; pointer-events: none;
+  transition: transform var(--t-med) var(--ease), opacity var(--t-med) var(--ease);
+}
+.collab-card:hover .collab-card__watermark { transform: rotate(-8deg) scale(1.05); opacity: 0.07; }
+
+/* Sceau « partenaire officiel » */
+.collab-card__ribbon {
+  position: absolute; top: clamp(1rem, 3vw, 1.4rem); right: clamp(1rem, 3vw, 1.4rem);
+  display: inline-flex; align-items: center; gap: 0.4rem; z-index: 3;
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase;
+  color: #201a10;
+  padding: 0.4rem 0.8rem; border-radius: var(--radius-pill);
+  background: var(--grad-gold); box-shadow: var(--shadow-glow);
+}
+.collab-card__ribbon .icon { width: 15px; height: 15px; }
+
+/* Emblème + anneau doré animé */
+.collab-card__emblem-wrap { position: relative; z-index: 1; display: grid; place-items: center; }
 .collab-card__emblem {
-  flex-shrink: 0; width: clamp(100px, 24vw, 130px); aspect-ratio: 1; border-radius: 50%;
-  position: relative; overflow: hidden; display: grid; place-items: center;
-  background: radial-gradient(120% 120% at 30% 18%, rgba(201,162,75,0.16), transparent 62%), var(--color-surface);
-  border: 1px solid var(--color-line); box-shadow: var(--shadow-soft);
+  position: relative; flex-shrink: 0;
+  width: clamp(122px, 26vw, 172px); aspect-ratio: 1; border-radius: 50%;
+  display: grid; place-items: center; padding: 12px;
+  background:
+    radial-gradient(62% 62% at 50% 42%, rgba(42,78,158,0.42), transparent 72%),
+    var(--color-bg);
+  box-shadow:
+    inset 0 0 0 1px rgba(201,162,75,0.22),
+    0 20px 44px -20px rgba(0,0,0,0.75),
+    var(--shadow-glow);
   transition: transform var(--t-med) var(--ease);
 }
-.collab-card:hover .collab-card__emblem { transform: scale(1.03); }
-.collab-card__logo { width: 100%; height: 100%; object-fit: cover; }
+/* Anneau conique doré tournant */
+.collab-card__emblem::before {
+  content: ""; position: absolute; inset: -4px; border-radius: 50%; z-index: -1;
+  background: conic-gradient(from 180deg,
+    rgba(201,162,75,0), var(--color-accent-hover),
+    rgba(201,162,75,0) 52%, var(--color-accent-deep), rgba(201,162,75,0));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  animation: collabRingSpin 11s linear infinite;
+}
+.collab-card:hover .collab-card__emblem { transform: scale(1.04); }
+.collab-card__logo {
+  width: 100%; height: 100%; object-fit: contain; border-radius: 50%;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5));
+}
 .collab-card__emblem-fallback { display: grid; place-items: center; color: var(--color-accent); }
 .collab-card__emblem-fallback[hidden] { display: none; }
-.collab-card__emblem-fallback .icon { width: 46px; height: 46px; }
-.collab-card__body { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 0.45rem; }
+.collab-card__emblem-fallback .icon { width: 54px; height: 54px; }
+
+@keyframes collabRingSpin { to { transform: rotate(360deg); } }
+
+/* Contenu */
+.collab-card__body {
+  position: relative; z-index: 1; min-width: 0;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0.55rem;
+}
 .collab-card__tag {
   display: inline-flex; align-items: center; gap: 0.4rem;
   font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--color-accent);
-  padding: 0.3rem 0.75rem; border: 1px solid var(--color-line); border-radius: var(--radius-pill);
+  padding: 0.3rem 0.8rem; border: 1px solid var(--color-line); border-radius: var(--radius-pill);
   background: rgba(201,162,75,0.08);
 }
-.collab-card__name { font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.6rem); }
-.collab-card__season { color: var(--color-muted); font-size: 0.9rem; font-weight: 500; }
-.collab-card__text { color: var(--color-muted); font-size: 0.97rem; line-height: 1.62; margin: 0.35rem 0 1rem; }
+.collab-card__name {
+  font-size: clamp(1.5rem, 1.2rem + 1.3vw, 2rem); line-height: 1.08; margin-top: 0.1rem;
+}
+.collab-card__meta { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; margin: 0.15rem 0 0.1rem; }
+.collab-card__meta li {
+  display: inline-flex; align-items: center; gap: 0.42rem;
+  font-size: 0.8rem; font-weight: 500; color: var(--color-text);
+  padding: 0.34rem 0.72rem; border: 1px solid var(--color-line); border-radius: var(--radius-pill);
+  background: rgba(255,255,255,0.02);
+}
+.collab-card__meta .icon { width: 15px; height: 15px; color: var(--color-accent); }
+.collab-card__text { color: var(--color-muted); font-size: 0.97rem; line-height: 1.62; margin: 0.4rem 0 1.05rem; }
 .collab-card__body .btn { margin-top: 0.1rem; }
-@media (max-width: 560px) {
-  .collab-card { grid-template-columns: 1fr; justify-items: start; }
-  .collab-card__emblem { width: clamp(88px, 30vw, 108px); }
+
+@media (max-width: 620px) {
+  .collab-card { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 1.3rem; }
+  .collab-card__body { align-items: center; }
+  .collab-card__meta { justify-content: center; }
+  .collab-card__ribbon { position: static; margin-inline: auto; }
+  .collab-card__emblem { width: clamp(108px, 40vw, 140px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collab-card__emblem::before { animation: none; }
+  .collab-card:hover .collab-card__watermark { transform: none; }
 }
