@@ -94,8 +94,10 @@ const CONFIG = {
     "2026-12-25",   // Noël
     "2026-01-01",   // Jour de l'An
     "2026-08-23",   // Indisponible (personnel)
-    "2026-08-17"    // Indisponible (personnel)
+    "2026-08-17",   // Indisponible (personnel)
+    "2026-08-18",    // Indisponible (personnel)
     // "2026-07-21",  // ← exemple : ajoutez vos propres dates ici
+
   ],
 
   /* -------------------------------------------------------------------
@@ -108,34 +110,10 @@ const CONFIG = {
         que vous « rayez » manuellement les créneaux déjà pris.
   ------------------------------------------------------------------- */
   creneauxBloques: [
-    // --- Vendredi 11 septembre 2026 : indisponible à partir de 18h00 ---
-    { date: "2026-09-11", heure: "18:00" },
-    { date: "2026-09-11", heure: "18:15" },
-    { date: "2026-09-11", heure: "18:30" },
-    { date: "2026-09-11", heure: "18:45" },
-    { date: "2026-09-11", heure: "19:00" },
-    { date: "2026-09-11", heure: "19:15" },
-    { date: "2026-09-11", heure: "19:30" },
-    { date: "2026-09-11", heure: "19:45" },
-    { date: "2026-09-11", heure: "20:00" },
-    { date: "2026-09-11", heure: "20:15" },
-    { date: "2026-09-11", heure: "20:30" },
-    { date: "2026-09-11", heure: "20:45" },
-    // --- Samedi 12 septembre 2026 : indisponible à partir de 18h00 ---
-    { date: "2026-09-12", heure: "18:00" },
-    { date: "2026-09-12", heure: "18:15" },
-    { date: "2026-09-12", heure: "18:30" },
-    { date: "2026-09-12", heure: "18:45" },
-    { date: "2026-09-12", heure: "19:00" },
-    { date: "2026-09-12", heure: "19:15" },
-    { date: "2026-09-12", heure: "19:30" },
-    { date: "2026-09-12", heure: "19:45" },
-    { date: "2026-09-12", heure: "20:00" },
-    { date: "2026-09-12", heure: "20:15" },
-    { date: "2026-09-12", heure: "20:30" },
-    { date: "2026-09-12", heure: "20:45" },
-    // { date: "2026-07-14", heure: "10:00" },  // ← exemple : ajoutez vos créneaux ici
+
+    
   ],
+
 
   /* -------------------------------------------------------------------
      5. SERVICES (prix et durées)

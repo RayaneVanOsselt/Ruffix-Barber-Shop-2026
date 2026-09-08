@@ -639,18 +639,39 @@
 
         <div class="collab-grid" data-reveal>
           <article class="collab-card">
-            <span class="collab-card__emblem">
-              <!-- Dépose le logo dans images/blue-star-united.png (fond transparent de préférence).
-                   Tant qu'il est absent, l'étoile de repli s'affiche automatiquement. -->
-              <img class="collab-card__logo" src="images/blue-star-united.png"
-                   alt="Logo Blue Star United Football Club" loading="lazy" decoding="async"
-                   onerror="var f=this.parentNode.querySelector('.collab-card__emblem-fallback');if(f){f.hidden=false;}this.remove();" />
-              <span class="collab-card__emblem-fallback" hidden aria-hidden="true"><svg class="icon"><use href="#i-star"></use></svg></span>
+            <!-- Filigrane décoratif en arrière-plan -->
+            <svg class="collab-card__watermark" aria-hidden="true"><use href="#i-star"></use></svg>
+
+            <!-- Sceau « partenaire officiel » -->
+            <span class="collab-card__ribbon">
+              <svg class="icon" aria-hidden="true"><use href="#i-verified"></use></svg>
+              <span data-i18n="collab.official">Partenaire officiel</span>
             </span>
+
+            <div class="collab-card__emblem-wrap">
+              <span class="collab-card__emblem">
+                <!-- Dépose le logo dans images/blue-star-united.png (fond transparent de préférence).
+                     Tant qu'il est absent, l'étoile de repli s'affiche automatiquement. -->
+                <img class="collab-card__logo" src="images/blue-star-united.png"
+                     alt="Logo Blue Star United Football Club" loading="lazy" decoding="async"
+                     onerror="var f=this.parentNode.querySelector('.collab-card__emblem-fallback');if(f){f.hidden=false;}this.remove();" />
+                <span class="collab-card__emblem-fallback" hidden aria-hidden="true"><svg class="icon"><use href="#i-star"></use></svg></span>
+              </span>
+            </div>
+
             <div class="collab-card__body">
               <span class="collab-card__tag" data-i18n="collab.sport">Collaboration sportive</span>
               <h3 class="collab-card__name">Blue Star Futsal</h3>
-              <span class="collab-card__season" data-i18n="collab.season">Saison 2026/2027</span>
+              <ul class="collab-card__meta">
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg>
+                  <span data-i18n="collab.season">Saison 2026/2027</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg>
+                  <span data-i18n="collab.sportType">Football · Futsal</span>
+                </li>
+              </ul>
               <p class="collab-card__text" data-i18n="collab.text">Nous sommes fiers de collaborer avec Blue Star Futsal pour la saison 2026/2027. Une collaboration qui illustre notre volonté d'accompagner les clubs et les acteurs du sport avec un service sérieux, fiable et adapté à leurs besoins.</p>
               <a class="btn btn--sm" href="https://www.instagram.com/blue_star_futsal?igsi=emMyYTZpODR5Yjhy"
                  target="_blank" rel="noopener"

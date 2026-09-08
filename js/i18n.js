@@ -31,6 +31,7 @@
       "collab.eyebrow": "Collaborations & partenaires", "collab.title": "Nos collaborations",
       "collab.lead": "Au-delà du salon, nous accompagnons aussi des clubs, des sportifs et des structures professionnelles, avec le même sérieux et la même fiabilité.",
       "collab.sport": "Collaboration sportive", "collab.season": "Saison 2026/2027", "collab.cta": "Voir sur Instagram",
+      "collab.official": "Partenaire officiel", "collab.sportType": "Football · Futsal",
       "collab.text": "Nous sommes fiers de collaborer avec Blue Star Futsal pour la saison 2026/2027. Une collaboration qui illustre notre volonté d'accompagner les clubs et les acteurs du sport avec un service sérieux, fiable et adapté à leurs besoins.",
       // Hero
       "hero.eyebrow": "Barbier · Coiffure homme",
@@ -155,6 +156,7 @@
       "collab.eyebrow": "Samenwerkingen & partners", "collab.title": "Onze samenwerkingen",
       "collab.lead": "Naast het salon begeleiden we ook clubs, sporters en professionele structuren, met dezelfde ernst en betrouwbaarheid.",
       "collab.sport": "Sportieve samenwerking", "collab.season": "Seizoen 2026/2027", "collab.cta": "Bekijk op Instagram",
+      "collab.official": "Officiële partner", "collab.sportType": "Voetbal · Futsal",
       "collab.text": "We zijn trots op onze samenwerking met Blue Star Futsal voor het seizoen 2026/2027. Een samenwerking die onze wil toont om ook clubs en sportactoren te begeleiden met een serieuze, betrouwbare service, aangepast aan hun noden.",
       "hero.eyebrow": "Kapper · Herenkapsel",
       "hero.title": "De kunst van het herenkapsel",
@@ -266,6 +268,7 @@
       "collab.eyebrow": "Collaborations & partners", "collab.title": "Our collaborations",
       "collab.lead": "Beyond the salon, we also support clubs, athletes and professional organisations, with the same seriousness and reliability.",
       "collab.sport": "Sports collaboration", "collab.season": "Season 2026/2027", "collab.cta": "View on Instagram",
+      "collab.official": "Official partner", "collab.sportType": "Football · Futsal",
       "collab.text": "We are proud to collaborate with Blue Star Futsal for the 2026/2027 season. A collaboration that reflects our commitment to supporting clubs and sports organisations with a serious, reliable service tailored to their needs.",
       "hero.eyebrow": "Barber · Men's hair",
       "hero.title": "The art of the men's cut",
