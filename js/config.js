@@ -108,8 +108,33 @@ const CONFIG = {
         que vous « rayez » manuellement les créneaux déjà pris.
   ------------------------------------------------------------------- */
   creneauxBloques: [
-    // { date: "2026-07-14", heure: "10:00" },
-    // { date: "2026-07-14", heure: "10:15" },
+    // --- Vendredi 11 septembre 2026 : indisponible à partir de 18h00 ---
+    { date: "2026-09-11", heure: "18:00" },
+    { date: "2026-09-11", heure: "18:15" },
+    { date: "2026-09-11", heure: "18:30" },
+    { date: "2026-09-11", heure: "18:45" },
+    { date: "2026-09-11", heure: "19:00" },
+    { date: "2026-09-11", heure: "19:15" },
+    { date: "2026-09-11", heure: "19:30" },
+    { date: "2026-09-11", heure: "19:45" },
+    { date: "2026-09-11", heure: "20:00" },
+    { date: "2026-09-11", heure: "20:15" },
+    { date: "2026-09-11", heure: "20:30" },
+    { date: "2026-09-11", heure: "20:45" },
+    // --- Samedi 12 septembre 2026 : indisponible à partir de 18h00 ---
+    { date: "2026-09-12", heure: "18:00" },
+    { date: "2026-09-12", heure: "18:15" },
+    { date: "2026-09-12", heure: "18:30" },
+    { date: "2026-09-12", heure: "18:45" },
+    { date: "2026-09-12", heure: "19:00" },
+    { date: "2026-09-12", heure: "19:15" },
+    { date: "2026-09-12", heure: "19:30" },
+    { date: "2026-09-12", heure: "19:45" },
+    { date: "2026-09-12", heure: "20:00" },
+    { date: "2026-09-12", heure: "20:15" },
+    { date: "2026-09-12", heure: "20:30" },
+    { date: "2026-09-12", heure: "20:45" },
+    // { date: "2026-07-14", heure: "10:00" },  // ← exemple : ajoutez vos créneaux ici
   ],
 
   /* -------------------------------------------------------------------
