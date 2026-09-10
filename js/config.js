@@ -96,7 +96,7 @@ const CONFIG = {
     "2026-08-23",   // Indisponible (personnel)
     "2026-08-17",   // Indisponible (personnel)
     "2026-08-18",   // Indisponible (personnel)
-    "2026-09-12",   // Indisponible toute la journée (personnel)
+    // Indisponible toute la journée (personnel)
     // "2026-07-21",  // ← exemple : ajoutez vos propres dates ici
 
   ],
