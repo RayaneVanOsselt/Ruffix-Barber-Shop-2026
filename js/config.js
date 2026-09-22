@@ -91,18 +91,17 @@ const CONFIG = {
      Exemple : "2026-12-25" pour Noël.
   ------------------------------------------------------------------- */
   joursFermes: [
-    "2026-12-25",   // Noël
-    "2026-01-01",   // Jour de l'An
-    "2026-08-23",   // Indisponible (personnel)
-    "2026-08-17",   // Indisponible (personnel)
-    "2026-08-18",   // Indisponible (personnel)
-    // Indisponible toute la journée (personnel)
-     "2026-09-28",
-     "2026-09-29",
-    // "2026-07-21",  // ← exemple : ajoutez vos propres dates ici
+  "2026-01-01", // Jour de l'An
 
-  ],
+  // Indisponibilités personnelles
+  "2026-08-17",
+  "2026-08-18",
+  "2026-08-23",
+  "2026-09-28",
+  "2026-09-29",
 
+  "2026-12-25", // Noël
+],
   /* -------------------------------------------------------------------
      4. CRÉNEAUX INDISPONIBLES (heures précises déjà réservées/bloquées)
      -------------------------------------------------------------------
