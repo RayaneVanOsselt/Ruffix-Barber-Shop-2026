@@ -43,10 +43,30 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Montserrat:wght@400;500;600;700&display=swap"
         rel="stylesheet" />
 
+  <!-- ============= Animation d'entrée : décision immédiate =============
+       Exécuté AVANT l'affichage pour éviter tout flash du hero :
+       - html.motion : animations autorisées (pas de « réduire les animations »)
+       - html.has-intro : l'intro s'affiche (1re visite de la session, sans ancre)
+       Sécurité : si js/intro.js ne se charge pas, tout redevient visible. -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      if (!window.matchMedia || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      d.classList.add("motion");
+      var seen = false;
+      try { seen = sessionStorage.getItem("rufix_intro_seen") === "1"; } catch (e) {}
+      var deepLink = location.hash && location.hash !== "#accueil";
+      if (!seen && !deepLink) d.classList.add("has-intro");
+      window.__rufixIntroFailsafe = setTimeout(function () {
+        d.classList.remove("motion", "has-intro");
+      }, 8000);
+    })();
+  </script>
+
   <!-- ========================= Styles ========================= -->
-  <link rel="stylesheet" href="css/base.css?v=20260908c" />
-  <link rel="stylesheet" href="css/components.css?v=20260908c" />
-  <link rel="stylesheet" href="css/animations.css?v=20260908c" />
+  <link rel="stylesheet" href="css/base.css?v=20261010" />
+  <link rel="stylesheet" href="css/components.css?v=20261010" />
+  <link rel="stylesheet" href="css/animations.css?v=20261010" />
 
   <!-- ============= Données structurées (SEO local) =============
        👉 Éditez ces valeurs en même temps que js/config.js.
@@ -78,6 +98,40 @@
 </head>
 
 <body>
+  <!-- =========================================================
+       INTRO — animation d'entrée (1re visite de la session).
+       Visible uniquement si <html> porte la classe « intro »,
+       pilotée par js/intro.js. Le contenu de la moitié haute est
+       cloné dans la moitié basse : la « coupe » tranche le logo.
+       ========================================================= -->
+  <div class="intro" id="intro">
+    <div class="intro__visual" aria-hidden="true">
+      <div class="intro__half intro__half--top">
+        <div class="intro__stage">
+          <div class="intro__mark">
+            <div class="intro__emblem">
+              <svg class="intro__ring" viewBox="0 0 200 200" focusable="false">
+                <circle class="intro__ring-ticks" cx="100" cy="100" r="98" />
+                <circle class="intro__ring-line" cx="100" cy="100" r="92" />
+              </svg>
+              <img src="images/logo.png" alt="" width="240" height="240" />
+            </div>
+            <span class="intro__name"><span style="--i:0">R</span><span style="--i:1">U</span><span style="--i:2">F</span><span style="--i:3">I</span><span style="--i:4">X</span></span>
+            <span class="intro__sub">Barber</span>
+          </div>
+        </div>
+      </div>
+      <div class="intro__half intro__half--bottom"></div>
+      <span class="intro__blade"></span>
+      <div class="intro__meta">
+        <span data-i18n="hero.eyebrow">Barbier · Coiffure homme</span>
+        <span class="intro__count">000</span>
+      </div>
+      <span class="intro__bar"></span>
+    </div>
+    <button type="button" class="intro__skip" data-i18n="intro.skip">Passer</button>
+  </div>
+
   <a class="skip-link" href="#main">Aller au contenu principal</a>
 
   <!-- =========================================================
@@ -923,12 +977,15 @@
        EmailJS (CDN) : chargé pour permettre l'envoi si configuré.
        Si les clés ne sont pas renseignées dans config.js, le site
        bascule automatiquement sur le repli mailto (aucune erreur). -->
+  <!-- intro.js juste après i18n.js (titre déjà traduit) et AVANT le CDN :
+       l'intro démarre sans attendre le téléchargement d'EmailJS. -->
+  <script src="js/config.js?v=20261010" defer></script>
+  <script src="js/i18n.js?v=20261010" defer></script>
+  <script src="js/intro.js?v=20261010" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
-  <script src="js/config.js?v=20260908c" defer></script>
-  <script src="js/i18n.js?v=20260908c" defer></script>
-  <script src="js/booking.js?v=20260908c" defer></script>
-  <script src="js/reviews.js?v=20260908c" defer></script>
-  <script src="js/main.js?v=20260908c" defer></script>
-  <script src="js/assistant.js?v=20260908c" defer></script>
+  <script src="js/booking.js?v=20261010" defer></script>
+  <script src="js/reviews.js?v=20261010" defer></script>
+  <script src="js/main.js?v=20261010" defer></script>
+  <script src="js/assistant.js?v=20261010" defer></script>
 </body>
 </html>

@@ -57,6 +57,8 @@
 
   /* --- Transitions --- */
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);     /* sortie très douce (intro, hero) */
+  --ease-inout: cubic-bezier(0.77, 0, 0.18, 1);   /* accélère puis freine (ouverture) */
   --t-fast: 0.25s;
   --t-med: 0.45s;
 
