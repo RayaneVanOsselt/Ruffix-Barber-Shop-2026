@@ -113,23 +113,13 @@ const CONFIG = {
      💡 Comme il n'y a pas de serveur (site 100% statique), c'est ici
         que vous « rayez » manuellement les créneaux déjà pris.
   ------------------------------------------------------------------- */
-  creneauxBloques: [
-    // --- Vendredi 11 septembre 2026 : indisponible à partir de 18h00 ---
-    { date: "2026-09-11", heure: "18:00" },
-    { date: "2026-09-11", heure: "18:15" },
-    { date: "2026-09-11", heure: "18:30" },
-    { date: "2026-09-11", heure: "18:45" },
-    { date: "2026-09-11", heure: "19:00" },
-    { date: "2026-09-11", heure: "19:15" },
-    { date: "2026-09-11", heure: "19:30" },
-    { date: "2026-09-11", heure: "19:45" },
-    { date: "2026-09-11", heure: "20:00" },
-    { date: "2026-09-11", heure: "20:15" },
-    { date: "2026-09-11", heure: "20:30" },
-    { date: "2026-09-11", heure: "20:45" },
-    // (Samedi 12 septembre : journée entière bloquée via « joursFermes » ci-dessus)
-    // { date: "2026-07-14", heure: "10:00" },  // ← exemple : ajoutez vos créneaux ici
-  ],
+  // --- Vendredi 16 octobre 2026 : indisponible de 19h45 à 21h00 ---
+{ date: "2026-10-16", heure: "19:45" },
+{ date: "2026-10-16", heure: "20:00" },
+{ date: "2026-10-16", heure: "20:15" },
+{ date: "2026-10-16", heure: "20:30" },
+{ date: "2026-10-16", heure: "20:45" },
+{ date: "2026-10-16", heure: "21:00" },
 
 
   /* -------------------------------------------------------------------
