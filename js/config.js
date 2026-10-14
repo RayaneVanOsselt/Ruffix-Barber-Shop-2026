@@ -105,24 +105,19 @@ const CONFIG = {
   "2026-12-25", // Noël
 ],
   /* -------------------------------------------------------------------
-     4. CRÉNEAUX INDISPONIBLES (heures précises déjà réservées/bloquées)
-     -------------------------------------------------------------------
-     Bloquez une heure précise d'une journée précise pour qu'elle
-     n'apparaisse plus dans le calendrier.
-     Format : { date: "AAAA-MM-JJ", heure: "HH:MM" }
-     💡 Comme il n'y a pas de serveur (site 100% statique), c'est ici
-        que vous « rayez » manuellement les créneaux déjà pris.
-  ------------------------------------------------------------------- */
+   4. CRÉNEAUX INDISPONIBLES
+   -------------------------------------------------------------------
+   Format : { date: "AAAA-MM-JJ", heure: "HH:MM" }
+------------------------------------------------------------------- */
+creneauxBloques: [
   // --- Vendredi 16 octobre 2026 : indisponible de 19h45 à 21h00 ---
-{ date: "2026-10-16", heure: "19:45" },
-{ date: "2026-10-16", heure: "20:00" },
-{ date: "2026-10-16", heure: "20:15" },
-{ date: "2026-10-16", heure: "20:30" },
-{ date: "2026-10-16", heure: "20:45" },
-{ date: "2026-10-16", heure: "21:00" },
-
+  { date: "2026-10-16", heure: "19:45" },
+  { date: "2026-10-16", heure: "20:00" },
+  { date: "2026-10-16", heure: "20:15" },
+  { date: "2026-10-16", heure: "20:30" },
+  { date: "2026-10-16", heure: "20:45" },
+  { date: "2026-10-16", heure: "21:00" },
 ],
-
 
   /* -------------------------------------------------------------------
      5. SERVICES (prix et durées)
